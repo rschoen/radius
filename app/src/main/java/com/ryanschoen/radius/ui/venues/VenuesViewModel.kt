@@ -1,13 +1,13 @@
-package com.ryanschoen.radius.ui.notifications
+package com.ryanschoen.radius.ui.venues
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class NotificationsViewModel : ViewModel() {
+class VenuesViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "This is notifications Fragment"
+        value = "Someday, this will be a list of venues!"
     }
     val text: LiveData<String> = _text
 }

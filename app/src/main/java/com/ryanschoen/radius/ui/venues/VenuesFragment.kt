@@ -1,4 +1,4 @@
-package com.ryanschoen.radius.ui.home
+package com.ryanschoen.radius.ui.venues
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.ryanschoen.radius.databinding.FragmentHomeBinding
+import com.ryanschoen.radius.databinding.FragmentVenuesBinding
 
-class HomeFragment : Fragment() {
+class VenuesFragment : Fragment() {
 
-    private var _binding: FragmentHomeBinding? = null
+    private var _binding: FragmentVenuesBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -22,14 +22,14 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
+        val venuesViewModel =
+            ViewModelProvider(this).get(VenuesViewModel::class.java)
 
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        _binding = FragmentVenuesBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         val textView: TextView = binding.textHome
-        homeViewModel.text.observe(viewLifecycleOwner) {
+        venuesViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
         return root

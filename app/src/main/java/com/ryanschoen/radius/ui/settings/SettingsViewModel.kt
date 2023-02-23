@@ -1,13 +1,13 @@
-package com.ryanschoen.radius.ui.home
+package com.ryanschoen.radius.ui.settings
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class HomeViewModel : ViewModel() {
+class SettingsViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+        value = "Someday, this will be settings!t"
     }
     val text: LiveData<String> = _text
 }
