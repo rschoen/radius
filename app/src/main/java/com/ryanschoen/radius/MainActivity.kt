@@ -1,20 +1,32 @@
 package com.ryanschoen.radius
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.ryanschoen.radius.databinding.ActivityMainBinding
+import com.ryanschoen.radius.ui.AddressDialog
+import com.ryanschoen.radius.ui.AddressManager
+import timber.log.Timber
+import timber.log.Timber.Forest.plant
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var addressManager: AddressManager
+    private lateinit var sharedPref: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (BuildConfig.DEBUG) {
+            plant(Timber.DebugTree())
+        }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -31,5 +43,22 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        sharedPref = getSharedPreferences(
+            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+
+    }
+
+    fun showAddressDialog() {
+        val addressDialog = AddressDialog()
+        addressDialog.show(supportFragmentManager, "address")
+    }
+
+    override fun onResume() {
+        if(sharedPref.getString(getString(R.string.saved_address),null).isNullOrBlank()) {
+            showAddressDialog()
+        }
+
+        super.onResume()
     }
 }
