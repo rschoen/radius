@@ -6,7 +6,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.ryanschoen.radius.databinding.ActivityMainBinding
-import com.ryanschoen.radius.ui.AddressManager
 import timber.log.Timber
 import timber.log.Timber.Forest.plant
 
@@ -14,7 +13,6 @@ import timber.log.Timber.Forest.plant
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var addressManager: AddressManager
    // private lateinit var sharedPref: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {

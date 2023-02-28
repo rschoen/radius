@@ -10,6 +10,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentSetupBinding
 import timber.log.Timber
@@ -86,7 +87,7 @@ class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     binding.venuesStatusIcon.setImageResource(R.drawable.baseline_change_circle_36)
                     binding.venuesStatusIcon.visibility = View.VISIBLE
 
-                    binding.venuesStatusText.text = getString(R.string.venue_search_pending)
+                    binding.venuesStatusText.text = getString(R.string.venue_search_processing)
                     binding.venuesStatusText.visibility = View.VISIBLE
                 }
                 viewModel.onAddressChangedComplete()
@@ -102,6 +103,7 @@ class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 else {
                     binding.venuesStatusIcon.setImageResource(R.drawable.baseline_check_circle_36)
                     binding.venuesStatusText.text = "Downloaded ${viewModel.numVenues.value} venues!"
+                    findNavController().navigate(SetupFragmentDirections.actionNavigationSetupToNavigationMap())
                 }
                 viewModel.onVenuesChangedComplete()
             }

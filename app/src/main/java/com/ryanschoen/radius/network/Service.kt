@@ -87,8 +87,8 @@ suspend fun sendAddressVerification(address: NetworkAddress): AddressResult? {
     }
 }
 
-suspend fun fetchVenues(address: String): List<Venue> {
-    val venues = mutableListOf<Venue>()
+suspend fun fetchVenues(address: String): NetworkYelpSearchResults {
+    val venues = mutableListOf<NetworkVenue>()
     val venuesAdded = mutableListOf<String>()
     withContext(Dispatchers.IO) {
         try {
@@ -96,9 +96,9 @@ suspend fun fetchVenues(address: String): List<Venue> {
             for(category in CATEGORIES) {
                 for(i in 0 until QUERIES_PER_CATEGORY) {
                     queriesMade++
-                    val newVenues = Network.venueList.getVenues(address, category, RESULTS_PER_QUERY, i).asDomainModel()
+                    val newVenues = Network.venueList.getVenues(address, category, RESULTS_PER_QUERY, i).businesses
                     for (venue in newVenues) {
-                        if(!venuesAdded.contains(venue.id) && !venue.closed && venue.reviews >= MINIMUM_REVIEWS) {
+                        if(!venuesAdded.contains(venue.id) && !venue.closed && venue.reviews.toInt() >= MINIMUM_REVIEWS) {
                             venues.add(venue)
                             venuesAdded.add(venue.id)
                         }
@@ -123,5 +123,5 @@ suspend fun fetchVenues(address: String): List<Venue> {
         }
 
     }
-    return venues
+    return NetworkYelpSearchResults(venues)
 }

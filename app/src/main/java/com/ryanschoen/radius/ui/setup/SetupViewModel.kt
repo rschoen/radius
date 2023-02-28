@@ -16,7 +16,7 @@ class SetupViewModel(application: Application) : AndroidViewModel(application) {
     private val repo = getRepository(application)
 
     init {
-        if (repo.hasSavedAddress()) {
+        if (repo.isAddressReady()) {
             Timber.i("Found saved address: " + repo.getSavedAddress())
         }
         else {
@@ -44,31 +44,20 @@ class SetupViewModel(application: Application) : AndroidViewModel(application) {
         get() = _venuesChanged
 
     fun verifyAddress(address: String, locality: String, administrativeArea: String, regionCode: String = "US") {
+
         viewModelScope.launch {
-            val addressResult = sendAddressVerification(
-                NetworkAddress(
-                    listOf<String>(address),
-                    locality,
-                    administrativeArea,
-                    regionCode
-                )
-            )
-            if(addressResult == null) {
-                //TODO: do something more meaningful here
-                Toast.makeText(getApplication(),"Address verification failed due to an internal error. Please retry!",Toast.LENGTH_LONG).show()
-            } else if (!addressResult.complete) {
-                _latLng.value = LatLng(0.0,0.0)
+            var addressVerified = repo.verifyAndStoreAddress(address, locality, administrativeArea, regionCode)
+            if (addressVerified) {
+                _verifiedAddress.value = repo.getSavedAddress()
+                _addressChanged.value = true
+
+                val venuesDownloaded = repo.downloadVenues(_verifiedAddress.value!!)
+                _numVenues.value = venuesDownloaded
+                _venuesChanged.value = true
+            }
+            else {
                 _verifiedAddress.value = ""
                 _addressChanged.value = true
-            } else {
-
-                _latLng.value = LatLng(addressResult.latitude, addressResult.longitude)
-                _verifiedAddress.value = addressResult.formattedAddress
-                _addressChanged.value = true
-
-                val venues = fetchVenues(addressResult.formattedAddress)
-                _numVenues.value = venues.size
-                _venuesChanged.value = true
             }
         }
 

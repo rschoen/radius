@@ -31,5 +31,9 @@
         android:id="@+id/navigation_setup"
         android:name="com.ryanschoen.radius.ui.setup.SetupFragment"
         android:label="@string/title_setup"
-        tools:layout="@layout/fragment_setup" />
+        tools:layout="@layout/fragment_setup" >
+        <action
+            android:id="@+id/action_navigation_setup_to_navigation_map"
+            app:destination="@id/navigation_map" />
+    </fragment>
 </navigation>

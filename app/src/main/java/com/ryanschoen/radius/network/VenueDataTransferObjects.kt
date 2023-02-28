@@ -1,5 +1,6 @@
 package com.ryanschoen.radius.network
 
+import com.ryanschoen.radius.database.DatabaseVenue
 import com.ryanschoen.radius.domain.Venue
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -7,11 +8,26 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class NetworkYelpSearchResults(
-    val businesses: List<_YelpBusiness>
+    val businesses: List<NetworkVenue>
 )
 
+fun NetworkYelpSearchResults.asDatabaseModel(): Array<DatabaseVenue> {
+    return businesses.map {
+        DatabaseVenue(
+            id = it.id,
+            name = it.name,
+            url = it.url,
+            imageUrl = it.imageUrl,
+            reviews = it.reviews.toInt(),
+            rating = it.rating.toDouble(),
+            lat = it.coordinates.latitude.toDouble(),
+            lng = it.coordinates.longitude.toDouble()
+        )
+    }.toTypedArray()
+}
+
 @JsonClass(generateAdapter = false)
-data class _YelpBusiness(
+data class NetworkVenue(
     val id: String,
     val name: String,
     @Json(name="image_url") val imageUrl: String,
