@@ -3,12 +3,13 @@ package com.ryanschoen.radius.domain
 
 data class Venue(val id: String,
                  val name: String,
-                 val address: String,
                  val lat: Double,
                  val lng: Double,
                  val reviews: Int,
                  val rating: Double,
-                 val imageUrl: String) {
+                 val imageUrl: String,
+                 val url: String,
+                 val closed: Boolean) {
 }
 
 data class Address(val address: String,

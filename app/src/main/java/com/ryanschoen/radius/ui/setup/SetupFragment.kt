@@ -9,8 +9,10 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.core.widget.doOnTextChanged
+import androidx.lifecycle.Observer
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentSetupBinding
+import timber.log.Timber
 
 class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
@@ -18,7 +20,12 @@ class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
         fun newInstance() = SetupFragment()
     }
 
-    private lateinit var viewModel: SetupViewModel
+    private val viewModel: SetupViewModel by lazy {
+        val activity = requireNotNull(this.activity) {
+            "You can only access viewModel after onViewCreated()"
+        }
+        ViewModelProvider(this).get(SetupViewModel::class.java)
+    }
 
 
     private var _binding: FragmentSetupBinding? = null
@@ -40,6 +47,13 @@ class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.stateSpinner.onItemSelectedListener = this
 
         binding.saveAddress.setOnClickListener() {
+            binding.saveAddress.isEnabled = false
+            binding.verificationStatusIcon.setImageResource(R.drawable.baseline_change_circle_36)
+            binding.verificationStatusIcon.visibility = View.VISIBLE
+            binding.verificationStatusText.text = getText(R.string.verification_processing)
+            binding.verificationStatusText.visibility = View.VISIBLE
+            binding.venuesStatusText.visibility = View.GONE
+            binding.venuesStatusIcon.visibility = View.GONE
             viewModel.verifyAddress(binding.addressEdittext.text.toString(),
                                     binding.cityEdittext.text.toString(),
                                     binding.stateSpinner.selectedItem.toString())
@@ -58,14 +72,44 @@ class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
             spinner.adapter = adapter
         }
 
+        viewModel.addressChanged.observe(viewLifecycleOwner, Observer { changed ->
+            Timber.i("Changed: " + changed.toString())
+            if(changed) {
+                if(viewModel.verifiedAddress.value.isNullOrBlank()) {
+                    binding.verificationStatusIcon.setImageResource(R.drawable.baseline_dangerous_36)
+                    binding.verificationStatusText.text = getText(R.string.verification_failed)
+                }
+                else {
+                    binding.verificationStatusIcon.setImageResource(R.drawable.baseline_check_circle_36)
+                    binding.verificationStatusText.text = viewModel.verifiedAddress.value
+
+                    binding.venuesStatusIcon.setImageResource(R.drawable.baseline_change_circle_36)
+                    binding.venuesStatusIcon.visibility = View.VISIBLE
+
+                    binding.venuesStatusText.text = getString(R.string.venue_search_pending)
+                    binding.venuesStatusText.visibility = View.VISIBLE
+                }
+                viewModel.onAddressChangedComplete()
+            }
+        })
+
+        viewModel.venuesChanged.observe(viewLifecycleOwner, Observer { changed ->
+            if(changed) {
+                if(viewModel.numVenues.value == 0) {
+                    binding.venuesStatusIcon.setImageResource(R.drawable.baseline_dangerous_36)
+                    binding.venuesStatusText.text = getText(R.string.venue_search_failed)
+                }
+                else {
+                    binding.venuesStatusIcon.setImageResource(R.drawable.baseline_check_circle_36)
+                    binding.venuesStatusText.text = "Downloaded ${viewModel.numVenues.value} venues!"
+                }
+                viewModel.onVenuesChangedComplete()
+            }
+        })
+
         return root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(SetupViewModel::class.java)
-        //viewModel.checkForAddress()
-    }
 
     private fun checkIfEntryComplete() {
         if (binding.addressEdittext.text.isEmpty() ||

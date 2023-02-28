@@ -72,43 +72,63 @@
                 tools:enabled="true" />
 
             <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/verification_status_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_normal"
                 android:layout_marginTop="@dimen/margin_large"
+                android:visibility="invisible"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/save_address"
-                app:srcCompat="@drawable/baseline_pending_36" />
-
+                app:srcCompat="@drawable/baseline_pending_36"
+                tools:visibility="visible" />
 
 
             <TextView
-                android:id="@+id/address_verification_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_normal"
-                android:layout_marginTop="@dimen/margin_normal"
-                android:layout_marginBottom="@dimen/margin_normal"
-                android:text="Set address to begin verification"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="@+id/imageView"
-                app:layout_constraintStart_toEndOf="@+id/imageView"
-                app:layout_constraintTop_toTopOf="@+id/imageView" />
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:id="@+id/verification_status_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_normal"
                 android:layout_marginTop="@dimen/margin_normal"
                 android:layout_marginEnd="@dimen/margin_normal"
-                android:progress="00"
+                android:layout_marginBottom="@dimen/margin_normal"
+                android:text="@string/verification_pending"
+                android:textSize="16sp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/verification_status_icon"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/verification_status_icon"
+                app:layout_constraintTop_toTopOf="@+id/verification_status_icon"
+                tools:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/venues_status_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_normal"
+                android:layout_marginTop="@dimen/margin_normal"
+                android:visibility="invisible"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView"
-                tools:progress="30" />
+                app:layout_constraintTop_toBottomOf="@+id/verification_status_icon"
+                app:srcCompat="@drawable/baseline_pending_36"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/venues_status_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_normal"
+                android:layout_marginTop="@dimen/margin_normal"
+                android:layout_marginEnd="@dimen/margin_normal"
+                android:layout_marginBottom="@dimen/margin_normal"
+                android:text="@string/venue_search_pending"
+                android:textSize="16sp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@id/venues_status_icon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/venues_status_icon"
+                app:layout_constraintTop_toTopOf="@id/venues_status_icon"
+                tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

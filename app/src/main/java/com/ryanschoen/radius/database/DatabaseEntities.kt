@@ -9,12 +9,12 @@ data class DatabaseVenue constructor(
     @PrimaryKey
     val id: String,
     val name: String,
-    val address: String,
     val lat: Double,
     val lng: Double,
     val reviews: Int,
     val rating: Double,
-    val imageUrl: String
+    val imageUrl: String,
+    val url: String
 )
 
 fun List<DatabaseVenue>.asDomainModel(): List<Venue> {
@@ -22,12 +22,13 @@ fun List<DatabaseVenue>.asDomainModel(): List<Venue> {
         Venue (
             id = it.id,
             name = it.name,
-            address = it.address,
             lat = it.lat,
             lng = it.lng,
             reviews = it.reviews,
             rating = it.rating,
-            imageUrl = it.imageUrl
+            imageUrl = it.imageUrl,
+            url = it.url,
+            closed = false
                 )
     }
 }

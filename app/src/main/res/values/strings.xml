@@ -10,9 +10,15 @@
     <string name="saved_lat">saved_latlng</string>
     <string name="saved_long">saved_long</string>
     <string name="address_of_home_base">Address of home base</string>
-    <string name="save_address">Save</string>
+    <string name="save_address">Locate</string>
     <string name="title_setup">Setup</string>
     <string name="city">City</string>
+    <string name="verification_pending">Enter your home base address to verify</string>
+    <string name="verification_processing">Verifying address…</string>
+    <string name="verification_failed">Could not verify your address. Double check to make sure it\'s correct!</string>
+    <string name="venue_search_pending">Verify your home bass to download venues</string>
+    <string name="venue_search_processing">Downloading venues…</string>
+    <string name="venue_search_failed">Could not find any nearby venues. Double check your address!</string>
     <string-array name="states_names">
         <item>Alabama</item>
         <item>Alaska</item>
