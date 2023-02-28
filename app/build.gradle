@@ -2,7 +2,9 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
+    id 'androidx.navigation.safeargs.kotlin'
 }
+apply plugin: 'kotlin-kapt'
 
 
 android {
@@ -39,20 +41,25 @@ android {
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
-    implementation 'com.google.android.gms:play-services-maps:18.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
-    implementation 'androidx.room:room-common:2.5.0'
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.jakewharton.timber:timber:5.0.1'
+    implementation "androidx.core:core-ktx:$version_core"
+    implementation "androidx.appcompat:appcompat:$version_appcompat"
+    implementation "com.google.android.material:material:$version_material"
+    implementation "com.google.android.gms:play-services-maps:$version_maps"
+    implementation "androidx.constraintlayout:constraintlayout:$version_constraint_layout"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$version_lifecycle"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$version_lifecycle"
+    implementation "androidx.navigation:navigation-fragment-ktx:$version_navigation"
+    implementation "androidx.navigation:navigation-ui-ktx:$version_navigation"
+    implementation "androidx.room:room-ktx:$version_room"
+    kapt "androidx.room:room-compiler:$version_room"
+    implementation "com.squareup.retrofit2:retrofit:$version_retrofit"
+    implementation "com.squareup.retrofit2:converter-moshi:$version_retrofit"
+    implementation "com.squareup.moshi:moshi-kotlin:$version_moshi"
+    kapt "com.squareup.moshi:moshi-kotlin-codegen:$version_moshi_codegen"
+    implementation "com.jakewharton.timber:timber:$version_timber"
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.0'
 
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    testImplementation "junit:junit:$version_junit"
+    androidTestImplementation "androidx.test.ext:junit:$version_junit_ext"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$version_espresso"
 }

@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -60,6 +61,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         map.addMarker(MarkerOptions().position(sf).title("L'Ardoise Bistro").snippet(snippet))
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(sf, 10.0f))
         //enableMyLocation()
+
+
+        this.findNavController().navigate(MapFragmentDirections.actionNavigationMapToNavigationSetup())
     }
 
     private fun isPermissionGranted() : Boolean {

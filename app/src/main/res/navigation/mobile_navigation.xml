@@ -9,7 +9,11 @@
         android:id="@+id/navigation_map"
         android:name="com.ryanschoen.radius.ui.map.MapFragment"
         android:label="@string/title_map"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_map" >
+        <action
+            android:id="@+id/action_navigation_map_to_navigation_setup"
+            app:destination="@id/navigation_setup" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_venues"
@@ -22,4 +26,10 @@
         android:name="com.ryanschoen.radius.ui.settings.SettingsFragment"
         android:label="@string/title_settings"
         tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/navigation_setup"
+        android:name="com.ryanschoen.radius.ui.setup.SetupFragment"
+        android:label="@string/title_setup"
+        tools:layout="@layout/fragment_setup" />
 </navigation>
