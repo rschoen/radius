@@ -18,6 +18,7 @@
     <string name="venue_search_failed">Could not find any nearby venues. Double check your address!</string>
     <string name="saved_latitude">saved_latitude</string>
     <string name="saved_longitude">saved_longitude</string>
+    <string name="clear_data">[DEBUG] Clear data and quit</string>
     <string-array name="states_names">
         <item>Alabama</item>
         <item>Alaska</item>

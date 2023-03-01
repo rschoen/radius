@@ -21,7 +21,8 @@ fun NetworkYelpSearchResults.asDatabaseModel(): Array<DatabaseVenue> {
             reviews = it.reviews.toInt(),
             rating = it.rating.toDouble(),
             lat = it.coordinates.latitude.toDouble(),
-            lng = it.coordinates.longitude.toDouble()
+            lng = it.coordinates.longitude.toDouble(),
+            distance = it.distance!!
         )
     }.toTypedArray()
 }
@@ -36,6 +37,7 @@ data class NetworkVenue(
     @Json(name="review_count") val reviews: String,
     val rating: String,
     val coordinates: _YelpCoordinates,
+    var distance: Double?
 
 )
 
@@ -44,7 +46,7 @@ data class _YelpCoordinates(
     val latitude: String,
     val longitude: String
 )
-
+/*
 fun NetworkYelpSearchResults.asDomainModel(): List<Venue> {
     return businesses.map {
         Venue (
@@ -59,4 +61,4 @@ fun NetworkYelpSearchResults.asDomainModel(): List<Venue> {
             closed = it.closed
         )
     }
-}
+}*/

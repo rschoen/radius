@@ -9,7 +9,7 @@ data class Venue(val id: String,
                  val rating: Double,
                  val imageUrl: String,
                  val url: String,
-                 val closed: Boolean) {
+                 val distance: Double) {
 }
 
 data class Address(val address: String,

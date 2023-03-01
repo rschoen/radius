@@ -36,6 +36,8 @@ class VenuesRepository(private val application: Application) {
         it.asDomainModel()
     }
 
+    val tenthVenueDistance: LiveData<Double> = database.venueDao.getTenthVenue()
+
 
     fun getSavedAddress(): String? {
         return sharedPref.getString(SAVED_ADDRESS_STRING,"")
@@ -50,7 +52,7 @@ class VenuesRepository(private val application: Application) {
         return sharedPref.getBoolean(SAVED_ADDRESS_READY,false)
     }
     fun setAddressReady(ready: Boolean) {
-        sharedPref.edit().putBoolean(SAVED_ADDRESS_READY,true).apply()
+        sharedPref.edit().putBoolean(SAVED_ADDRESS_READY,ready).apply()
     }
 
     fun setSavedAddressLatLong(address: String, lat: Double, lng: Double) {
@@ -60,6 +62,10 @@ class VenuesRepository(private val application: Application) {
             putFloat(SAVED_LONGITUDE_STRING, lng.toFloat())
             apply()
         }
+    }
+
+    fun clearSharedPrefs() {
+        sharedPref.edit().clear().apply()
     }
 
 
@@ -93,16 +99,23 @@ class VenuesRepository(private val application: Application) {
             }
     }
 
-    suspend fun downloadVenues(address: String): Int {
+    suspend fun downloadVenues(address: String, latitude: Double, longitude: Double): Int {
         val venues =
             withContext(Dispatchers.IO) {
-                var venues = fetchVenues(address)
+                var venues = fetchVenues(address, latitude, longitude)
                 database.venueDao.insertAll(*venues.asDatabaseModel())
                 Timber.i("Inserted ${venues.businesses.size} venues")
                 venues
             }
         setAddressReady(true)
         return venues.businesses.size
+    }
+
+    suspend fun deleteAllData() {
+        withContext(Dispatchers.IO) {
+            database.venueDao.deleteVenuesData()
+            clearSharedPrefs()
+        }
     }
 }
 

@@ -14,7 +14,8 @@ data class DatabaseVenue constructor(
     val reviews: Int,
     val rating: Double,
     val imageUrl: String,
-    val url: String
+    val url: String,
+    val distance: Double
 )
 
 fun List<DatabaseVenue>.asDomainModel(): List<Venue> {
@@ -28,7 +29,7 @@ fun List<DatabaseVenue>.asDomainModel(): List<Venue> {
             rating = it.rating,
             imageUrl = it.imageUrl,
             url = it.url,
-            closed = false
+            distance = it.distance
                 )
     }
 }

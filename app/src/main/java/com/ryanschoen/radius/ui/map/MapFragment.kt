@@ -4,9 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -33,6 +31,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var map: GoogleMap? = null
     private val REQUEST_LOCATION_PERMISSION = 1
     private lateinit var viewModel: MapViewModel
+    private var mapHasBeenZoomed = false
+    private lateinit var homeLatLng: LatLng
+    private var defaultZoomLevel: Double? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,10 +56,32 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
         })
 
+        viewModel.quitActivity.observe(viewLifecycleOwner, Observer { quit ->
+            if(quit) {
+                requireActivity().finish()
+            }
+        })
+
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+        setHasOptionsMenu(true)
+
         return root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.overflow_menu, menu)
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        return when (item.itemId) {
+            R.id.clear_data -> {
+                viewModel.clearAllData()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onDestroyView() {
@@ -68,6 +91,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+        homeLatLng = LatLng(viewModel.getHomeLat(), viewModel.getHomeLng())
+        map!!.moveCamera(CameraUpdateFactory.newLatLng(homeLatLng))
+        Timber.i("Moving map to ${homeLatLng.toString()}")
         setupMap()
 
     }
@@ -78,19 +104,19 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     fun setupMap() {
-        var constantMap = map
-        if (constantMap == null || view == null) {
+        if (map == null || view == null) {
             return
         }
 
-        val homeLatLng = LatLng(viewModel.getHomeLat(), viewModel.getHomeLng())
-
+        Timber.i("Setting up map...")
 
         viewModel.venues.observe(viewLifecycleOwner, Observer { venues ->
-            constantMap.clear()
+            Timber.i("Venues observer called")
+            map!!.clear()
 
+            val homeLatLng = LatLng(viewModel.getHomeLat(), viewModel.getHomeLng())
 
-            constantMap.addMarker(
+            map!!.addMarker(
                 MarkerOptions().position(homeLatLng).title("Home Base").icon(
                     BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
                 )
@@ -98,15 +124,48 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             for (venue in venues) {
                 val position = LatLng(venue.lat, venue.lng)
-                constantMap.addMarker(
+                map!!.addMarker(
                     MarkerOptions().position(position).title(venue.name)
                         .snippet("${venue.reviews} reviews, ${venue.rating} stars")
                 )
-                Timber.i("Adding to map: ${venue.name}")
+                //Timber.i("Adding to map: ${venue.name}")
+            }
+
+        })
+
+        viewModel.tenthVenueDistance.observe(viewLifecycleOwner, Observer { distance ->
+            Timber.i("Distance observer called")
+            //if() {
+            //var distance = distanceList.get(0)
+            var zoom = 14.0f
+
+            if (distance != null) {
+
+
+                if (distance < 100) {
+                    zoom = 18.0f
+                } else if (distance < 200) {
+                    zoom = 17.0f
+                } else if (distance < 500) {
+                    zoom = 16.0f
+                } else if (distance < 1000) {
+                    zoom = 15.0f
+                } else if (distance < 2000) {
+                    zoom = 14.0f
+                } else if (distance < 5000) {
+                    zoom = 13.0f
+                } else if (distance < 10_000) {
+                    zoom = 12.0f
+                } else if (distance < 20_000) {
+                    zoom = 11.0f
+                } else zoom = 10.0f
+                Timber.i("Distance: %f, Zoom: %f", distance, zoom)
+                map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoom))
+                //}
             }
         })
 
-        constantMap.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, 16.0f))
+
         //TODO: dynamically set this based on how close the closest venue is
         //enableMyLocation()
     }

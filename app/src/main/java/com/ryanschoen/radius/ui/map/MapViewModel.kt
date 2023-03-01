@@ -4,9 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.ryanschoen.radius.domain.Venue
 import com.ryanschoen.radius.repository.getRepository
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 public class MapViewModel(application: Application) : AndroidViewModel(application) {
@@ -16,7 +18,12 @@ public class MapViewModel(application: Application) : AndroidViewModel(applicati
     val navigateToSetup: LiveData<Boolean>
         get() = _navigateToSetup
 
+    private var _quitActivity = MutableLiveData<Boolean>()
+    val quitActivity: LiveData<Boolean>
+        get() = _quitActivity
+
     val venues = repo.venues
+    val tenthVenueDistance = repo.tenthVenueDistance
 
     init {
         if (repo.isAddressReady()) {
@@ -37,6 +44,13 @@ public class MapViewModel(application: Application) : AndroidViewModel(applicati
     }
     fun getHomeLng(): Double {
         return repo.getSavedLongitude()
+    }
+
+    fun clearAllData() {
+        viewModelScope.launch {
+            repo.deleteAllData()
+            _quitActivity.value = true
+        }
     }
 
 }

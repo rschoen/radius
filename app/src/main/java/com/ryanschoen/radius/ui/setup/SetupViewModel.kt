@@ -51,7 +51,7 @@ class SetupViewModel(application: Application) : AndroidViewModel(application) {
                 _verifiedAddress.value = repo.getSavedAddress()
                 _addressChanged.value = true
 
-                val venuesDownloaded = repo.downloadVenues(_verifiedAddress.value!!)
+                val venuesDownloaded = repo.downloadVenues(_verifiedAddress.value!!, repo.getSavedLatitude(), repo.getSavedLongitude())
                 _numVenues.value = venuesDownloaded
                 _venuesChanged.value = true
             }

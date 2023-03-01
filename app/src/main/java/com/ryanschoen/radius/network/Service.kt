@@ -87,7 +87,7 @@ suspend fun sendAddressVerification(address: NetworkAddress): AddressResult? {
     }
 }
 
-suspend fun fetchVenues(address: String): NetworkYelpSearchResults {
+suspend fun fetchVenues(address: String, latitude: Double, longitude: Double): NetworkYelpSearchResults {
     val venues = mutableListOf<NetworkVenue>()
     val venuesAdded = mutableListOf<String>()
     withContext(Dispatchers.IO) {
@@ -99,6 +99,9 @@ suspend fun fetchVenues(address: String): NetworkYelpSearchResults {
                     val newVenues = Network.venueList.getVenues(address, category, RESULTS_PER_QUERY, i).businesses
                     for (venue in newVenues) {
                         if(!venuesAdded.contains(venue.id) && !venue.closed && venue.reviews.toInt() >= MINIMUM_REVIEWS) {
+                            venue.distance = latLngDiffToDistanceMeters(latitude, longitude,
+                                venue.coordinates.latitude.toDouble(), venue.coordinates.longitude.toDouble())
+                            //Timber.i("Calculated distance to be %f",venue.distance)
                             venues.add(venue)
                             venuesAdded.add(venue.id)
                         }
@@ -110,13 +113,13 @@ suspend fun fetchVenues(address: String): NetworkYelpSearchResults {
 
         }
         catch (e: HttpException) {
-            //TODO: do something more meaningful witht his error
+            //TODO: do something more meaningful with this error
             //Toast.makeText(getApplication(),"Address validation encountered an HTTP error. Please retry.",
             //Toast.LENGTH_LONG).show()
             Timber.e(e)
         }
         catch (e: Exception) {
-            //TODO: do something more meaningful witht his error
+            //TODO: do something more meaningful with this error
             //Toast.makeText(getApplication(),"Address validation encountered an unknown error. Please retry.",
             //Toast.LENGTH_LONG).show()
             Timber.e(e)
@@ -124,4 +127,21 @@ suspend fun fetchVenues(address: String): NetworkYelpSearchResults {
 
     }
     return NetworkYelpSearchResults(venues)
+}
+
+fun latLngDiffToDistanceMeters(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
+    val R = 6371e3
+    val piRad = Math.PI/180
+    val p1 = lat1 * piRad
+    val p2 = lat2 * piRad
+    val dp = (lat2-lat1) * piRad
+    val dl = (lng2-lng1) * piRad
+    val a= Math.sin(dp/2) * Math.sin(dp/2) +
+            Math.cos(p1) * Math.cos(p2) *
+            Math.sin(dl/2) * Math.sin(dl/2)
+    val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+
+    //Timber.i("a: %f, c: %f", a, c)
+
+    return R * c
 }

@@ -11,6 +11,12 @@ interface VenueDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg venues: DatabaseVenue)
+
+    @Query("select distance from databasevenue order by distance limit 1 offset 10")
+    fun getTenthVenue(): LiveData<Double>
+
+    @Query("delete from databasevenue")
+    fun deleteVenuesData()
 }
 
 @Database(entities = [DatabaseVenue::class], version=1)
