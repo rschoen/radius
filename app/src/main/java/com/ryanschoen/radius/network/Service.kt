@@ -50,7 +50,7 @@ object Network {
     val addressValidator: AddressValidationService = addressRetrofit.create(AddressValidationService::class.java)
 
    private val venueRetrofit = Retrofit.Builder()
-        .baseUrl("https://api.yelp.com/v3/businesses/") //TODO
+        .baseUrl("https://api.yelp.com/v3/businesses/")
         .addConverterFactory(MoshiConverterFactory.create(moshi))
        .client(httpClient.build())
         .build()

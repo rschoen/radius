@@ -162,7 +162,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
 
 
-        //TODO: dynamically set this based on how close the closest venue is
         //enableMyLocation()
     }
 

@@ -11,11 +11,7 @@ import com.ryanschoen.radius.domain.Venue
 
 class VenueInfoWindowAdapter(context: Context) : InfoWindowAdapter {
 
-    private val layoutInflater: LayoutInflater
-
-    init {
-        layoutInflater = LayoutInflater.from(context)
-    }
+    private val layoutInflater = LayoutInflater.from(context)
 
     override fun getInfoContents(p0: Marker): View {
         val binding = VenueInfoWindowBinding.inflate(layoutInflater)
