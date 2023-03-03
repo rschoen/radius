@@ -1,9 +1,6 @@
 package com.ryanschoen.radius
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -32,9 +29,10 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_map, R.id.navigation_venues, R.id.navigation_settings
+                R.id.navigation_map
             )
         )
+
         setupActionBarWithNavController(navController, appBarConfiguration)
 
 
@@ -54,5 +52,18 @@ class MainActivity : AppCompatActivity() {
         //}
 
         super.onResume()
+    }
+
+    fun showUpButton(show: Boolean) {
+        supportActionBar!!.setDisplayHomeAsUpEnabled(show)
+    }
+
+    override fun onNavigateUp(): Boolean {
+        return super.onNavigateUp()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return findNavController(R.id.nav_host_fragment_activity_main).navigateUp()
+                    || super.onSupportNavigateUp();
     }
 }

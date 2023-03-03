@@ -1,7 +1,6 @@
 package com.ryanschoen.radius.ui.map
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.*
@@ -21,6 +20,7 @@ import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentMapBinding
 import timber.log.Timber
 
+
 class MapFragment : Fragment(), OnMapReadyCallback {
 
     private var _binding: FragmentMapBinding? = null
@@ -29,11 +29,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     // onDestroyView.
     private val binding get() = _binding!!
     private var map: GoogleMap? = null
-    private val REQUEST_LOCATION_PERMISSION = 1
     private lateinit var viewModel: MapViewModel
-    private var mapHasBeenZoomed = false
     private lateinit var homeLatLng: LatLng
-    private var defaultZoomLevel: Double? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,7 +48,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         viewModel.navigateToSetup.observe(viewLifecycleOwner, Observer { navigate ->
             if (navigate) {
                 this.findNavController()
-                    .navigate(MapFragmentDirections.actionNavigationMapToNavigationSetup())
+                    .navigate(MapFragmentDirections.actionNavigationMapToNavigationSetup(false))
                 viewModel.onNavigateToSetupDone()
             }
         })
@@ -76,6 +73,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
         return when (item.itemId) {
+            R.id.change_home_base -> {
+                findNavController().navigate(MapFragmentDirections.actionNavigationMapToNavigationSetup(true))
+                true
+            }
             R.id.clear_data -> {
                 viewModel.clearAllData()
                 true
@@ -91,6 +92,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+        map!!.setInfoWindowAdapter(VenueInfoWindowAdapter(requireContext()))
         homeLatLng = LatLng(viewModel.getHomeLat(), viewModel.getHomeLng())
         map!!.moveCamera(CameraUpdateFactory.newLatLng(homeLatLng))
         Timber.i("Moving map to ${homeLatLng.toString()}")
@@ -127,7 +129,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 map!!.addMarker(
                     MarkerOptions().position(position).title(venue.name)
                         .snippet("${venue.reviews} reviews, ${venue.rating} stars")
-                )
+                )?.tag = venue
                 //Timber.i("Adding to map: ${venue.name}")
             }
 
@@ -200,4 +202,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
         }
     }*/
+
+
 }
+

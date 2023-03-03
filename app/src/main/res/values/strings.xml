@@ -7,7 +7,7 @@
     <string name="address_dialog_title">Set your home base!</string>
     <string name="preference_file_key">com.ryanschoen.radius.preferences_file</string>
     <string name="address_of_home_base">Address of home base</string>
-    <string name="save_address">Locate</string>
+    <string name="save_address">Save Address</string>
     <string name="title_setup">Setup</string>
     <string name="city">City</string>
     <string name="verification_not_started">Enter your home base address to verify</string>
@@ -19,6 +19,7 @@
     <string name="saved_latitude">saved_latitude</string>
     <string name="saved_longitude">saved_longitude</string>
     <string name="clear_data">[DEBUG] Clear data and quit</string>
+    <string name="change_home_base">Change home base</string>
     <string-array name="states_names">
         <item>Alabama</item>
         <item>Alaska</item>

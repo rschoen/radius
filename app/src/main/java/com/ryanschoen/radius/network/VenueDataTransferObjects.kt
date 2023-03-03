@@ -1,7 +1,6 @@
 package com.ryanschoen.radius.network
 
 import com.ryanschoen.radius.database.DatabaseVenue
-import com.ryanschoen.radius.domain.Venue
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -22,7 +21,7 @@ fun NetworkYelpSearchResults.asDatabaseModel(): Array<DatabaseVenue> {
             rating = it.rating.toDouble(),
             lat = it.coordinates.latitude.toDouble(),
             lng = it.coordinates.longitude.toDouble(),
-            distance = it.distance!!
+            distance = it.distance.toDouble()
         )
     }.toTypedArray()
 }
@@ -37,7 +36,7 @@ data class NetworkVenue(
     @Json(name="review_count") val reviews: String,
     val rating: String,
     val coordinates: _YelpCoordinates,
-    var distance: Double?
+    var distance: String
 
 )
 

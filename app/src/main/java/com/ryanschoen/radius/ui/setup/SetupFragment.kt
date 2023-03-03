@@ -11,15 +11,14 @@ import android.widget.ArrayAdapter
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.ryanschoen.radius.MainActivity
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentSetupBinding
+import com.ryanschoen.radius.hideKeyboard
 import timber.log.Timber
 
 class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
-
-    companion object {
-        fun newInstance() = SetupFragment()
-    }
 
     private val viewModel: SetupViewModel by lazy {
         val activity = requireNotNull(this.activity) {
@@ -35,6 +34,7 @@ class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    val args: SetupFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,6 +48,7 @@ class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.stateSpinner.onItemSelectedListener = this
 
         binding.saveAddress.setOnClickListener() {
+            this.hideKeyboard()
             binding.saveAddress.isEnabled = false
             binding.verificationStatusIcon.setImageResource(R.drawable.baseline_change_circle_36)
             binding.verificationStatusIcon.visibility = View.VISIBLE
@@ -108,8 +109,13 @@ class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 viewModel.onVenuesChangedComplete()
             }
         })
-
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (requireActivity() as MainActivity).showUpButton(args.isAddressAlreadySet)
+
     }
 
 
