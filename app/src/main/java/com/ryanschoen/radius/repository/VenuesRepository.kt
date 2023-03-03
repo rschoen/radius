@@ -2,11 +2,8 @@ package com.ryanschoen.radius.repository
 
 import android.app.Application
 import android.content.Context
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.model.LatLng
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.database.asDomainModel
 import com.ryanschoen.radius.database.getDatabase
@@ -16,20 +13,22 @@ import com.ryanschoen.radius.network.asDatabaseModel
 import com.ryanschoen.radius.network.fetchVenues
 import com.ryanschoen.radius.network.sendAddressVerification
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-class VenuesRepository(private val application: Application) {
-    val database = getDatabase(application)
-    val sharedPref = application.getSharedPreferences(
+class VenuesRepository(application: Application) {
+    private val database = getDatabase(application)
+    private val sharedPref = application.getSharedPreferences(
     application.getString(R.string.preference_file_key),
     Context.MODE_PRIVATE)
 
-    val SAVED_ADDRESS_STRING = "saved_address"
-    val SAVED_LATITUDE_STRING = "saved_latitude"
-    val SAVED_LONGITUDE_STRING = "saved_longitude"
-    val SAVED_ADDRESS_READY = "saved_address_ready"
+    companion object {
+        const val SAVED_ADDRESS_STRING = "saved_address"
+        const val SAVED_LATITUDE_STRING = "saved_latitude"
+        const val SAVED_LONGITUDE_STRING = "saved_longitude"
+        const val SAVED_ADDRESS_READY = "saved_address_ready"
+    }
+
 
     val venues: LiveData<List<Venue>> = Transformations.map(database.venueDao.getVenues()) {
         Timber.i(database.venueDao.getVenues().toString())
@@ -99,10 +98,10 @@ class VenuesRepository(private val application: Application) {
             }
     }
 
-    suspend fun downloadVenues(address: String, latitude: Double, longitude: Double): Int {
+    suspend fun downloadVenues(address: String): Int {
         val venues =
             withContext(Dispatchers.IO) {
-                var venues = fetchVenues(address, latitude, longitude)
+                val venues = fetchVenues(address)
                 database.venueDao.insertAll(*venues.asDatabaseModel())
                 Timber.i("Inserted ${venues.businesses.size} venues")
                 venues

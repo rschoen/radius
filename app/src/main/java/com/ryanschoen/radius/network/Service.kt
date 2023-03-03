@@ -15,20 +15,20 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
 import timber.log.Timber
 
-val RESULTS_PER_QUERY = 50
-val QUERIES_PER_CATEGORY = 1
+const val RESULTS_PER_QUERY = 50
+const val QUERIES_PER_CATEGORY = 1
 val CATEGORIES = listOf("restaurant","bar")
-val MINIMUM_REVIEWS = 10
+const val MINIMUM_REVIEWS = 10
 
 
 interface AddressValidationService {
     @Headers("Content-Type: application/json")
-    @POST("./v1:validateAddress?key=" + MAPS_API_KEY)
+    @POST("./v1:validateAddress?key=$MAPS_API_KEY")
     suspend fun validateAddress(@Body address: _NetworkValidationAddress): NetworkAddressResult
 }
 
 interface VenueService {
-    @Headers("Authorization: Bearer " + YELP_API_KEY)
+    @Headers("Authorization: Bearer $YELP_API_KEY")
     @GET("search?sort_by=distance")
 suspend fun getVenues(@Query("location") address: String, @Query("term") searchTerm: String, @Query("limit") limit: Int, @Query("offset") offset: Int): NetworkYelpSearchResults
 }
@@ -38,8 +38,8 @@ private val moshi = Moshi.Builder()
     .build()
 
 object Network {
-    val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-    val httpClient = OkHttpClient.Builder().addInterceptor(logging)
+    private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    private val httpClient = OkHttpClient.Builder().addInterceptor(logging)
 
     private val addressRetrofit = Retrofit.Builder()
         .baseUrl("https://addressvalidation.googleapis.com/")
@@ -47,7 +47,7 @@ object Network {
         .client(httpClient.build())
         .build()
 
-    val addressValidator = addressRetrofit.create(AddressValidationService::class.java)
+    val addressValidator: AddressValidationService = addressRetrofit.create(AddressValidationService::class.java)
 
    private val venueRetrofit = Retrofit.Builder()
         .baseUrl("https://api.yelp.com/v3/businesses/") //TODO
@@ -55,7 +55,7 @@ object Network {
        .client(httpClient.build())
         .build()
 
-    val venueList = venueRetrofit.create(VenueService::class.java)
+    val venueList: VenueService = venueRetrofit.create(VenueService::class.java)
 
 }
 
@@ -66,23 +66,23 @@ suspend fun sendAddressVerification(address: NetworkAddress): AddressResult? {
             addressResult = Network.addressValidator.validateAddress(address.asNetworkValidationAddress())
         }
         catch (e: HttpException) {
-            //TODO: do something more meaningful witht his error
+            //TODO: do something more meaningful with this error
             //Toast.makeText(getApplication(),"Address validation encountered an HTTP error. Please retry.",
                 //Toast.LENGTH_LONG).show()
             Timber.e(e)
         }
         catch (e: Exception) {
-            //TODO: do something more meaningful witht his error
+            //TODO: do something more meaningful with this error
             //Toast.makeText(getApplication(),"Address validation encountered an unknown error. Please retry.",
                 //Toast.LENGTH_LONG).show()
             Timber.e(e)
         }
     }
 
-    if(addressResult == null) {
-        return null
+    return if(addressResult == null) {
+        null
     } else {
-        return addressResult!!.asDomainModel()
+        addressResult!!.asDomainModel()
     }
 }
 
@@ -106,7 +106,7 @@ suspend fun fetchVenues(address: String): NetworkYelpSearchResults {
                 }
             }
 
-            Timber.i("Retrieved ${venues.size} venues with ${queriesMade} queries")
+            Timber.i("Retrieved ${venues.size} venues with $queriesMade queries")
 
         }
         catch (e: HttpException) {

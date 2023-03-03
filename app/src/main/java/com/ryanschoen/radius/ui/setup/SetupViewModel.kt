@@ -1,13 +1,10 @@
 package com.ryanschoen.radius.ui.setup
 
 import android.app.Application
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.model.LatLng
-import com.ryanschoen.radius.network.*
 import com.ryanschoen.radius.repository.getRepository
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -28,10 +25,6 @@ class SetupViewModel(application: Application) : AndroidViewModel(application) {
     val verifiedAddress: LiveData<String>
         get() = _verifiedAddress
 
-    private var _latLng = MutableLiveData<LatLng>()
-    val latLng: LiveData<LatLng>
-        get() = _latLng
-
     private var _addressChanged = MutableLiveData<Boolean>()
     val addressChanged: LiveData<Boolean>
         get() = _addressChanged
@@ -46,12 +39,12 @@ class SetupViewModel(application: Application) : AndroidViewModel(application) {
     fun verifyAddress(address: String, locality: String, administrativeArea: String, regionCode: String = "US") {
 
         viewModelScope.launch {
-            var addressVerified = repo.verifyAndStoreAddress(address, locality, administrativeArea, regionCode)
+            val addressVerified = repo.verifyAndStoreAddress(address, locality, administrativeArea, regionCode)
             if (addressVerified) {
                 _verifiedAddress.value = repo.getSavedAddress()
                 _addressChanged.value = true
 
-                val venuesDownloaded = repo.downloadVenues(_verifiedAddress.value!!, repo.getSavedLatitude(), repo.getSavedLongitude())
+                val venuesDownloaded = repo.downloadVenues(_verifiedAddress.value!!)
                 _numVenues.value = venuesDownloaded
                 _venuesChanged.value = true
             }
@@ -69,7 +62,4 @@ class SetupViewModel(application: Application) : AndroidViewModel(application) {
     fun onVenuesChangedComplete() {
         _venuesChanged.value = false
     }
-
-
-
 }

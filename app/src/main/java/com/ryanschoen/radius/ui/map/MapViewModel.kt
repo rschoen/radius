@@ -5,13 +5,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.model.LatLng
-import com.ryanschoen.radius.domain.Venue
 import com.ryanschoen.radius.repository.getRepository
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-public class MapViewModel(application: Application) : AndroidViewModel(application) {
+class MapViewModel(application: Application) : AndroidViewModel(application) {
     private val repo = getRepository(application)
 
     private var _navigateToSetup = MutableLiveData<Boolean>()

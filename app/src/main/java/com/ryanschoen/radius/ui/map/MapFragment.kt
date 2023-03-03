@@ -1,12 +1,8 @@
 package com.ryanschoen.radius.ui.map
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.*
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -38,26 +34,26 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         savedInstanceState: Bundle?
     ): View {
         viewModel =
-            ViewModelProvider(this).get(MapViewModel::class.java)
+            ViewModelProvider(this)[MapViewModel::class.java]
 
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
 
 
-        viewModel.navigateToSetup.observe(viewLifecycleOwner, Observer { navigate ->
+        viewModel.navigateToSetup.observe(viewLifecycleOwner) { navigate ->
             if (navigate) {
                 this.findNavController()
                     .navigate(MapFragmentDirections.actionNavigationMapToNavigationSetup(false))
                 viewModel.onNavigateToSetupDone()
             }
-        })
+        }
 
-        viewModel.quitActivity.observe(viewLifecycleOwner, Observer { quit ->
-            if(quit) {
+        viewModel.quitActivity.observe(viewLifecycleOwner) { quit ->
+            if (quit) {
                 requireActivity().finish()
             }
-        })
+        }
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -95,7 +91,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         map!!.setInfoWindowAdapter(VenueInfoWindowAdapter(requireContext()))
         homeLatLng = LatLng(viewModel.getHomeLat(), viewModel.getHomeLng())
         map!!.moveCamera(CameraUpdateFactory.newLatLng(homeLatLng))
-        Timber.i("Moving map to ${homeLatLng.toString()}")
+        Timber.i("Moving map to $homeLatLng")
         setupMap()
 
     }
@@ -105,14 +101,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         setupMap()
     }
 
-    fun setupMap() {
+    private fun setupMap() {
         if (map == null || view == null) {
             return
         }
 
         Timber.i("Setting up map...")
 
-        viewModel.venues.observe(viewLifecycleOwner, Observer { venues ->
+        viewModel.venues.observe(viewLifecycleOwner) { venues ->
             Timber.i("Venues observer called")
             map!!.clear()
 
@@ -133,17 +129,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 //Timber.i("Adding to map: ${venue.name}")
             }
 
-        })
+        }
 
-        viewModel.tenthVenueDistance.observe(viewLifecycleOwner, Observer { distance ->
+        viewModel.tenthVenueDistance.observe(viewLifecycleOwner) { distance ->
             Timber.i("Distance observer called")
             //if() {
             //var distance = distanceList.get(0)
-            var zoom = 14.0f
+            val zoom: Float
 
             if (distance != null) {
-
-
                 if (distance < 100) {
                     zoom = 18.0f
                 } else if (distance < 200) {
@@ -165,13 +159,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoom))
                 //}
             }
-        })
+        }
 
 
         //TODO: dynamically set this based on how close the closest venue is
         //enableMyLocation()
     }
 
+/*
     private fun isPermissionGranted(): Boolean {
         return ContextCompat.checkSelfPermission(
             requireContext(),
@@ -179,7 +174,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    /*@SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
         if(isPermissionGranted()) {
             map.isMyLocationEnabled = true

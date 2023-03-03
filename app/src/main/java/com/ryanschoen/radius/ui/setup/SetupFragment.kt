@@ -21,10 +21,8 @@ import timber.log.Timber
 class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private val viewModel: SetupViewModel by lazy {
-        val activity = requireNotNull(this.activity) {
-            "You can only access viewModel after onViewCreated()"
-        }
-        ViewModelProvider(this).get(SetupViewModel::class.java)
+        requireActivity()
+        ViewModelProvider(this)[SetupViewModel::class.java]
     }
 
 
@@ -34,12 +32,12 @@ class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    val args: SetupFragmentArgs by navArgs()
+    private val args: SetupFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSetupBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
@@ -47,7 +45,7 @@ class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.cityEdittext.doOnTextChanged { _, _, _, _ -> checkIfEntryComplete() }
         binding.stateSpinner.onItemSelectedListener = this
 
-        binding.saveAddress.setOnClickListener() {
+        binding.saveAddress.setOnClickListener {
             this.hideKeyboard()
             binding.saveAddress.isEnabled = false
             binding.verificationStatusIcon.setImageResource(R.drawable.baseline_change_circle_36)
@@ -74,14 +72,12 @@ class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
             spinner.adapter = adapter
         }
 
-        viewModel.addressChanged.observe(viewLifecycleOwner, Observer { changed ->
-            Timber.i("Changed: " + changed.toString())
-            if(changed) {
-                if(viewModel.verifiedAddress.value.isNullOrBlank()) {
+        viewModel.addressChanged.observe(viewLifecycleOwner) { changed ->
+            if (changed) {
+                if (viewModel.verifiedAddress.value.isNullOrBlank()) {
                     binding.verificationStatusIcon.setImageResource(R.drawable.baseline_dangerous_36)
                     binding.verificationStatusText.text = getText(R.string.verification_failed)
-                }
-                else {
+                } else {
                     binding.verificationStatusIcon.setImageResource(R.drawable.baseline_check_circle_36)
                     binding.verificationStatusText.text = viewModel.verifiedAddress.value
 
@@ -93,22 +89,23 @@ class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 }
                 viewModel.onAddressChangedComplete()
             }
-        })
+        }
 
-        viewModel.venuesChanged.observe(viewLifecycleOwner, Observer { changed ->
-            if(changed) {
-                if(viewModel.numVenues.value == 0) {
+        viewModel.venuesChanged.observe(viewLifecycleOwner) { changed ->
+            Timber.i("Venues list changed")
+            if (changed) {
+                if (viewModel.numVenues.value == 0) {
                     binding.venuesStatusIcon.setImageResource(R.drawable.baseline_dangerous_36)
                     binding.venuesStatusText.text = getText(R.string.venue_search_failed)
-                }
-                else {
+                } else {
                     binding.venuesStatusIcon.setImageResource(R.drawable.baseline_check_circle_36)
-                    binding.venuesStatusText.text = "Downloaded ${viewModel.numVenues.value} venues!"
+                    binding.venuesStatusText.text =
+                        "Downloaded ${viewModel.numVenues.value} venues!"
                     findNavController().navigate(SetupFragmentDirections.actionNavigationSetupToNavigationMap())
                 }
                 viewModel.onVenuesChangedComplete()
             }
-        })
+        }
         return root
     }
 
@@ -120,14 +117,9 @@ class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
     private fun checkIfEntryComplete() {
-        if (binding.addressEdittext.text.isEmpty() ||
+        binding.saveAddress.isEnabled = !(binding.addressEdittext.text.isEmpty() ||
                 binding.cityEdittext.text.isEmpty() ||
-                binding.stateSpinner.selectedItem.toString() == "State") {
-            binding.saveAddress.isEnabled = false
-        }
-        else {
-            binding.saveAddress.isEnabled = true
-        }
+                binding.stateSpinner.selectedItem.toString() == "State")
     }
 
     override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
@@ -137,6 +129,8 @@ class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
     override fun onNothingSelected(parent: AdapterView<*>) {
         checkIfEntryComplete()
     }
+
+
 
 
 

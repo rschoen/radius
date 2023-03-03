@@ -9,14 +9,7 @@ data class Venue(val id: String,
                  val rating: Double,
                  val imageUrl: String,
                  val url: String,
-                 val distance: Double) {
-}
-
-data class Address(val address: String,
-                val locality: String,
-                val administrativeArea: String,
-                val regionCode: String = "US")
-
+                 val distance: Double)
 data class AddressResult(val complete: Boolean,
                          val formattedAddress: String,
                         val latitude: Double,

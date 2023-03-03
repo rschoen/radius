@@ -13,7 +13,6 @@ import timber.log.Timber.Forest.plant
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-   // private lateinit var sharedPref: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,36 +33,32 @@ class MainActivity : AppCompatActivity() {
         )
 
         setupActionBarWithNavController(navController, appBarConfiguration)
-
-
-
     }
 
 
-    fun showAddressDialog() {
-        //val addressDialog = AddressDialog()
-        //addressDialog.show(supportFragmentManager, "address")
-
-    }
-
-    override fun onResume() {
-        //if(sharedPref.getString(getString(R.string.saved_address),null).isNullOrBlank()) {
-            //showAddressDialog()
-        //}
-
-        super.onResume()
-    }
 
     fun showUpButton(show: Boolean) {
         supportActionBar!!.setDisplayHomeAsUpEnabled(show)
     }
 
-    override fun onNavigateUp(): Boolean {
-        return super.onNavigateUp()
-    }
 
+    // Workaround to navigate back without triggering Maps SDK "background" mode
+    // which causes it to drop to 2fps :(
     override fun onSupportNavigateUp(): Boolean {
+
+        /*Timber.i("Navigating up...")
         return findNavController(R.id.nav_host_fragment_activity_main).navigateUp()
-                    || super.onSupportNavigateUp();
+                    || super.onSupportNavigateUp();*/
+
+        val navController = findNavController(R.id.nav_host_fragment_activity_main)
+
+        val backStackEntry = navController.previousBackStackEntry
+        if (backStackEntry != null) {
+            navController.navigate(backStackEntry.destination.id)
+            return true
+        }
+        else {
+            return super.onSupportNavigateUp()
+        }
     }
 }
