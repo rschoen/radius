@@ -11,13 +11,16 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentMapBinding
+import com.ryanschoen.radius.domain.Venue
 import timber.log.Timber
 
 
-class MapFragment : Fragment(), OnMapReadyCallback {
+class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
+
 
     private var _binding: FragmentMapBinding? = null
 
@@ -124,7 +127,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 val position = LatLng(venue.lat, venue.lng)
                 map!!.addMarker(
                     MarkerOptions().position(position).title(venue.name)
-                        .snippet("${venue.reviews} reviews, ${venue.rating} stars")
+                        .snippet("${venue.reviews} reviews, ${venue.rating} stars").apply {
+                            if(venue.visited) {
+                                icon(
+                                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                                )
+                            }
+                        }
                 )?.tag = venue
                 //Timber.i("Adding to map: ${venue.name}")
             }
@@ -161,8 +170,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
+        map!!.setOnInfoWindowClickListener(this)
+
 
         //enableMyLocation()
+    }
+
+    override fun onInfoWindowClick(p0: Marker) {
+        this.findNavController().navigate(MapFragmentDirections.actionNavigationMapToNavigationVenues((p0.tag as Venue).id))
     }
 
 /*

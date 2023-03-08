@@ -18,3 +18,20 @@ fun Context.hideKeyboard(view: View) {
     val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }
+
+fun yelpRatingToImageRes(rating: Double): Int {
+    val ratingInt = (rating*2).toInt()
+    return when(ratingInt) {
+        2 -> R.drawable.stars_regular_1
+        3 -> R.drawable.stars_regular_1_half
+        4 -> R.drawable.stars_regular_2
+        5 -> R.drawable.stars_regular_2_half
+        6 -> R.drawable.stars_regular_3
+        7 -> R.drawable.stars_regular_3_half
+        8 -> R.drawable.stars_regular_4
+        9 -> R.drawable.stars_regular_4_half
+        10 -> R.drawable.stars_regular_5
+        else -> R.drawable.stars_regular_0
+    }
+
+}

@@ -13,13 +13,23 @@
         <action
             android:id="@+id/action_navigation_map_to_navigation_setup"
             app:destination="@id/navigation_setup" />
+        <action
+            android:id="@+id/action_navigation_map_to_navigation_venues"
+            app:destination="@id/navigation_venues" />
     </fragment>
 
     <fragment
         android:id="@+id/navigation_venues"
         android:name="com.ryanschoen.radius.ui.venues.VenuesFragment"
         android:label="@string/title_venues"
-        tools:layout="@layout/fragment_venues" />
+        tools:layout="@layout/fragment_venues" >
+        <action
+            android:id="@+id/action_navigation_venues_to_navigation_setup"
+            app:destination="@id/navigation_setup" />
+        <argument
+            android:name="venueId"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_setup"

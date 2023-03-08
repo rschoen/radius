@@ -17,6 +17,9 @@ interface VenueDao {
 
     @Query("delete from databasevenue")
     fun deleteVenuesData()
+
+    @Query("update databasevenue set visited=:visited where id=:id")
+    fun setVenueVisited(id: String, visited: Boolean)
 }
 
 @Database(entities = [DatabaseVenue::class], version=1)

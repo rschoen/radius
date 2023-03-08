@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.viewModelScope
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.database.asDomainModel
 import com.ryanschoen.radius.database.getDatabase
@@ -13,6 +14,7 @@ import com.ryanschoen.radius.network.asDatabaseModel
 import com.ryanschoen.radius.network.fetchVenues
 import com.ryanschoen.radius.network.sendAddressVerification
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
@@ -114,6 +116,11 @@ class VenuesRepository(application: Application) {
         withContext(Dispatchers.IO) {
             database.venueDao.deleteVenuesData()
             clearSharedPrefs()
+        }
+    }
+    suspend fun setVenueVisited(venueId: String, visited: Boolean) {
+        withContext(Dispatchers.IO) {
+            database.venueDao.setVenueVisited(venueId, visited)
         }
     }
 }

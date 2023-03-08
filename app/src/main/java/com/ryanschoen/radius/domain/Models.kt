@@ -9,7 +9,9 @@ data class Venue(val id: String,
                  val rating: Double,
                  val imageUrl: String,
                  val url: String,
-                 val distance: Double)
+                 val distance: Double,
+                 val visited: Boolean,
+                    val hidden: Boolean)
 data class AddressResult(val complete: Boolean,
                          val formattedAddress: String,
                         val latitude: Double,

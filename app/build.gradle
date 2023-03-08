@@ -63,6 +63,9 @@ dependencies {
     implementation "com.jakewharton.timber:timber:$version_timber"
     implementation 'com.squareup.okhttp3:logging-interceptor:3.9.0'
 
+    implementation "com.github.bumptech.glide:glide:$version_glide"
+    kapt "com.github.bumptech.glide:compiler:$version_glide"
+
     testImplementation "junit:junit:$version_junit"
     androidTestImplementation "androidx.test.ext:junit:$version_junit_ext"
     androidTestImplementation "androidx.test.espresso:espresso-core:$version_espresso"
