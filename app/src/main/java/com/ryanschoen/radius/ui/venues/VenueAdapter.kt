@@ -14,6 +14,7 @@ import com.ryanschoen.radius.databinding.ListItemVenueBinding
 import com.ryanschoen.radius.domain.Venue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import timber.log.Timber
 
 private val ITEM_VIEW_TYPE_VENUE = 1
 
@@ -30,14 +31,11 @@ class VenueAdapter(private val venues: List<Venue>, private val onClickListener:
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder) {
             is ViewHolder -> {
-                holder.bind(venues[position], onClickListener, onCheckListener)
+                holder.bind(getItem(position), onClickListener, onCheckListener)
             }
         }
     }
 
-    override fun getItemCount(): Int {
-        return venues.size
-    }
 
     class ViewHolder private constructor (val binding: ListItemVenueBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Venue, onClickListener: OnClickListener, onCheckListener: OnCheckListener) {
@@ -59,6 +57,11 @@ class VenueAdapter(private val venues: List<Venue>, private val onClickListener:
             }
 
             // TODO: add click listener to rest of everything??
+
+
+            if(item.id == "9yM20-7fj4LMrOO30nqkBw") {
+                Timber.i("Found our venue. We're about to execute bindings with visited = ${item.visited}")
+            }
 
             binding.executePendingBindings()
         }

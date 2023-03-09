@@ -51,4 +51,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun setVenueVisited(venueId: String, visited: Boolean) {
+        viewModelScope.launch {
+            repo.setVenueVisited(venueId, visited)
+        }
+    }
+
 }

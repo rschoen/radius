@@ -10,7 +10,7 @@ data class Venue(val id: String,
                  val imageUrl: String,
                  val url: String,
                  val distance: Double,
-                 val visited: Boolean,
+                 var visited: Boolean,
                     val hidden: Boolean)
 data class AddressResult(val complete: Boolean,
                          val formattedAddress: String,

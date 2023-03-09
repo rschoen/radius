@@ -1,7 +1,9 @@
 package com.ryanschoen.radius.ui.map
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.widget.CheckBox
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -15,11 +17,12 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentMapBinding
+import com.ryanschoen.radius.databinding.VenueInfoWindowBinding
 import com.ryanschoen.radius.domain.Venue
 import timber.log.Timber
 
 
-class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
+class MapFragment : Fragment(), OnMapReadyCallback {
 
 
     private var _binding: FragmentMapBinding? = null
@@ -31,6 +34,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
     private lateinit var viewModel: MapViewModel
     private lateinit var homeLatLng: LatLng
 
+    private lateinit var infoWindowBinding: VenueInfoWindowBinding
+    private lateinit var infoWindow: ViewGroup
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -41,6 +47,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
 
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+
 
 
 
@@ -91,7 +99,29 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        map!!.setInfoWindowAdapter(VenueInfoWindowAdapter(requireContext()))
+        binding.mapRelativeLayout.init(map, getPixelsFromDp(requireContext(), (39+20).toFloat()))
+        infoWindowBinding = VenueInfoWindowBinding.inflate(layoutInflater)
+        infoWindowBinding.infoWindowVisitedCheckbox.setOnTouchListener  { v,m ->
+            if(m.action == MotionEvent.ACTION_UP) {
+                val newState = !(v as CheckBox).isChecked
+                (v as CheckBox).isChecked = newState
+                infoWindowBinding.venue!!.visited = newState
+                Timber.i("Setting visited equal to " + newState.toString())
+                viewModel.setVenueVisited(infoWindowBinding.venue!!.id, newState)
+                binding.mapRelativeLayout.redrawMarker(newState)
+            }
+            false
+        }
+        infoWindow = infoWindowBinding.root as ViewGroup
+        /*infoWindowBinding.venueName.setOnTouchListener { _,m ->
+            if(m.action == MotionEvent.ACTION_UP) {
+                onInfoWindowClick(binding.mapRelativeLayout.marker!!)
+                true
+            }
+            false
+        }*/
+        map!!.setInfoWindowAdapter(VenueInfoWindowAdapter(requireContext(), infoWindowBinding, binding.mapRelativeLayout))
+        map!!.setOnInfoWindowClickListener { marker -> onInfoWindowClick(marker) }
         homeLatLng = LatLng(viewModel.getHomeLat(), viewModel.getHomeLng())
         map!!.moveCamera(CameraUpdateFactory.newLatLng(homeLatLng))
         Timber.i("Moving map to $homeLatLng")
@@ -126,8 +156,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
             for (venue in venues) {
                 val position = LatLng(venue.lat, venue.lng)
                 map!!.addMarker(
-                    MarkerOptions().position(position).title(venue.name)
-                        .snippet("${venue.reviews} reviews, ${venue.rating} stars").apply {
+                    MarkerOptions().position(position).apply {
                             if(venue.visited) {
                                 icon(
                                     BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
@@ -137,6 +166,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
                 )?.tag = venue
                 //Timber.i("Adding to map: ${venue.name}")
             }
+            viewModel.venues.removeObservers(viewLifecycleOwner)
 
         }
 
@@ -168,15 +198,16 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
                 map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoom))
                 //}
             }
+            viewModel.tenthVenueDistance.removeObservers(viewLifecycleOwner)
         }
 
-        map!!.setOnInfoWindowClickListener(this)
+        //map!!.setOnInfoWindowClickListener(this)
 
 
         //enableMyLocation()
     }
 
-    override fun onInfoWindowClick(p0: Marker) {
+    fun onInfoWindowClick(p0: Marker) {
         this.findNavController().navigate(MapFragmentDirections.actionNavigationMapToNavigationVenues((p0.tag as Venue).id))
     }
 
@@ -211,6 +242,11 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
             }
         }
     }*/
+
+    fun getPixelsFromDp(context: Context, dp: Float): Int {
+        val scale: Float = context.getResources().getDisplayMetrics().density
+        return (dp * scale + 0.5f).toInt()
+    }
 
 
 }

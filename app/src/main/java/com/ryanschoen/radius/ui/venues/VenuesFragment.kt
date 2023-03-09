@@ -31,6 +31,8 @@ class VenuesFragment : Fragment() {
     private lateinit var venues: LiveData<List<Venue>>
 
     private val args: VenuesFragmentArgs by navArgs()
+    private var listLoaded = false
+    private lateinit var adapter: VenueAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,20 +61,37 @@ class VenuesFragment : Fragment() {
         }
 
         viewModel.venues.observe(viewLifecycleOwner) { venues ->
-            val adapter = VenueAdapter(venues, VenueAdapter.OnClickListener {}, VenueAdapter.OnCheckListener {venue, checked -> viewModel.setVenueVisited(venue.id, checked) })
-            binding.venueList.adapter = adapter
-            val layoutManager = LinearLayoutManager(requireContext())
-            layoutManager?.let {
-                if (!args.venueId.isNullOrBlank()) {
-                    for (position in venues.indices) {
-                        if (venues[position].id == args.venueId) {
-                            layoutManager.scrollToPosition(position)
-                            break
+            if (!listLoaded) {
+                adapter = VenueAdapter(
+                    venues,
+                    VenueAdapter.OnClickListener {},
+                    VenueAdapter.OnCheckListener { venue, checked ->
+                        if(venue.visited != checked) {
+                            Timber.i("Changed venue ${venue.id} from ${venue.visited} to ${checked}")
+                            viewModel.setVenueVisited(
+                                venue.id,
+                                checked
+                            )
+                        }
+                    })
+                binding.venueList.adapter = adapter
+                val layoutManager = LinearLayoutManager(requireContext())
+                layoutManager?.let {
+                    if (!args.venueId.isNullOrBlank()) {
+                        for (position in venues.indices) {
+                            if (venues[position].id == args.venueId) {
+                                layoutManager.scrollToPosition(position)
+                                break
+                            }
                         }
                     }
                 }
+                binding.venueList.layoutManager = layoutManager
+                listLoaded = true
+                Timber.i("List has been loaded")
             }
-            binding.venueList.layoutManager = layoutManager
+            Timber.i("UPDATE THAT LIST!")
+            adapter.submitList(venues)
 
             // TODO: we only want to do this on the first load. how do we know if it's first or not?
         }
