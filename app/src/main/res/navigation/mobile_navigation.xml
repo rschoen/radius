@@ -15,7 +15,10 @@
             app:destination="@id/navigation_setup" />
         <action
             android:id="@+id/action_navigation_map_to_navigation_venues"
-            app:destination="@id/navigation_venues" />
+            app:destination="@id/navigation_venues"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/mobile_navigation"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -28,7 +31,8 @@
             app:destination="@id/navigation_setup" />
         <argument
             android:name="venueId"
-            app:argType="string" />
+            app:argType="string"
+            android:defaultValue=""/>
     </fragment>
 
     <fragment

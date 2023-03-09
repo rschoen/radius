@@ -19,6 +19,7 @@ import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentMapBinding
 import com.ryanschoen.radius.databinding.VenueInfoWindowBinding
 import com.ryanschoen.radius.domain.Venue
+import com.ryanschoen.radius.yelpIntent
 import timber.log.Timber
 
 
@@ -208,7 +209,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     fun onInfoWindowClick(p0: Marker) {
-        this.findNavController().navigate(MapFragmentDirections.actionNavigationMapToNavigationVenues((p0.tag as Venue).id))
+        yelpIntent(requireContext(), (p0.tag as Venue).url)
+        //this.findNavController().navigate(MapFragmentDirections.actionNavigationMapToNavigationVenues((p0.tag as Venue).id))
     }
 
 /*

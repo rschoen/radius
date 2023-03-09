@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.ryanschoen.radius.databinding.ActivityMainBinding
 import timber.log.Timber
 import timber.log.Timber.Forest.plant
@@ -32,6 +34,8 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
+        val navView: BottomNavigationView = binding.navView
+        navView.setupWithNavController(navController)
         setupActionBarWithNavController(navController, appBarConfiguration)
     }
 

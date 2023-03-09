@@ -2,9 +2,13 @@ package com.ryanschoen.radius
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.Fragment
+
 
 fun Fragment.hideKeyboard() {
     view?.let { activity?.hideKeyboard(it) }
@@ -34,4 +38,9 @@ fun yelpRatingToImageRes(rating: Double): Int {
         else -> R.drawable.stars_regular_0
     }
 
+}
+
+fun yelpIntent(context: Context, url: String) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    startActivity(context, intent, null)
 }
