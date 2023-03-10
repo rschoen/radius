@@ -1,6 +1,7 @@
 package com.ryanschoen.radius.ui.map
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import android.widget.CheckBox
@@ -11,10 +12,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentMapBinding
 import com.ryanschoen.radius.databinding.VenueInfoWindowBinding
@@ -67,6 +65,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 requireActivity().finish()
             }
         }
+        viewModel.visitedRadius.observe(viewLifecycleOwner) { _ ->
+            drawMap()
+        }
+        viewModel.venuesRadius.observe(viewLifecycleOwner) { _ ->
+            drawMap()
+        }
 
         if(viewModel.addressIsReady) {
 
@@ -104,6 +108,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+        map!!.setMapStyle(
+            MapStyleOptions.loadRawResourceStyle(
+                requireContext(), R.raw.map_style))
         binding.mapRelativeLayout.init(map, getPixelsFromDp(requireContext(), (39+20).toFloat()))
         infoWindowBinding = VenueInfoWindowBinding.inflate(layoutInflater)
         infoWindowBinding.infoWindowVisitedCheckbox.setOnTouchListener  { v,m ->
@@ -134,6 +141,57 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     }
 
+    private fun drawMap() {
+        map?.let {
+            map!!.clear()
+            val homeLatLng = LatLng(viewModel.getHomeLat(), viewModel.getHomeLng())
+
+            map!!.addMarker(
+                MarkerOptions().position(homeLatLng).title("Home Base").icon(
+                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+                )
+            )
+
+            if(viewModel.venues.value != null && viewModel.venues.value!!.isNotEmpty()) {
+                for (venue in viewModel.venues.value!!) {
+                    val position = LatLng(venue.lat, venue.lng)
+                    map!!.addMarker(
+                        MarkerOptions().position(position).apply {
+                            if (venue.visited) {
+                                icon(
+                                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                                )
+                            }
+                        }
+                    )?.tag = venue
+                    //Timber.i("Adding to map: ${venue.name}")
+                }
+            }
+
+
+
+
+            if(viewModel.venuesRadius.value != null && viewModel.venuesRadius.value!! > 0) {
+                val circleOptions = CircleOptions()
+                    .center(homeLatLng)
+                    .radius(viewModel.venuesRadius.value!!)
+                    .strokeColor(Color.GRAY)
+                map!!.addCircle(circleOptions)
+
+            }
+
+            if(viewModel.visitedRadius.value != null && viewModel.visitedRadius.value!! > 0) {
+                val circleOptions = CircleOptions()
+                    .center(homeLatLng)
+                    .radius(viewModel.visitedRadius.value!!)
+                    .strokeColor(Color.GREEN)
+                map!!.addCircle(circleOptions)
+
+            }
+        }
+
+    }
+
     override fun onResume() {
         super.onResume()
         setupMap()
@@ -148,29 +206,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         viewModel.venues.observe(viewLifecycleOwner) { venues ->
             Timber.i("Venues observer called")
-            map!!.clear()
 
-            val homeLatLng = LatLng(viewModel.getHomeLat(), viewModel.getHomeLng())
-
-            map!!.addMarker(
-                MarkerOptions().position(homeLatLng).title("Home Base").icon(
-                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
-                )
-            )
-
-            for (venue in venues) {
-                val position = LatLng(venue.lat, venue.lng)
-                map!!.addMarker(
-                    MarkerOptions().position(position).apply {
-                            if(venue.visited) {
-                                icon(
-                                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
-                                )
-                            }
-                        }
-                )?.tag = venue
-                //Timber.i("Adding to map: ${venue.name}")
-            }
+            drawMap()
             viewModel.venues.removeObservers(viewLifecycleOwner)
 
         }

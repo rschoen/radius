@@ -15,6 +15,12 @@ interface VenueDao {
     @Query("select distance from databasevenue order by distance limit 1 offset 10")
     fun getTenthVenue(): LiveData<Double>
 
+    @Query("select max(distance) from databasevenue")
+    fun getMaximumVenueDistance(): LiveData<Double>
+
+    @Query("select max(distance) from databasevenue where visited=TRUE and distance <=  (select min(distance)  from databasevenue where visited=FALSE)")
+    fun getMaximumAllVisitedDistance(): LiveData<Double>
+
     @Query("delete from databasevenue")
     fun deleteVenuesData()
 

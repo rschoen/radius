@@ -23,6 +23,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     val venues = repo.venues
     val tenthVenueDistance = repo.tenthVenueDistance
     var addressIsReady = false
+    val venuesRadius = repo.venuesRadius
+    val visitedRadius = repo.visitedRadius
 
     init {
         if (repo.isAddressReady()) {

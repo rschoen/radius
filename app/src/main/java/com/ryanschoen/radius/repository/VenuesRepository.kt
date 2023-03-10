@@ -34,6 +34,8 @@ class VenuesRepository(application: Application) {
     }
 
     val tenthVenueDistance: LiveData<Double> = database.venueDao.getTenthVenue()
+    val venuesRadius: LiveData<Double> = database.venueDao.getMaximumVenueDistance()
+    val visitedRadius: LiveData<Double> = database.venueDao.getMaximumAllVisitedDistance()
 
 
     fun getSavedAddress(): String? {
