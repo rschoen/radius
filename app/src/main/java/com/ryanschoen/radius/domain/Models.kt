@@ -12,7 +12,3 @@ data class Venue(val id: String,
                  val distance: Double,
                  var visited: Boolean,
                     val hidden: Boolean)
-data class AddressResult(val complete: Boolean,
-                         val formattedAddress: String,
-                        val latitude: Double,
-                        val longitude: Double)

@@ -4,17 +4,13 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import androidx.lifecycle.viewModelScope
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.database.asDomainModel
 import com.ryanschoen.radius.database.getDatabase
 import com.ryanschoen.radius.domain.Venue
-import com.ryanschoen.radius.network.NetworkAddress
 import com.ryanschoen.radius.network.asDatabaseModel
 import com.ryanschoen.radius.network.fetchVenues
-import com.ryanschoen.radius.network.sendAddressVerification
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
@@ -67,37 +63,6 @@ class VenuesRepository(application: Application) {
 
     fun clearSharedPrefs() {
         sharedPref.edit().clear().apply()
-    }
-
-
-
-    suspend fun verifyAndStoreAddress(address: String, locality: String, administrativeArea: String, regionCode: String): Boolean {
-
-            val addressResult =
-            withContext(Dispatchers.IO) {
-                sendAddressVerification(
-                    NetworkAddress(
-                        listOf<String>(address),
-                        locality,
-                        administrativeArea,
-                        regionCode
-                    )
-                )
-
-            }
-            if (addressResult == null) {
-                //TODO: do something more meaningful here
-                return false
-            } else if (!addressResult.complete) {
-                return false
-            } else {
-                setSavedAddressLatLong(
-                    addressResult.formattedAddress,
-                    addressResult.latitude,
-                    addressResult.longitude
-                )
-                return true
-            }
     }
 
     suspend fun downloadVenues(address: String): Int {

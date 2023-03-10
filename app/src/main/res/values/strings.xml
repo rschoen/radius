@@ -19,6 +19,7 @@
     <string name="saved_longitude">saved_longitude</string>
     <string name="clear_data">[DEBUG] Clear data and quit</string>
     <string name="change_home_base">Change home base</string>
+    <string name="search_for_address">Search for an address</string>
     <string-array name="states_names">
         <item>Alabama</item>
         <item>Alaska</item>

@@ -17,97 +17,41 @@
             android:layout_height="wrap_content"
             tools:context=".ui.setup.SetupFragment">
 
-            <EditText
-                android:id="@+id/address_edittext"
+
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_margin="@dimen/margin_normal"
-                android:autofillHints="postalAddress"
-                android:hint="@string/address_of_home_base"
-                android:inputType="textPostalAddress"
-                app:layout_constraintEnd_toStartOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <EditText
-                android:id="@+id/city_edittext"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="@dimen/margin_normal"
-                android:layout_marginEnd="@dimen/margin_normal"
-                android:autofillHints="addressLocality"
-                android:hint="@string/city"
-                android:inputType="textPostalAddress"
-                app:layout_constraintEnd_toStartOf="@id/state_spinner"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/address_edittext" />
-
-            <Spinner
-                android:id="@+id/state_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:layout_marginStart="@dimen/margin_normal"
-                android:layout_marginEnd="@dimen/margin_normal"
-                android:spinnerMode="dialog"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/city_edittext"
-                app:layout_constraintTop_toBottomOf="@id/address_edittext" />
-
-            <Button
-                android:id="@+id/save_address"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_normal"
-                android:layout_marginStart="@dimen/margin_small"
-                android:layout_marginTop="@dimen/margin_normal"
-                android:layout_marginEnd="@dimen/margin_normal"
-                android:layout_marginBottom="@dimen/margin_normal"
-                android:enabled="false"
-                android:text="@string/save_address"
+                android:id="@+id/autocomplete_container"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/city_edittext"
-                tools:enabled="true" />
-
-            <ImageView
-                android:id="@+id/verification_status_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_normal"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginStart="@dimen/margin_large"
                 android:layout_marginTop="@dimen/margin_large"
-                android:visibility="invisible"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/save_address"
-                app:srcCompat="@drawable/baseline_pending_36"
-                tools:visibility="visible" />
-
-
-            <TextView
-                android:id="@+id/verification_status_text"
-                android:layout_width="0dp"
+                android:layout_marginEnd="@dimen/margin_large"
+                android:layout_marginBottom="@dimen/margin_large"
+                >
+            <fragment
+                android:id="@+id/autocomplete_fragment"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_normal"
-                android:layout_marginTop="@dimen/margin_normal"
-                android:layout_marginEnd="@dimen/margin_normal"
-                android:layout_marginBottom="@dimen/margin_normal"
-                tools:text="@string/verification_not_started"
-                android:textSize="16sp"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="@+id/verification_status_icon"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/verification_status_icon"
-                app:layout_constraintTop_toTopOf="@+id/verification_status_icon"
-                tools:visibility="visible" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                tools:layout="@layout/places_autocomplete_fragment" />
+            </androidx.cardview.widget.CardView>
+
+
 
             <ImageView
                 android:id="@+id/venues_status_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_normal"
-                android:layout_marginTop="@dimen/margin_normal"
+                android:layout_marginStart="@dimen/margin_large"
+                android:layout_marginTop="@dimen/margin_large"
                 android:visibility="invisible"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/verification_status_icon"
+                app:layout_constraintTop_toBottomOf="@+id/autocomplete_container"
                 app:srcCompat="@drawable/baseline_pending_36"
                 tools:visibility="visible" />
 
@@ -117,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_normal"
                 android:layout_marginTop="@dimen/margin_normal"
-                android:layout_marginEnd="@dimen/margin_normal"
+                android:layout_marginEnd="@dimen/margin_large"
                 android:layout_marginBottom="@dimen/margin_normal"
                 tools:text="@string/venue_search_not_started"
                 android:textSize="16sp"
@@ -128,20 +72,9 @@
                 app:layout_constraintTop_toTopOf="@id/venues_status_icon"
                 tools:visibility="visible" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

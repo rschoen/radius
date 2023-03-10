@@ -1,24 +1,30 @@
 package com.ryanschoen.radius.ui.setup
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import androidx.core.widget.doOnTextChanged
-import androidx.lifecycle.Observer
+import android.view.animation.Animation
+import android.view.animation.RotateAnimation
+import android.widget.EditText
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.gms.common.api.Status
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import com.ryanschoen.radius.BuildConfig
 import com.ryanschoen.radius.MainActivity
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentSetupBinding
-import com.ryanschoen.radius.hideKeyboard
 import timber.log.Timber
 
-class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
+
+class SetupFragment : Fragment() {
 
     private val viewModel: SetupViewModel by lazy {
         requireActivity()
@@ -41,55 +47,52 @@ class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
         _binding = FragmentSetupBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        binding.addressEdittext.doOnTextChanged { _, _, _, _ -> checkIfEntryComplete() }
-        binding.cityEdittext.doOnTextChanged { _, _, _, _ -> checkIfEntryComplete() }
-        binding.stateSpinner.onItemSelectedListener = this
+        // Initialize the SDK
+        Places.initialize(context, BuildConfig.MAPS_API_KEY)
 
-        binding.saveAddress.setOnClickListener {
-            this.hideKeyboard()
-            binding.saveAddress.isEnabled = false
-            binding.verificationStatusIcon.setImageResource(R.drawable.baseline_change_circle_36)
-            binding.verificationStatusIcon.visibility = View.VISIBLE
-            binding.verificationStatusText.text = getText(R.string.verification_processing)
-            binding.verificationStatusText.visibility = View.VISIBLE
-            binding.venuesStatusText.visibility = View.GONE
-            binding.venuesStatusIcon.visibility = View.GONE
-            viewModel.verifyAddress(binding.addressEdittext.text.toString(),
-                                    binding.cityEdittext.text.toString(),
-                                    binding.stateSpinner.selectedItem.toString())
-        }
+        // Create a new PlacesClient instance
+        val placesClient = Places.createClient(context)
+        // Initialize the AutocompleteSupportFragment.
+        val autocompleteFragment = childFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
 
-        val spinner = binding.stateSpinner
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter.createFromResource(
-            requireContext(),
-            R.array.states_abbreviations,
-            android.R.layout.simple_spinner_item
-        ).also { adapter ->
-            // Specify the layout to use when the list of choices appears
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            // Apply the adapter to the spinner
-            spinner.adapter = adapter
-        }
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(listOf(Place.Field.ADDRESS, Place.Field.LAT_LNG))
+            .setHint(getString(R.string.search_for_address))
 
-        viewModel.addressChanged.observe(viewLifecycleOwner) { changed ->
-            if (changed) {
-                if (viewModel.verifiedAddress.value.isNullOrBlank()) {
-                    binding.verificationStatusIcon.setImageResource(R.drawable.baseline_dangerous_36)
-                    binding.verificationStatusText.text = getText(R.string.verification_failed)
-                } else {
-                    binding.verificationStatusIcon.setImageResource(R.drawable.baseline_check_circle_36)
-                    binding.verificationStatusText.text = viewModel.verifiedAddress.value
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+            override fun onPlaceSelected(place: Place) {
+                Handler().postDelayed({
+                    autocompleteFragment.setText(place.getAddress());
+                }, 300)
+                autocompleteFragment.setText(place.address)
+                binding.venuesStatusIcon.setImageResource(R.drawable.baseline_change_circle_36)
+                val r = RotateAnimation(
+                    360f,
+                    0f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f,
+                    Animation.RELATIVE_TO_SELF,
+                    0.5f
+                )
+                r.duration = 800
+                r.repeatCount = Animation.INFINITE
+                binding.venuesStatusIcon.startAnimation(r)
 
-                    binding.venuesStatusIcon.setImageResource(R.drawable.baseline_change_circle_36)
-                    binding.venuesStatusIcon.visibility = View.VISIBLE
+                binding.venuesStatusIcon.visibility = View.VISIBLE
 
-                    binding.venuesStatusText.text = getString(R.string.venue_search_processing)
-                    binding.venuesStatusText.visibility = View.VISIBLE
-                }
-                viewModel.onAddressChangedComplete()
+                binding.venuesStatusText.text = getString(R.string.venue_search_processing)
+                binding.venuesStatusText.visibility = View.VISIBLE
+                viewModel.loadVenues(place.address, place.latLng)
             }
-        }
+
+            override fun onError(status: Status) {
+                // TODO: Handle the error.
+                Timber.i("An error occurred: $status")
+            }
+        })
+
+
 
         viewModel.venuesChanged.observe(viewLifecycleOwner) { changed ->
             Timber.i("Venues list changed")
@@ -115,20 +118,6 @@ class SetupFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     }
 
-
-    private fun checkIfEntryComplete() {
-        binding.saveAddress.isEnabled = !(binding.addressEdittext.text.isEmpty() ||
-                binding.cityEdittext.text.isEmpty() ||
-                binding.stateSpinner.selectedItem.toString() == "State")
-    }
-
-    override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
-        checkIfEntryComplete()
-    }
-
-    override fun onNothingSelected(parent: AdapterView<*>) {
-        checkIfEntryComplete()
-    }
 
 
 

@@ -2,7 +2,6 @@ package com.ryanschoen.radius.network
 
 import com.ryanschoen.radius.BuildConfig.MAPS_API_KEY
 import com.ryanschoen.radius.BuildConfig.YELP_API_KEY
-import com.ryanschoen.radius.domain.AddressResult
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.Dispatchers
@@ -21,12 +20,6 @@ val CATEGORIES = listOf("restaurant","bar")
 const val MINIMUM_REVIEWS = 10
 
 
-interface AddressValidationService {
-    @Headers("Content-Type: application/json")
-    @POST("./v1:validateAddress?key=$MAPS_API_KEY")
-    suspend fun validateAddress(@Body address: _NetworkValidationAddress): NetworkAddressResult
-}
-
 interface VenueService {
     @Headers("Authorization: Bearer $YELP_API_KEY")
     @GET("search?sort_by=distance")
@@ -41,13 +34,6 @@ object Network {
     private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
     private val httpClient = OkHttpClient.Builder().addInterceptor(logging)
 
-    private val addressRetrofit = Retrofit.Builder()
-        .baseUrl("https://addressvalidation.googleapis.com/")
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .client(httpClient.build())
-        .build()
-
-    val addressValidator: AddressValidationService = addressRetrofit.create(AddressValidationService::class.java)
 
    private val venueRetrofit = Retrofit.Builder()
         .baseUrl("https://api.yelp.com/v3/businesses/")
@@ -57,33 +43,6 @@ object Network {
 
     val venueList: VenueService = venueRetrofit.create(VenueService::class.java)
 
-}
-
-suspend fun sendAddressVerification(address: NetworkAddress): AddressResult? {
-    var addressResult: NetworkAddressResult? = null
-    withContext(Dispatchers.IO) {
-        try {
-            addressResult = Network.addressValidator.validateAddress(address.asNetworkValidationAddress())
-        }
-        catch (e: HttpException) {
-            //TODO: do something more meaningful with this error
-            //Toast.makeText(getApplication(),"Address validation encountered an HTTP error. Please retry.",
-                //Toast.LENGTH_LONG).show()
-            Timber.e(e)
-        }
-        catch (e: Exception) {
-            //TODO: do something more meaningful with this error
-            //Toast.makeText(getApplication(),"Address validation encountered an unknown error. Please retry.",
-                //Toast.LENGTH_LONG).show()
-            Timber.e(e)
-        }
-    }
-
-    return if(addressResult == null) {
-        null
-    } else {
-        addressResult!!.asDomainModel()
-    }
 }
 
 suspend fun fetchVenues(address: String): NetworkYelpSearchResults {
