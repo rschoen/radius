@@ -22,10 +22,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     val venues = repo.venues
     val tenthVenueDistance = repo.tenthVenueDistance
+    var addressIsReady = false
 
     init {
         if (repo.isAddressReady()) {
             Timber.i("Found saved address: " + repo.getSavedAddress())
+            addressIsReady = true
         }
         else {
             Timber.i("No saved address :(")

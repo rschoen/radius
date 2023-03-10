@@ -55,6 +55,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         viewModel.navigateToSetup.observe(viewLifecycleOwner) { navigate ->
             if (navigate) {
+                Timber.i("Navigating to setup...")
                 this.findNavController()
                     .navigate(MapFragmentDirections.actionNavigationMapToNavigationSetup(false))
                 viewModel.onNavigateToSetupDone()
@@ -67,8 +68,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
+        if(viewModel.addressIsReady) {
+
+            val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+            mapFragment.getMapAsync(this)
+        }
 
         setHasOptionsMenu(true)
 
