@@ -71,17 +71,21 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
         }
         viewModel.visitedRadius.observe(viewLifecycleOwner) { distance ->
-            if(round(distance).toInt() != lastVisitedDistanceUpdated) {
-                Timber.i("Visited distance observer called")
-                drawMap()
-                lastVisitedDistanceUpdated = round(distance).toInt()
+            distance?.let {
+                if (round(distance).toInt() != lastVisitedDistanceUpdated) {
+                    Timber.i("Visited distance observer called")
+                    drawMap()
+                    lastVisitedDistanceUpdated = round(distance).toInt()
+                }
             }
         }
         viewModel.venuesRadius.observe(viewLifecycleOwner) { distance ->
-            if(round(distance).toInt() != lastVenueDistanceUpdated) {
-                Timber.i("Max  distance observer called")
-                drawMap()
-                lastVenueDistanceUpdated = round(distance).toInt()
+            distance?.let {
+                if(round(distance).toInt() != lastVenueDistanceUpdated) {
+                    Timber.i("Max  distance observer called")
+                    drawMap()
+                    lastVenueDistanceUpdated = round(distance).toInt()
+                }
             }
         }
 
