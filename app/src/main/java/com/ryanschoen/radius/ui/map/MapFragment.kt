@@ -19,6 +19,8 @@ import com.ryanschoen.radius.databinding.VenueInfoWindowBinding
 import com.ryanschoen.radius.domain.Venue
 import com.ryanschoen.radius.yelpIntent
 import timber.log.Timber
+import kotlin.math.ceil
+import kotlin.math.round
 
 
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -35,6 +37,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var infoWindowBinding: VenueInfoWindowBinding
     private lateinit var infoWindow: ViewGroup
+
+    private var lastVenueDistanceUpdated = 0
+    private var lastVisitedDistanceUpdated = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,11 +70,19 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 requireActivity().finish()
             }
         }
-        viewModel.visitedRadius.observe(viewLifecycleOwner) { _ ->
-            drawMap()
+        viewModel.visitedRadius.observe(viewLifecycleOwner) { distance ->
+            if(round(distance).toInt() != lastVisitedDistanceUpdated) {
+                Timber.i("Visited distance observer called")
+                drawMap()
+                lastVisitedDistanceUpdated = round(distance).toInt()
+            }
         }
-        viewModel.venuesRadius.observe(viewLifecycleOwner) { _ ->
-            drawMap()
+        viewModel.venuesRadius.observe(viewLifecycleOwner) { distance ->
+            if(round(distance).toInt() != lastVenueDistanceUpdated) {
+                Timber.i("Max  distance observer called")
+                drawMap()
+                lastVenueDistanceUpdated = round(distance).toInt()
+            }
         }
 
         if(viewModel.addressIsReady) {
@@ -206,7 +219,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         viewModel.venues.observe(viewLifecycleOwner) { venues ->
             Timber.i("Venues observer called")
-
             drawMap()
             viewModel.venues.removeObservers(viewLifecycleOwner)
 
