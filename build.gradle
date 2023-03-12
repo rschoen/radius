@@ -8,12 +8,11 @@ buildscript {
         version_material = "1.8.0"
         version_maps = "18.1.0"
         version_constraint_layout = "2.1.4"
-        version_lifecycle = "2.5.1"
+        version_lifecycle = "2.6.0"
         version_navigation = "2.5.3"
         version_room = "2.5.0"
         version_retrofit= "2.9.0"
-        version_moshi = "1.9.3"
-        version_moshi_codegen = "1.13.0"
+        version_moshi = "1.14.0"
         version_timber = "5.0.1"
         version_junit = "4.13.2"
         version_junit_ext = "1.1.5"
@@ -31,8 +30,8 @@ buildscript {
 }
 
 plugins {
-    id 'com.android.application' version '7.4.0' apply false
-    id 'com.android.library' version '7.4.0' apply false
-    id 'org.jetbrains.kotlin.android' version '1.7.21' apply false
+    id 'com.android.application' version '7.4.2' apply false
+    id 'com.android.library' version '7.4.2' apply false
+    id 'org.jetbrains.kotlin.android' version '1.8.10' apply false
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin' version '2.0.1' apply false
 }

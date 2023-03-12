@@ -3,7 +3,7 @@ package com.ryanschoen.radius.repository
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.database.asDomainModel
 import com.ryanschoen.radius.database.getDatabase
@@ -28,7 +28,7 @@ class VenuesRepository(application: Application) {
     }
 
 
-    val venues: LiveData<List<Venue>> = Transformations.map(database.venueDao.getVenues()) {
+    val venues: LiveData<List<Venue>> = database.venueDao.getVenues().map {
         Timber.i(database.venueDao.getVenues().toString())
         it.asDomainModel()
     }
