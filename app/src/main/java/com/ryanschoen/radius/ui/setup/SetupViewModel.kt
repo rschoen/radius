@@ -34,6 +34,7 @@ class SetupViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             repo.setSavedAddressLatLong(address, latlng.latitude, latlng.longitude)
+            repo.deactivateAllVenues()
             val venuesDownloaded = repo.downloadVenues(address)
             _numVenues.value = venuesDownloaded
             _venuesChanged.value = true

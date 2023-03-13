@@ -23,7 +23,8 @@ fun NetworkYelpSearchResults.asDatabaseModel(): Array<DatabaseVenue> {
             lng = it.coordinates.longitude.toDouble(),
             distance = it.distance.toDouble(),
             visited = false,
-            hidden = false
+            hidden = false,
+            active = true
         )
     }.toTypedArray()
 }

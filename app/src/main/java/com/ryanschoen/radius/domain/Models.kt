@@ -11,4 +11,4 @@ data class Venue(val id: String,
                  val url: String,
                  val distance: Double,
                  var visited: Boolean,
-                    val hidden: Boolean)
+                 val hidden: Boolean)

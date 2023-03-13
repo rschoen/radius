@@ -21,7 +21,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         get() = _quitActivity
 
     val venues = repo.venues
-    val tenthVenueDistance = repo.tenthVenueDistance
+    val tenthVenueDistance = repo.getNthVenue(10)
     var addressIsReady = false
     val venuesRadius = repo.venuesRadius
     val visitedRadius = repo.visitedRadius

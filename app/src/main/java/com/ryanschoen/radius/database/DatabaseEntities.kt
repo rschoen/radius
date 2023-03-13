@@ -16,8 +16,9 @@ data class DatabaseVenue constructor(
     val imageUrl: String,
     val url: String,
     val distance: Double,
-    val visited: Boolean,
-    val hidden: Boolean,
+    var visited: Boolean,
+    var hidden: Boolean,
+    var active: Boolean
 )
 
 fun List<DatabaseVenue>.asDomainModel(): List<Venue> {
@@ -34,6 +35,6 @@ fun List<DatabaseVenue>.asDomainModel(): List<Venue> {
             distance = it.distance,
             visited = it.visited,
             hidden = it.hidden
-                )
+        )
     }
 }

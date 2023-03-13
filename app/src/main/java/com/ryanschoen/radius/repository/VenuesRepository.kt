@@ -2,9 +2,11 @@ package com.ryanschoen.radius.repository
 
 import android.app.Application
 import android.content.Context
+import android.database.sqlite.SQLiteConstraintException
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import com.ryanschoen.radius.R
+import com.ryanschoen.radius.database.DatabaseVenue
 import com.ryanschoen.radius.database.asDomainModel
 import com.ryanschoen.radius.database.getDatabase
 import com.ryanschoen.radius.domain.Venue
@@ -33,7 +35,7 @@ class VenuesRepository(application: Application) {
         it.asDomainModel()
     }
 
-    val tenthVenueDistance: LiveData<Double> = database.venueDao.getTenthVenue()
+    fun getNthVenue(n: Int): LiveData<Double> = database.venueDao.getNthVenueDistance(n)
     val venuesRadius: LiveData<Double> = database.venueDao.getMaximumVenueDistance()
     val visitedRadius: LiveData<Double> = database.venueDao.getMaximumAllVisitedDistance()
 
@@ -67,16 +69,22 @@ class VenuesRepository(application: Application) {
         sharedPref.edit().clear().apply()
     }
 
-    suspend fun downloadVenues(address: String): Int {
-        val venues =
-            withContext(Dispatchers.IO) {
-                val venues = fetchVenues(address)
-                database.venueDao.insertAll(*venues.asDatabaseModel())
-                Timber.i("Inserted ${venues.businesses.size} venues")
-                venues
+    suspend fun downloadVenues(address: String): Int = withContext(Dispatchers.IO) {
+        val venues = fetchVenues(address)
+        val dbVenues = venues.asDatabaseModel()
+
+        var maxDistance: Double = -1.0
+        for(venue in dbVenues) {
+            upsertVenue(venue)
+            if(venue.distance > maxDistance) {
+                maxDistance = venue.distance
             }
+        }
+        database.venueDao.activateVenuesInRange(maxDistance)
+
+        Timber.i("Inserted ${venues.businesses.size} venues")
         setAddressReady(true)
-        return venues.businesses.size
+        venues.businesses.size
     }
 
     suspend fun deleteAllData() {
@@ -90,6 +98,34 @@ class VenuesRepository(application: Application) {
 
             Timber.i("Into the database: ${venueId}.visited = ${visited}")
             database.venueDao.setVenueVisited(venueId, visited)
+        }
+    }
+
+    suspend fun deactivateAllVenues() {
+        withContext(Dispatchers.IO) {
+            database.venueDao.deactivateAllVenues()
+        }
+    }
+
+     private fun upsertVenue(item: DatabaseVenue) {
+        try{
+            database.venueDao.insertVenue(item)
+        }catch (exception: SQLiteConstraintException){
+            val oldItem = database.venueDao.getVenueById(item.id)
+            database.venueDao.updateVenue(item.apply {
+                active = oldItem.active
+                visited = oldItem.visited
+                hidden = oldItem.hidden
+                // you can add more fields here
+            })
+        }catch (throwable: Throwable){
+            val oldItem = database.venueDao.getVenueById(item.id)
+            database.venueDao.updateVenue(item.apply {
+                active = oldItem.active
+                visited = oldItem.visited
+                hidden = oldItem.hidden
+                // you can add more fields here
+            })
         }
     }
 }

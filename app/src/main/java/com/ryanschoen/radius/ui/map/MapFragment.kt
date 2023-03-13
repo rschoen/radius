@@ -39,6 +39,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private var lastVenueDistanceUpdated = 0
     private var lastVisitedDistanceUpdated = 0
+    private var venuesOnMap = -1
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -215,10 +216,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         Timber.i("Setting up map...")
 
         viewModel.venues.observe(viewLifecycleOwner) { venues ->
-            Timber.i("Venues observer called")
-            drawMap()
-            viewModel.venues.removeObservers(viewLifecycleOwner)
-
+            if(venues.size != venuesOnMap) {
+                Timber.i("Venues observer called")
+                drawMap()
+            }
         }
 
         viewModel.tenthVenueDistance.observe(viewLifecycleOwner) { distance ->
