@@ -3,19 +3,13 @@ package com.ryanschoen.radius.ui.venues
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.gms.maps.model.LatLng
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentVenuesBinding
-import com.ryanschoen.radius.domain.Venue
-import com.ryanschoen.radius.ui.setup.SetupFragmentArgs
-import com.ryanschoen.radius.ui.venues.VenuesFragmentDirections
-import kotlinx.coroutines.launch
+import com.ryanschoen.radius.yelpIntent
 import timber.log.Timber
 
 
@@ -27,8 +21,6 @@ class VenuesFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
     private lateinit var viewModel: VenuesViewModel
-    private lateinit var homeLatLng: LatLng
-    private lateinit var venues: LiveData<List<Venue>>
 
     private val args: VenuesFragmentArgs by navArgs()
     private var listLoaded = false
@@ -64,7 +56,9 @@ class VenuesFragment : Fragment() {
             if (!listLoaded) {
                 adapter = VenueAdapter(
                     venues,
-                    VenueAdapter.OnClickListener {},
+                    VenueAdapter.OnClickListener { venue ->
+                        yelpIntent(requireContext(), venue.url)
+                    },
                     VenueAdapter.OnCheckListener { venue, checked ->
                         if(venue.visited != checked) {
                             Timber.i("Changed venue ${venue.id} from ${venue.visited} to ${checked}")
@@ -76,16 +70,16 @@ class VenuesFragment : Fragment() {
                     })
                 binding.venueList.adapter = adapter
                 val layoutManager = LinearLayoutManager(requireContext())
-                layoutManager?.let {
-                    if (!args.venueId.isNullOrBlank()) {
-                        for (position in venues.indices) {
-                            if (venues[position].id == args.venueId) {
-                                layoutManager.scrollToPosition(position)
-                                break
-                            }
+
+                if (args.venueId.isNotBlank()) {
+                    for (position in venues.indices) {
+                        if (venues[position].id == args.venueId) {
+                            layoutManager.scrollToPosition(position)
+                            break
                         }
                     }
                 }
+
                 binding.venueList.layoutManager = layoutManager
                 listLoaded = true
                 Timber.i("List has been loaded")

@@ -2,23 +2,17 @@ package com.ryanschoen.radius.ui.venues
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.content.Context
 import android.widget.CheckBox
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.ryanschoen.radius.databinding.ListItemVenueBinding
 import com.ryanschoen.radius.domain.Venue
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import timber.log.Timber
 
 private val ITEM_VIEW_TYPE_VENUE = 1
 
-private val adapterScope = CoroutineScope(Dispatchers.Default)
 
 class VenueAdapter(private val venues: List<Venue>, private val onClickListener: OnClickListener, private val onCheckListener: OnCheckListener) : ListAdapter<Venue, RecyclerView.ViewHolder>(VenueDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -56,11 +50,8 @@ class VenueAdapter(private val venues: List<Venue>, private val onClickListener:
                 }
             }
 
-            // TODO: add click listener to rest of everything??
-
-
-            if(item.id == "9yM20-7fj4LMrOO30nqkBw") {
-                Timber.i("Found our venue. We're about to execute bindings with visited = ${item.visited}")
+            this.itemView.setOnClickListener {
+                onClickListener.onClick(item)
             }
 
             binding.executePendingBindings()

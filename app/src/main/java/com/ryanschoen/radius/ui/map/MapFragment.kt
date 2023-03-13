@@ -19,7 +19,6 @@ import com.ryanschoen.radius.databinding.VenueInfoWindowBinding
 import com.ryanschoen.radius.domain.Venue
 import com.ryanschoen.radius.yelpIntent
 import timber.log.Timber
-import kotlin.math.ceil
 import kotlin.math.round
 
 
@@ -142,13 +141,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             false
         }
         infoWindow = infoWindowBinding.root as ViewGroup
-        /*infoWindowBinding.venueName.setOnTouchListener { _,m ->
-            if(m.action == MotionEvent.ACTION_UP) {
-                onInfoWindowClick(binding.mapRelativeLayout.marker!!)
-                true
-            }
-            false
-        }*/
+
         map!!.setInfoWindowAdapter(VenueInfoWindowAdapter(requireContext(), infoWindowBinding, binding.mapRelativeLayout))
         map!!.setOnInfoWindowClickListener { marker -> onInfoWindowClick(marker) }
         homeLatLng = LatLng(viewModel.getHomeLat(), viewModel.getHomeLng())
@@ -265,7 +258,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         //enableMyLocation()
     }
 
-    fun onInfoWindowClick(p0: Marker) {
+    private fun onInfoWindowClick(p0: Marker) {
         yelpIntent(requireContext(), (p0.tag as Venue).url)
         //this.findNavController().navigate(MapFragmentDirections.actionNavigationMapToNavigationVenues((p0.tag as Venue).id))
     }
