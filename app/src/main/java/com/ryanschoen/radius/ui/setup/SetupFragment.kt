@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
-import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -48,10 +47,10 @@ class SetupFragment : Fragment() {
         val root: View = binding.root
 
         // Initialize the SDK
-        Places.initialize(context, BuildConfig.MAPS_API_KEY)
+        Places.initialize(requireContext(), BuildConfig.MAPS_API_KEY)
 
         // Create a new PlacesClient instance
-        val placesClient = Places.createClient(context)
+        val placesClient = Places.createClient(requireContext())
         // Initialize the AutocompleteSupportFragment.
         val autocompleteFragment = childFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
 
@@ -63,7 +62,7 @@ class SetupFragment : Fragment() {
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
                 Handler().postDelayed({
-                    autocompleteFragment.setText(place.getAddress());
+                    autocompleteFragment.setText(place.getAddress())
                 }, 300)
                 autocompleteFragment.setText(place.address)
                 binding.venuesStatusIcon.setImageResource(R.drawable.baseline_change_circle_36)
@@ -101,6 +100,7 @@ class SetupFragment : Fragment() {
                     binding.venuesStatusIcon.setImageResource(R.drawable.baseline_dangerous_36)
                     binding.venuesStatusText.text = getText(R.string.venue_search_failed)
                 } else {
+                    binding.venuesStatusIcon.clearAnimation()
                     binding.venuesStatusIcon.setImageResource(R.drawable.baseline_check_circle_36)
                     binding.venuesStatusText.text =
                         "Downloaded ${viewModel.numVenues.value} venues!"

@@ -6,7 +6,7 @@ import androidx.room.*
 
 @Dao
 interface VenueDao {
-    @Query("select * from databasevenue where active=TRUE")
+    @Query("select * from databasevenue where active=TRUE order by distance asc")
     fun getVenues(): LiveData<List<DatabaseVenue>>
 
     /*@Insert(onConflict = OnConflictStrategy.REPLACE)

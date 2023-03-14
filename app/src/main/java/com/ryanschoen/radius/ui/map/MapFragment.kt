@@ -17,9 +17,9 @@ import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentMapBinding
 import com.ryanschoen.radius.databinding.VenueInfoWindowBinding
 import com.ryanschoen.radius.domain.Venue
+import com.ryanschoen.radius.metersEquals
 import com.ryanschoen.radius.yelpIntent
 import timber.log.Timber
-import kotlin.math.round
 
 
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -37,9 +37,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var infoWindowBinding: VenueInfoWindowBinding
     private lateinit var infoWindow: ViewGroup
 
-    private var lastVenueDistanceUpdated = 0
-    private var lastVisitedDistanceUpdated = 0
-    private var venuesOnMap = -1
+    private var venuesOnMap: Int = 0
+    private var maxVenueDistanceOnMap: Double = 0.0
+    private var maxVisitedDistanceOnMap: Double = 0.0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,24 +70,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 requireActivity().finish()
             }
         }
-        viewModel.visitedRadius.observe(viewLifecycleOwner) { distance ->
-            distance?.let {
-                if (round(distance).toInt() != lastVisitedDistanceUpdated) {
-                    Timber.i("Visited distance observer called")
-                    drawMap()
-                    lastVisitedDistanceUpdated = round(distance).toInt()
-                }
-            }
-        }
-        viewModel.venuesRadius.observe(viewLifecycleOwner) { distance ->
-            distance?.let {
-                if(round(distance).toInt() != lastVenueDistanceUpdated) {
-                    Timber.i("Max  distance observer called")
-                    drawMap()
-                    lastVenueDistanceUpdated = round(distance).toInt()
-                }
-            }
-        }
+
 
         if(viewModel.addressIsReady) {
 
@@ -132,11 +115,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         infoWindowBinding = VenueInfoWindowBinding.inflate(layoutInflater)
         infoWindowBinding.infoWindowVisitedCheckbox.setOnTouchListener  { v,m ->
             if(m.action == MotionEvent.ACTION_UP) {
+                Timber.d("Caught the click action.")
                 val newState = !(v as CheckBox).isChecked
-                (v as CheckBox).isChecked = newState
+                //(v as CheckBox).isChecked = newState
+                Timber.d("Setting the info window binding to visited = ${newState}.")
                 infoWindowBinding.venue!!.visited = newState
-                Timber.i("Setting visited equal to " + newState.toString())
+                Timber.d("Calling viewModel's setVenueVisited with visited = ${newState}.")
                 viewModel.setVenueVisited(infoWindowBinding.venue!!.id, newState)
+                Timber.d("Asking the map overlay to redraw the marker.")
                 binding.mapRelativeLayout.redrawMarker(newState)
             }
             false
@@ -153,7 +139,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun drawMap() {
+        var infoWindowVenueId = ""
+
         map?.let {
+            Timber.d("Redrawing the map from scratch")
+
+            binding.mapRelativeLayout.marker?.apply {
+                infoWindowVenueId = (tag as Venue).id
+            }
+
             map!!.clear()
             val homeLatLng = LatLng(viewModel.getHomeLat(), viewModel.getHomeLng())
 
@@ -166,7 +160,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             if(viewModel.venues.value != null && viewModel.venues.value!!.isNotEmpty()) {
                 for (venue in viewModel.venues.value!!) {
                     val position = LatLng(venue.lat, venue.lng)
-                    map!!.addMarker(
+                    val marker = map!!.addMarker(
                         MarkerOptions().position(position).apply {
                             if (venue.visited) {
                                 icon(
@@ -174,31 +168,48 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                 )
                             }
                         }
-                    )?.tag = venue
-                    //Timber.i("Adding to map: ${venue.name}")
+                    )
+                    marker?.let {
+                        marker.tag = venue
+                        if(venue.id == infoWindowVenueId) {
+                            Timber.d("Re-popping the info window!")
+                            marker.showInfoWindow()
+                        }
+                    }
+
                 }
             }
 
 
 
 
-            if(viewModel.venuesRadius.value != null && viewModel.venuesRadius.value!! > 0) {
+            if(maxVenueDistanceOnMap > 0) {
                 val circleOptions = CircleOptions()
                     .center(homeLatLng)
-                    .radius(viewModel.venuesRadius.value!!)
+                    .radius(maxVenueDistanceOnMap)
                     .strokeColor(Color.GRAY)
                 map!!.addCircle(circleOptions)
 
+            } else {
+                Timber.d("No max venue distance")
             }
 
-            if(viewModel.visitedRadius.value != null && viewModel.visitedRadius.value!! > 0) {
+            if(maxVisitedDistanceOnMap > 0) {
                 val circleOptions = CircleOptions()
                     .center(homeLatLng)
-                    .radius(viewModel.visitedRadius.value!!)
+                    .radius(maxVisitedDistanceOnMap)
                     .strokeColor(Color.GREEN)
                 map!!.addCircle(circleOptions)
 
+            } else {
+                Timber.d("No max visited distance")
             }
+
+            binding.mapRelativeLayout.marker?.apply {
+                Timber.d("Showing info window...")
+                showInfoWindow()
+            }
+
         }
 
     }
@@ -216,16 +227,49 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         Timber.i("Setting up map...")
 
         viewModel.venues.observe(viewLifecycleOwner) { venues ->
+            Timber.i("Venues observer called. Should we redraw?")
+            var redraw = false
             if(venues.size != venuesOnMap) {
-                Timber.i("Venues observer called")
+                Timber.i("Drawing map because # of venues changed!")
+                redraw = true
+                venuesOnMap = venues.size
+            }
+
+            var maxVisitedDistance = 0.0
+            var maxVenueDistance = 0.0
+            var haveSeenUnvisited = false
+            for(venue in venues) {
+                // distance guaranteed to be increasing
+                maxVenueDistance = venue.distance
+                if(!venue.visited) {
+                    haveSeenUnvisited = true
+                }
+                if(!haveSeenUnvisited) {
+                    maxVisitedDistance = venue.distance
+                }
+            }
+
+
+            if(!metersEquals(maxVenueDistance,maxVenueDistanceOnMap) ||
+                !metersEquals(maxVisitedDistance,maxVisitedDistanceOnMap)) {
+                Timber.d("Drawing map because one of the circles changed")
+                maxVenueDistanceOnMap = maxVenueDistance
+                maxVisitedDistanceOnMap = maxVisitedDistance
+                redraw = true
+
+            }
+
+            if(redraw) {
                 drawMap()
             }
+
+
+
         }
 
         viewModel.tenthVenueDistance.observe(viewLifecycleOwner) { distance ->
             Timber.i("Distance observer called")
-            //if() {
-            //var distance = distanceList.get(0)
+
             val zoom: Float
 
             if (distance != null) {
@@ -253,48 +297,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             viewModel.tenthVenueDistance.removeObservers(viewLifecycleOwner)
         }
 
-        //map!!.setOnInfoWindowClickListener(this)
-
-
-        //enableMyLocation()
     }
 
     private fun onInfoWindowClick(p0: Marker) {
         yelpIntent(requireContext(), (p0.tag as Venue).url)
-        //this.findNavController().navigate(MapFragmentDirections.actionNavigationMapToNavigationVenues((p0.tag as Venue).id))
     }
-
-/*
-    private fun isPermissionGranted(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun enableMyLocation() {
-        if(isPermissionGranted()) {
-            map.isMyLocationEnabled = true
-        }
-        else {
-            requestPermissions(arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION),REQUEST_LOCATION_PERMISSION)
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        if(requestCode == REQUEST_LOCATION_PERMISSION) {
-            Timber.i("Got location permission back! ${grantResults.size.toString()} and ${grantResults[0].toString()}")
-            if(grantResults.size > 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                Timber.i("Turn that baby on!")
-                enableMyLocation()
-            }
-        }
-    }*/
 
     fun getPixelsFromDp(context: Context, dp: Float): Int {
         val scale: Float = context.getResources().getDisplayMetrics().density

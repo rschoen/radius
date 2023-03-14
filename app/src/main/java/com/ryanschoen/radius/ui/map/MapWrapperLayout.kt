@@ -60,19 +60,20 @@ class MapWrapperLayout : RelativeLayout {
      * or InfoWindowAdapter.getInfoWindow.
      */
     fun setMarkerWithInfoWindow(marker: Marker?, infoWindow: View?) {
+        Timber.i("Setting marker with info window. visited = ${(marker?.tag as Venue).visited}")
         this.marker = marker
         this.infoWindow = infoWindow
     }
 
     fun redrawMarker(visited: Boolean) {
         this.marker?.apply {
+            Timber.d("Recoloring the marker with visited = ${visited}")
             if(visited) {
-                Timber.i("Marking the marker visited!")
                 setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
             } else {
-                Timber.i("Marking the marker NOT visited!")
                 setIcon(BitmapDescriptorFactory.defaultMarker())
             }
+            Timber.d("Calling showInfoWindow()")
             showInfoWindow()
         }
     }

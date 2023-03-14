@@ -31,7 +31,6 @@ class VenuesRepository(application: Application) {
 
 
     val venues: LiveData<List<Venue>> = database.venueDao.getVenues().map {
-        Timber.i(database.venueDao.getVenues().toString())
         it.asDomainModel()
     }
 
@@ -96,7 +95,7 @@ class VenuesRepository(application: Application) {
     suspend fun setVenueVisited(venueId: String, visited: Boolean) {
         withContext(Dispatchers.IO) {
 
-            Timber.i("Into the database: ${venueId}.visited = ${visited}")
+            Timber.i("Storing async into the database: ${venueId}.visited = ${visited}")
             database.venueDao.setVenueVisited(venueId, visited)
         }
     }

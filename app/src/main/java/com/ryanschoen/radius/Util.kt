@@ -8,6 +8,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.Fragment
+import kotlin.math.abs
 
 
 fun Fragment.hideKeyboard() {
@@ -43,4 +44,8 @@ fun yelpRatingToImageRes(rating: Double): Int {
 fun yelpIntent(context: Context, url: String) {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
     startActivity(context, intent, null)
+}
+
+fun metersEquals(a: Double, b: Double, delta: Double = 0.1): Boolean {
+    return abs(a-b) < delta
 }

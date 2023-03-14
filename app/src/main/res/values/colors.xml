@@ -10,7 +10,7 @@
     <color name="blue_light">#FF78B2FF</color>
     <color name="blue_medium">#FF3169B3</color>
     <color name="blue_dark">#FF004096</color>
-    <color name="light_gray">#FFEEEEEE</color>
+    <color name="light_gray">#FFF7F7F7</color>
     <color name="dark_gray">#FF222222</color>
     <color name="darkish_gray">#FF333333</color>
 </resources>
