@@ -4,6 +4,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.ryanschoen.radius.domain.Venue
+import com.ryanschoen.radius.metersToMiles
 import com.ryanschoen.radius.yelpRatingToImageRes
 import java.text.NumberFormat
 import java.util.*
@@ -11,7 +12,7 @@ import java.util.*
 @BindingAdapter("reviewString")
 fun TextView.setReviewString(item: Venue?) {
     item?.let {
-        text = withCommas(item.reviews) + " reviews"
+        text =  "${withCommas(item.reviews)} reviews"
     }
 }
 
@@ -27,6 +28,13 @@ fun ImageView.setRatingImage(item: Venue?) {
 fun TextView.setReviewTextJustNumber(item: Venue?) {
     item?.let {
         text = withCommas(item.reviews)
+    }
+}
+
+@BindingAdapter("distanceMiles")
+fun TextView.metersToMilesDisplay(item: Venue?) {
+    item?.let {
+        text = String.format("%.2f mi", metersToMiles(item.distance))
     }
 }
 

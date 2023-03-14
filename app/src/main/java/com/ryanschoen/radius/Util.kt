@@ -49,3 +49,7 @@ fun yelpIntent(context: Context, url: String) {
 fun metersEquals(a: Double, b: Double, delta: Double = 0.1): Boolean {
     return abs(a-b) < delta
 }
+
+fun metersToMiles(m: Double): Double {
+    return m / 1609.344
+}
