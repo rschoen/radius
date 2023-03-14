@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="hidden_venue_background">@color/gray_20</color>
+    <color name="unhidden_venue_background">@color/gray_13</color>
+</resources>

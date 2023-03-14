@@ -7,18 +7,19 @@ import androidx.room.*
 @Dao
 interface VenueDao {
     @Query("select * from databasevenue where active=TRUE order by distance asc")
-    fun getVenues(): LiveData<List<DatabaseVenue>>
+    fun getActiveVenues(): LiveData<List<DatabaseVenue>>
 
-    /*@Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg venues: DatabaseVenue)*/
 
-    @Query("select distance from databasevenue where active=TRUE order by distance limit 1 offset :n")
+    @Query("select * from databasevenue where active=TRUE and hidden=FALSE order by distance asc")
+    fun getVisibleActiveVenues(): LiveData<List<DatabaseVenue>>
+
+    @Query("select distance from databasevenue where active=TRUE and hidden=FALSE order by distance limit 1 offset :n")
     fun getNthVenueDistance(n: Int): LiveData<Double>
 
-    @Query("select max(distance) from databasevenue where active=true")
+    @Query("select max(distance) from databasevenue where active=TRUE and hidden=FALSE")
     fun getMaximumVenueDistance(): LiveData<Double>
 
-    @Query("select max(distance) from databasevenue where visited=TRUE and active=TRUE and distance <=  (select min(distance) from databasevenue where visited=FALSE and active=TRUE)")
+    @Query("select max(distance) from databasevenue where visited=TRUE and active=TRUE and hidden=FALSE and distance <=  (select min(distance) from databasevenue where visited=FALSE and active=TRUE and hidden=FALSE )")
     fun getMaximumAllVisitedDistance(): LiveData<Double>
 
     @Query("delete from databasevenue")
@@ -41,6 +42,9 @@ interface VenueDao {
 
     @Query("select * from databasevenue where id= :id")
     fun getVenueById(id: String): DatabaseVenue
+
+    @Query("update databasevenue set hidden= NOT hidden where id=:id")
+    fun toggleVenueIsHidden(id: String)
 }
 
 @Database(entities = [DatabaseVenue::class], version=1)

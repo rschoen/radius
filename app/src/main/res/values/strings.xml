@@ -21,4 +21,7 @@
     <string name="change_home_base">Change home base</string>
     <string name="search_for_address">Search for an address</string>
     <string name="all_venue_information_provided_by">All venue information provided by</string>
+    <string name="visited">Visited</string>
+    <string name="unvisited">Unvisited</string>
+    <string name="hidden">Hidden</string>
 </resources>

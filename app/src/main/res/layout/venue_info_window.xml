@@ -63,7 +63,7 @@
             android:id="@+id/infoWindowVisitedCheckbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:buttonTint="?attr/colorPrimary"
+            style="@style/Checkbox"
             android:checked="@{venue.visited}"
             app:layout_constraintBottom_toBottomOf="@+id/venueName"
             app:layout_constraintEnd_toEndOf="parent"

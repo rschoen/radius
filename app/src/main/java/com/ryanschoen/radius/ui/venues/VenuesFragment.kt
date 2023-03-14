@@ -5,7 +5,6 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentVenuesBinding
@@ -22,7 +21,6 @@ class VenuesFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var viewModel: VenuesViewModel
 
-    private val args: VenuesFragmentArgs by navArgs()
     private var listLoaded = false
     private lateinit var adapter: VenueAdapter
 
@@ -59,6 +57,10 @@ class VenuesFragment : Fragment() {
                     VenueAdapter.OnClickListener { venue ->
                         yelpIntent(requireContext(), venue.url)
                     },
+                    VenueAdapter.OnLongClickListener { venue ->
+                        viewModel.toggleVenueIsHidden(venue.id)
+                        true
+                    },
                     VenueAdapter.OnCheckListener { venue, checked ->
                         if(venue.visited != checked) {
                             Timber.i("Changed venue ${venue.id} from ${venue.visited} to ${checked}")
@@ -69,30 +71,43 @@ class VenuesFragment : Fragment() {
                         }
                     })
                 binding.venueList.adapter = adapter
+                filterList()
                 val layoutManager = LinearLayoutManager(requireContext())
 
-                if (args.venueId.isNotBlank()) {
-                    for (position in venues.indices) {
-                        if (venues[position].id == args.venueId) {
-                            layoutManager.scrollToPosition(position)
-                            break
-                        }
-                    }
-                }
 
                 binding.venueList.layoutManager = layoutManager
                 listLoaded = true
                 Timber.i("List has been loaded")
             }
             Timber.i("UPDATE THAT LIST!")
-            adapter.submitList(venues)
+            adapter.filterAndSubmitList(venues)
 
             // TODO: we only want to do this on the first load. how do we know if it's first or not?
+        }
+
+        binding.checkboxFilterVisited.setOnClickListener {
+            filterList()
+        }
+        binding.checkboxFilterUnvisited.setOnClickListener {
+            filterList()
+        }
+        binding.checkboxFilterHidden.setOnClickListener {
+            filterList()
         }
 
         setHasOptionsMenu(true)
 
         return root
+    }
+
+    private fun filterList() {
+        Timber.d("Filtering list...")
+        val adapter = binding.venueList.adapter as VenueAdapter
+        val filter = adapter.filter as VenueAdapter.VenueFilter
+        filter.setFilterAttributes(binding.checkboxFilterVisited.isChecked,
+            binding.checkboxFilterUnvisited.isChecked,
+            binding.checkboxFilterHidden.isChecked)
+        filter.filter("")
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

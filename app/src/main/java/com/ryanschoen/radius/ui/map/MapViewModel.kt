@@ -20,11 +20,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     val quitActivity: LiveData<Boolean>
         get() = _quitActivity
 
-    val venues = repo.venues
+    val venues = repo.visibleVenues
     val tenthVenueDistance = repo.getNthVenue(10)
     var addressIsReady = false
-    val venuesRadius = repo.venuesRadius
-    val visitedRadius = repo.visitedRadius
 
     init {
         if (repo.isAddressReady()) {

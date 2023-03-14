@@ -10,7 +10,10 @@
     <color name="blue_light">#FF78B2FF</color>
     <color name="blue_medium">#FF3169B3</color>
     <color name="blue_dark">#FF004096</color>
-    <color name="light_gray">#FFF7F7F7</color>
-    <color name="dark_gray">#FF222222</color>
-    <color name="darkish_gray">#FF333333</color>
+    <color name="gray_97">#FFF7F7F7</color>
+    <color name="gray_90">#FFE6E6E6</color>
+    <color name="gray_20">#FF333333</color>
+    <color name="gray_13">#FF222222</color>
+    <color name="hidden_venue_background">@color/gray_90</color>
+    <color name="unhidden_venue_background">@color/white</color>
 </resources>

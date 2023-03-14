@@ -2,7 +2,16 @@
 <resources>
     <style name="Separator">
         <item name="android:layout_height">1dp</item>
-        <item name="android:background">@color/light_gray</item>
+        <item name="android:background">@color/gray_97</item>
     </style>
+    <style name="Checkbox">
+        <item name="android:buttonTint">?attr/colorPrimary</item>
+    </style>
+    <style name="VenueFilterCheckbox" parent="Checkbox">
+        <item name="android:textSize">12sp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+    </style>
+"
 
 </resources>

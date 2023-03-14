@@ -1,5 +1,6 @@
 package com.ryanschoen.radius.ui.venues
 
+import android.graphics.Typeface
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -8,6 +9,7 @@ import com.ryanschoen.radius.metersToMiles
 import com.ryanschoen.radius.yelpRatingToImageRes
 import java.text.NumberFormat
 import java.util.*
+
 
 @BindingAdapter("reviewString")
 fun TextView.setReviewString(item: Venue?) {
@@ -35,6 +37,19 @@ fun TextView.setReviewTextJustNumber(item: Venue?) {
 fun TextView.metersToMilesDisplay(item: Venue?) {
     item?.let {
         text = String.format("%.2f mi", metersToMiles(item.distance))
+    }
+}
+
+@BindingAdapter("nameWithHidden")
+fun TextView.nameWithHidden(item: Venue?) {
+    item?.let {
+        if(item.hidden) {
+            text = "${item.name} (hidden)"
+            setTypeface(typeface, Typeface.ITALIC)
+        } else {
+            text = item.name
+            setTypeface(typeface, Typeface.NORMAL)
+        }
     }
 }
 

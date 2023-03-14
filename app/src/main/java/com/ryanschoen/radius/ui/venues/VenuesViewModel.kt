@@ -37,13 +37,6 @@ class VenuesViewModel(application: Application) : AndroidViewModel(application) 
         _navigateToSetup.value = false
     }
 
-    fun getHomeLat(): Double {
-        return repo.getSavedLatitude()
-    }
-    fun getHomeLng(): Double {
-        return repo.getSavedLongitude()
-    }
-
     fun clearAllData() {
         viewModelScope.launch {
             repo.deleteAllData()
@@ -51,10 +44,12 @@ class VenuesViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun setVenueVisited(venueId: String, visited: Boolean) {
-        viewModelScope.launch {
-            repo.setVenueVisited(venueId, visited)
-        }
+    fun setVenueVisited(venueId: String, visited: Boolean) = viewModelScope.launch {
+        repo.setVenueVisited(venueId, visited)
+    }
+
+    fun toggleVenueIsHidden(id: String) = viewModelScope.launch {
+        repo.toggleVenueIsHidden(id)
     }
 
 }

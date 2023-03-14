@@ -30,7 +30,11 @@ class VenuesRepository(application: Application) {
     }
 
 
-    val venues: LiveData<List<Venue>> = database.venueDao.getVenues().map {
+    val venues: LiveData<List<Venue>> = database.venueDao.getActiveVenues().map {
+        it.asDomainModel()
+    }
+
+    val visibleVenues: LiveData<List<Venue>> = database.venueDao.getVisibleActiveVenues().map {
         it.asDomainModel()
     }
 
@@ -81,29 +85,26 @@ class VenuesRepository(application: Application) {
         }
         database.venueDao.activateVenuesInRange(maxDistance)
 
-        Timber.i("Inserted ${venues.businesses.size} venues")
+        Timber.d("Inserted ${venues.businesses.size} venues")
         setAddressReady(true)
         venues.businesses.size
     }
 
-    suspend fun deleteAllData() {
-        withContext(Dispatchers.IO) {
-            database.venueDao.deleteVenuesData()
-            clearSharedPrefs()
-        }
+    suspend fun deleteAllData() = withContext(Dispatchers.IO) {
+        database.venueDao.deleteVenuesData()
+        clearSharedPrefs()
     }
-    suspend fun setVenueVisited(venueId: String, visited: Boolean) {
-        withContext(Dispatchers.IO) {
-
-            Timber.i("Storing async into the database: ${venueId}.visited = ${visited}")
-            database.venueDao.setVenueVisited(venueId, visited)
-        }
+    suspend fun setVenueVisited(venueId: String, visited: Boolean) = withContext(Dispatchers.IO) {
+        Timber.d("Storing async into the database: ${venueId}.visited = ${visited}")
+        database.venueDao.setVenueVisited(venueId, visited)
     }
 
-    suspend fun deactivateAllVenues() {
-        withContext(Dispatchers.IO) {
-            database.venueDao.deactivateAllVenues()
-        }
+    suspend fun deactivateAllVenues() = withContext(Dispatchers.IO) {
+        database.venueDao.deactivateAllVenues()
+    }
+
+    suspend fun toggleVenueIsHidden(id: String) = withContext(Dispatchers.IO) {
+        database.venueDao.toggleVenueIsHidden(id)
     }
 
      private fun upsertVenue(item: DatabaseVenue) {

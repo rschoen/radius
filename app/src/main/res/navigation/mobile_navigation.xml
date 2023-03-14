@@ -29,10 +29,6 @@
         <action
             android:id="@+id/action_navigation_venues_to_navigation_setup"
             app:destination="@id/navigation_setup" />
-        <argument
-            android:name="venueId"
-            app:argType="string"
-            android:defaultValue=""/>
     </fragment>
 
     <fragment

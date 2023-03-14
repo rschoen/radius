@@ -3,14 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <data>
+        <import type="androidx.databinding.adapters.Converters"/>
         <variable
             name="venue"
             type="com.ryanschoen.radius.domain.Venue" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
+        android:layout_height="wrap_content"
+        android:background="@{venue.hidden ? @color/hidden_venue_background : @color/unhidden_venue_background}">
 
 
         <ImageView
@@ -35,7 +36,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@id/venuePhoto"
             app:layout_constraintTop_toTopOf="@id/venuePhoto"
-            app:text="@{venue.name}"
+            app:nameWithHidden="@{venue}"
             tools:text="LArdoise Bistro" />
 
         <ImageView
@@ -82,8 +83,8 @@
             android:id="@+id/visited_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:buttonTint="?attr/colorPrimary"
             android:checked="@{venue.visited}"
+            style="@style/Checkbox"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

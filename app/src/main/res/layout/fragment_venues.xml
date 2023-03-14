@@ -6,19 +6,65 @@
     android:layout_height="match_parent"
     tools:context=".ui.venues.VenuesFragment">
 
+    <CheckBox
+        android:id="@+id/checkbox_filter_visited"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_small"
+        android:checked="true"
+        android:text="@string/visited"
+        style="@style/VenueFilterCheckbox"
+        app:layout_constraintEnd_toStartOf="@id/checkbox_filter_unvisited"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <CheckBox
+        android:id="@+id/checkbox_filter_unvisited"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_small"
+        android:checked="true"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:text="@string/unvisited"
+        style="@style/VenueFilterCheckbox"
+        app:layout_constraintEnd_toStartOf="@id/checkbox_filter_hidden"
+        app:layout_constraintStart_toEndOf="@id/checkbox_filter_visited"
+        app:layout_constraintTop_toTopOf="@+id/checkbox_filter_visited" />
+
+    <CheckBox
+        android:id="@+id/checkbox_filter_hidden"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/hidden"
+        style="@style/VenueFilterCheckbox"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@id/checkbox_filter_unvisited"
+        app:layout_constraintTop_toTopOf="@+id/checkbox_filter_visited" />
+
+
+
+    <View
+        android:id="@+id/filters_horizontal_rule"
+        style="@style/Separator"
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/checkbox_filter_unvisited" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/venue_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/horizontal_rule"
+        app:layout_constraintBottom_toTopOf="@id/attribution_horizontal_rule"
+        app:layout_constraintTop_toBottomOf="@id/filters_horizontal_rule"
         tools:listitem="@layout/list_item_venue" />
 
     <View
-        android:id="@+id/horizontal_rule"
-        android:layout_width="match_parent"
+        android:id="@+id/attribution_horizontal_rule"
         style="@style/Separator"
-        app:layout_constraintTop_toBottomOf="@id/venue_list"/>
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/venue_list" />
 
     <TextView
         android:id="@+id/venue_attribution"
@@ -30,7 +76,7 @@
         android:text="@string/all_venue_information_provided_by"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/horizontal_rule" />
+        app:layout_constraintTop_toTopOf="@id/attribution_horizontal_rule" />
 
     <ImageView
         android:id="@+id/yelp_logo"
