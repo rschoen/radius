@@ -45,6 +45,9 @@ interface VenueDao {
 
     @Query("update databasevenue set hidden= NOT hidden where id=:id")
     fun toggleVenueIsHidden(id: String)
+
+    @Query("update databasevenue set name='', url='', lat=0.0, lng=0.0, reviews=0, rating=0.0, imageUrl=''")
+    fun clearYelpData()
 }
 
 @Database(entities = [DatabaseVenue::class], version=1)

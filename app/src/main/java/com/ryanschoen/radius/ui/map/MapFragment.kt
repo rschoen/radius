@@ -70,6 +70,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 requireActivity().finish()
             }
         }
+        viewModel.doneDownloadingVenues.observe(viewLifecycleOwner) { done ->
+            if(done) {
+                //rezoomMap()
+                viewModel.onDoneDownloadingVenues()
+            }
+        }
 
 
         if(viewModel.addressIsReady) {
@@ -95,6 +101,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
             R.id.clear_data -> {
                 viewModel.clearAllData()
+                true
+            }
+            R.id.clear_yelp_data -> {
+                viewModel.clearYelpData()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -132,7 +142,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         map!!.setInfoWindowAdapter(VenueInfoWindowAdapter(requireContext(), infoWindowBinding, binding.mapRelativeLayout))
         map!!.setOnInfoWindowClickListener { marker -> onInfoWindowClick(marker) }
         homeLatLng = LatLng(viewModel.getHomeLat(), viewModel.getHomeLng())
-        map!!.moveCamera(CameraUpdateFactory.newLatLng(homeLatLng))
+        map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, 15.0f))
         Timber.i("Moving map to $homeLatLng")
         setupMap()
 

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "112160f49aca6e36f2ff0df9e9d6aea4",
+    "identityHash": "9951031387fc2b2e46501e00a3868040",
     "entities": [
       {
         "tableName": "DatabaseVenue",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `lat` REAL NOT NULL, `lng` REAL NOT NULL, `reviews` INTEGER NOT NULL, `rating` REAL NOT NULL, `imageUrl` TEXT NOT NULL, `url` TEXT NOT NULL, `distance` REAL NOT NULL, `visited` INTEGER NOT NULL, `hidden` INTEGER NOT NULL, `active` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `lat` REAL, `lng` REAL, `reviews` INTEGER NOT NULL, `rating` REAL NOT NULL, `imageUrl` TEXT NOT NULL, `url` TEXT NOT NULL, `distance` REAL NOT NULL, `visited` INTEGER NOT NULL, `hidden` INTEGER NOT NULL, `active` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -24,13 +24,13 @@
             "fieldPath": "lat",
             "columnName": "lat",
             "affinity": "REAL",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "lng",
             "columnName": "lng",
             "affinity": "REAL",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "reviews",
@@ -94,7 +94,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '112160f49aca6e36f2ff0df9e9d6aea4')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9951031387fc2b2e46501e00a3868040')"
     ]
   }
 }

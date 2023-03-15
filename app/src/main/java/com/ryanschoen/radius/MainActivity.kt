@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity() {
         val navView: BottomNavigationView = binding.navView
         navView.setupWithNavController(navController)
         setupActionBarWithNavController(navController, appBarConfiguration)
+
     }
 
 

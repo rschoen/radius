@@ -15,6 +15,7 @@ import com.ryanschoen.radius.network.fetchVenues
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.time.LocalDateTime
 
 class VenuesRepository(application: Application) {
     private val database = getDatabase(application)
@@ -27,6 +28,10 @@ class VenuesRepository(application: Application) {
         const val SAVED_LATITUDE_STRING = "saved_latitude"
         const val SAVED_LONGITUDE_STRING = "saved_longitude"
         const val SAVED_ADDRESS_READY = "saved_address_ready"
+        const val YELP_DATA_READY = "yelp_data_read"
+        const val YELP_DATA_EXPIRATION = "yelp_data_expiration"
+
+        const val YELP_DATA_EXPIRATION_HOURS = 24
     }
 
 
@@ -41,6 +46,9 @@ class VenuesRepository(application: Application) {
     fun getNthVenue(n: Int): LiveData<Double> = database.venueDao.getNthVenueDistance(n)
     val venuesRadius: LiveData<Double> = database.venueDao.getMaximumVenueDistance()
     val visitedRadius: LiveData<Double> = database.venueDao.getMaximumAllVisitedDistance()
+    suspend fun clearYelpData() = withContext(Dispatchers.IO) {
+        database.venueDao.clearYelpData()
+    }
 
 
     fun getSavedAddress(): String? {
@@ -59,6 +67,20 @@ class VenuesRepository(application: Application) {
         sharedPref.edit().putBoolean(SAVED_ADDRESS_READY,ready).apply()
     }
 
+    var yelpDataReady: Boolean
+        get() = sharedPref.getBoolean(YELP_DATA_READY,false)
+        set(ready) = sharedPref.edit().putBoolean(YELP_DATA_READY,ready).apply()
+
+    val yelpDataHasExpired = LocalDateTime.now().isAfter(yelpDataExpiration)
+    val shouldRefreshYelpData = !yelpDataReady || yelpDataHasExpired
+
+    fun refreshYelpExpiration(hours: Int = YELP_DATA_EXPIRATION_HOURS) {
+        val yelpDataExpiration = LocalDateTime.now().plusHours(hours.toLong())
+        sharedPref.edit().putString(YELP_DATA_EXPIRATION,yelpDataExpiration.toString()).apply()
+    }
+    val yelpDataExpiration: LocalDateTime
+        get() = LocalDateTime.parse(sharedPref.getString(YELP_DATA_EXPIRATION,"2010-01-01"))
+
     fun setSavedAddressLatLong(address: String, lat: Double, lng: Double) {
         with (sharedPref.edit()) {
             putString(SAVED_ADDRESS_STRING, address)
@@ -73,18 +95,25 @@ class VenuesRepository(application: Application) {
     }
 
     suspend fun downloadVenues(address: String): Int = withContext(Dispatchers.IO) {
+        yelpDataReady = false
+        deactivateAllVenues()
+
         val venues = fetchVenues(address)
         val dbVenues = venues.asDatabaseModel()
 
         var maxDistance: Double = -1.0
         for(venue in dbVenues) {
+            if(venue.lat == null || venue.lng == null) {
+                continue
+            }
             upsertVenue(venue)
             if(venue.distance > maxDistance) {
                 maxDistance = venue.distance
             }
         }
         database.venueDao.activateVenuesInRange(maxDistance)
-
+        refreshYelpExpiration()
+        yelpDataReady=true
         Timber.d("Inserted ${venues.businesses.size} venues")
         setAddressReady(true)
         venues.businesses.size

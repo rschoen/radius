@@ -20,18 +20,25 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     val quitActivity: LiveData<Boolean>
         get() = _quitActivity
 
+    private var _doneDownloadingVenues = MutableLiveData<Boolean>()
+    val doneDownloadingVenues: LiveData<Boolean>
+        get() = _doneDownloadingVenues
+
     val venues = repo.visibleVenues
     val tenthVenueDistance = repo.getNthVenue(10)
-    var addressIsReady = false
+    var addressIsReady = repo.isAddressReady()
 
     init {
-        if (repo.isAddressReady()) {
-            Timber.i("Found saved address: " + repo.getSavedAddress())
-            addressIsReady = true
-        }
-        else {
-            Timber.i("No saved address :(")
+        if(!repo.isAddressReady()) {
+            Timber.i("No saved address found, redirecting to setup")
             _navigateToSetup.value = true
+        } else if(repo.shouldRefreshYelpData) {
+            viewModelScope.launch {
+                repo.downloadVenues(repo.getSavedAddress()!!)
+
+                // TODO: show a loading bar!
+                _doneDownloadingVenues.value = true
+            }
         }
     }
 
@@ -53,10 +60,20 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun clearYelpData() {
+        viewModelScope.launch {
+            repo.clearYelpData()
+        }
+    }
+
     fun setVenueVisited(venueId: String, visited: Boolean) {
         viewModelScope.launch {
             repo.setVenueVisited(venueId, visited)
         }
+    }
+
+    fun onDoneDownloadingVenues() {
+        _doneDownloadingVenues.value = false
     }
 
 }

@@ -20,6 +20,7 @@ buildscript {
         version_glide = "4.12.0"
         version_places = "3.0.0"
         version_okhttp_logging = "4.10.0"
+        version_work = "2.8.0"
     }
     repositories {
         google()

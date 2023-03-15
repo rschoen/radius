@@ -45,8 +45,8 @@ data class NetworkVenue(
 
 @JsonClass(generateAdapter = false)
 data class _YelpCoordinates(
-    val latitude: String,
-    val longitude: String
+    val latitude: String = "",
+    val longitude: String = ""
 )
 /*
 fun NetworkYelpSearchResults.asDomainModel(): List<Venue> {
