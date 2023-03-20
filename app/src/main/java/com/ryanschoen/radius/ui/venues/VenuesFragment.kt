@@ -2,24 +2,22 @@ package com.ryanschoen.radius.ui.venues
 
 import android.os.Bundle
 import android.view.*
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentVenuesBinding
+import com.ryanschoen.radius.ui.RadiusFragment
 import com.ryanschoen.radius.yelpIntent
 import timber.log.Timber
 
 
-class VenuesFragment : Fragment() {
+class VenuesFragment : RadiusFragment() {
 
     private var _binding: FragmentVenuesBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private lateinit var viewModel: VenuesViewModel
 
     private var listLoaded = false
     private lateinit var adapter: VenueAdapter
@@ -50,7 +48,7 @@ class VenuesFragment : Fragment() {
             }
         }
 
-        viewModel.venues.observe(viewLifecycleOwner) { venues ->
+        (viewModel as VenuesViewModel).venues.observe(viewLifecycleOwner) { venues ->
             if (!listLoaded) {
                 adapter = VenueAdapter(
                     venues,
@@ -58,7 +56,7 @@ class VenuesFragment : Fragment() {
                         yelpIntent(requireContext(), venue.url)
                     },
                     VenueAdapter.OnLongClickListener { venue ->
-                        viewModel.toggleVenueIsHidden(venue.id)
+                        (viewModel as VenuesViewModel).toggleVenueIsHidden(venue.id)
                         true
                     },
                     VenueAdapter.OnCheckListener { venue, checked ->
@@ -95,8 +93,6 @@ class VenuesFragment : Fragment() {
             filterList()
         }
 
-        setHasOptionsMenu(true)
-
         return root
     }
 
@@ -110,22 +106,9 @@ class VenuesFragment : Fragment() {
         filter.filter("")
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.overflow_menu, menu)
-    }
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle item selection
-        return when (item.itemId) {
-            R.id.change_home_base -> {
-                findNavController().navigate(VenuesFragmentDirections.actionNavigationVenuesToNavigationSetup(true))
-                true
-            }
-            R.id.clear_data -> {
-                viewModel.clearAllData()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
+
+    override fun navigateToSetup() {
+        findNavController().navigate(VenuesFragmentDirections.actionNavigationVenuesToNavigationSetup(true))
     }
 
     override fun onDestroyView() {

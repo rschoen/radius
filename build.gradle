@@ -21,6 +21,7 @@ buildscript {
         version_places = "3.0.0"
         version_okhttp_logging = "4.10.0"
         version_work = "2.8.0"
+        version_activity = "1.6.1"
     }
     repositories {
         google()

@@ -1,11 +1,11 @@
 package com.ryanschoen.radius.ui.map
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import android.widget.CheckBox
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -18,11 +18,12 @@ import com.ryanschoen.radius.databinding.FragmentMapBinding
 import com.ryanschoen.radius.databinding.VenueInfoWindowBinding
 import com.ryanschoen.radius.domain.Venue
 import com.ryanschoen.radius.metersEquals
+import com.ryanschoen.radius.ui.RadiusFragment
 import com.ryanschoen.radius.yelpIntent
 import timber.log.Timber
 
 
-class MapFragment : Fragment(), OnMapReadyCallback {
+class MapFragment : RadiusFragment(), OnMapReadyCallback {
 
 
     private var _binding: FragmentMapBinding? = null
@@ -31,7 +32,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     // onDestroyView.
     private val binding get() = _binding!!
     private var map: GoogleMap? = null
-    private lateinit var viewModel: MapViewModel
     private lateinit var homeLatLng: LatLng
 
     private lateinit var infoWindowBinding: VenueInfoWindowBinding
@@ -40,6 +40,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var venuesOnMap: Int = 0
     private var maxVenueDistanceOnMap: Double = 0.0
     private var maxVisitedDistanceOnMap: Double = 0.0
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,45 +71,21 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 requireActivity().finish()
             }
         }
-        viewModel.doneDownloadingVenues.observe(viewLifecycleOwner) { done ->
+        (viewModel as MapViewModel).doneDownloadingVenues.observe(viewLifecycleOwner) { done ->
             if(done) {
                 //rezoomMap()
-                viewModel.onDoneDownloadingVenues()
+                (viewModel as MapViewModel).onDoneDownloadingVenues()
             }
         }
 
 
-        if(viewModel.addressIsReady) {
+        if((viewModel as MapViewModel).addressIsReady) {
 
             val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
             mapFragment.getMapAsync(this)
         }
 
-        setHasOptionsMenu(true)
-
         return root
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.overflow_menu, menu)
-    }
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle item selection
-        return when (item.itemId) {
-            R.id.change_home_base -> {
-                findNavController().navigate(MapFragmentDirections.actionNavigationMapToNavigationSetup(true))
-                true
-            }
-            R.id.clear_data -> {
-                viewModel.clearAllData()
-                true
-            }
-            R.id.clear_yelp_data -> {
-                viewModel.clearYelpData()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 
     override fun onDestroyView() {
@@ -116,6 +93,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         _binding = null
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map!!.setMapStyle(
@@ -127,7 +105,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             if(m.action == MotionEvent.ACTION_UP) {
                 Timber.d("Caught the click action.")
                 val newState = !(v as CheckBox).isChecked
-                //(v as CheckBox).isChecked = newState
+                v.performClick()
                 Timber.d("Setting the info window binding to visited = ${newState}.")
                 infoWindowBinding.venue!!.visited = newState
                 Timber.d("Calling viewModel's setVenueVisited with visited = ${newState}.")
@@ -167,8 +145,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 )
             )
 
-            if(viewModel.venues.value != null && viewModel.venues.value!!.isNotEmpty()) {
-                for (venue in viewModel.venues.value!!) {
+            if((viewModel as MapViewModel).venues.value != null && (viewModel as MapViewModel).venues.value!!.isNotEmpty()) {
+                for (venue in (viewModel as MapViewModel).venues.value!!) {
                     val position = LatLng(venue.lat, venue.lng)
                     val marker = map!!.addMarker(
                         MarkerOptions().position(position).apply {
@@ -236,7 +214,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         Timber.i("Setting up map...")
 
-        viewModel.venues.observe(viewLifecycleOwner) { venues ->
+        (viewModel as MapViewModel).venues.observe(viewLifecycleOwner) { venues ->
             Timber.i("Venues observer called. Should we redraw?")
             var redraw = false
             if(venues.size != venuesOnMap) {
@@ -277,7 +255,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         }
 
-        viewModel.tenthVenueDistance.observe(viewLifecycleOwner) { distance ->
+        (viewModel as MapViewModel).tenthVenueDistance.observe(viewLifecycleOwner) { distance ->
             Timber.i("Distance observer called")
 
             val zoom: Float
@@ -304,13 +282,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoom))
                 //}
             }
-            viewModel.tenthVenueDistance.removeObservers(viewLifecycleOwner)
+            (viewModel as MapViewModel).tenthVenueDistance.removeObservers(viewLifecycleOwner)
         }
 
     }
 
     private fun onInfoWindowClick(p0: Marker) {
         yelpIntent(requireContext(), (p0.tag as Venue).url)
+    }
+
+    override fun navigateToSetup() {
+        findNavController().navigate(MapFragmentDirections.actionNavigationMapToNavigationSetup(true))
     }
 
     fun getPixelsFromDp(context: Context, dp: Float): Int {

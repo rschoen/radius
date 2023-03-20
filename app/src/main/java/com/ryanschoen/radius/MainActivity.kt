@@ -1,6 +1,7 @@
 package com.ryanschoen.radius
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -38,6 +39,15 @@ class MainActivity : AppCompatActivity() {
         val navView: BottomNavigationView = binding.navView
         navView.setupWithNavController(navController)
         setupActionBarWithNavController(navController, appBarConfiguration)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if(destination.id == R.id.navigation_setup) {
+                binding.navView.visibility = View.GONE
+            } else {
+
+                binding.navView.visibility = View.VISIBLE
+            }
+        }
 
     }
 
