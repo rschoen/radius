@@ -29,7 +29,7 @@ fun NetworkYelpSearchResults.asDatabaseModel(): Array<DatabaseVenue> {
     }.toTypedArray()
 }
 
-@JsonClass(generateAdapter = false)
+@JsonClass(generateAdapter = true)
 data class NetworkVenue(
     val id: String,
     val name: String,
@@ -43,7 +43,7 @@ data class NetworkVenue(
 
 )
 
-@JsonClass(generateAdapter = false)
+@JsonClass(generateAdapter = true)
 data class _YelpCoordinates(
     val latitude: String = "",
     val longitude: String = ""

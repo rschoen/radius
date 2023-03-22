@@ -9,6 +9,7 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import com.ryanschoen.radius.BuildConfig
 import com.ryanschoen.radius.R
 
 abstract class RadiusFragment : Fragment() {
@@ -38,7 +39,13 @@ abstract class RadiusFragment : Fragment() {
     private fun setupMenu() {
         (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
             override fun onPrepareMenu(menu: Menu) {
-                // Handle for example visibility of menu items
+                if(!BuildConfig.DEBUG) {
+                    val debugOptions = listOf(R.id.clear_data, R.id.clear_yelp_data)
+                    for (option in debugOptions) {
+                        val item = menu.findItem(option)
+                        item.isVisible = false
+                    }
+                }
             }
 
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {

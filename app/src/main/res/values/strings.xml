@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Radius</string>
     <string name="title_map">Map</string>
     <string name="title_venues">Venues</string>
     <string name="hint_address">Address</string>

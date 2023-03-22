@@ -8,6 +8,14 @@ apply plugin: 'kotlin-kapt'
 
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('H:\\My Drive\\Projects\\Android\\Keystore\\keystore.jks')
+            storePassword '82HxjnFJt8rZbVzpPTXXJ-PfCU3c-w'
+            keyAlias 'upload'
+            keyPassword '82HxjnFJt8rZbVzpPTXXJ-PfCU3c-w'
+        }
+    }
     namespace 'com.ryanschoen.radius'
     compileSdk 33
 
@@ -15,7 +23,7 @@ android {
         applicationId "com.ryanschoen.radius"
         minSdk 26
         targetSdk 33
-        versionCode 1
+        versionCode 3
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -28,8 +36,17 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            debuggable false
+            resValue "string", "app_name", "Radius"
+            signingConfig signingConfigs.release
+        }
+        debug {
+            debuggable true
+            applicationIdSuffix ".debug"
+            resValue "string", "app_name", "Radius (DEBUG)"
         }
     }
     compileOptions {

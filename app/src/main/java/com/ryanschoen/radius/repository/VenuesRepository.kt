@@ -77,7 +77,7 @@ class VenuesRepository(application: Application) {
         sharedPref.edit().putString(YELP_DATA_EXPIRATION,yelpDataExpiration.toString()).apply()
     }
     val yelpDataExpiration: LocalDateTime
-        get() = LocalDateTime.parse(sharedPref.getString(YELP_DATA_EXPIRATION,"2010-01-01"))
+        get() = LocalDateTime.parse(sharedPref.getString(YELP_DATA_EXPIRATION,"2018-12-30T19:34:50.63"))
 
     fun setSavedAddressLatLong(address: String, lat: Double, lng: Double) {
         with (sharedPref.edit()) {
