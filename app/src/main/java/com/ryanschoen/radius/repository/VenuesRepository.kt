@@ -44,8 +44,6 @@ class VenuesRepository(application: Application) {
     }
 
     fun getNthVenue(n: Int): LiveData<Double> = database.venueDao.getNthVenueDistance(n)
-    val venuesRadius: LiveData<Double> = database.venueDao.getMaximumVenueDistance()
-    val visitedRadius: LiveData<Double> = database.venueDao.getMaximumAllVisitedDistance()
     suspend fun clearYelpData() = withContext(Dispatchers.IO) {
         database.venueDao.clearYelpData()
     }

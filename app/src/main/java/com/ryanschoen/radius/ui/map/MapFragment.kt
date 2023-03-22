@@ -5,6 +5,8 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
+import android.view.animation.Animation
+import android.view.animation.RotateAnimation
 import android.widget.CheckBox
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -42,6 +44,7 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
     private var maxVisitedDistanceOnMap: Double = 0.0
 
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -71,12 +74,7 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
                 requireActivity().finish()
             }
         }
-        (viewModel as MapViewModel).doneDownloadingVenues.observe(viewLifecycleOwner) { done ->
-            if(done) {
-                //rezoomMap()
-                (viewModel as MapViewModel).onDoneDownloadingVenues()
-            }
-        }
+
 
 
         if((viewModel as MapViewModel).addressIsReady) {
@@ -122,6 +120,8 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
         homeLatLng = LatLng(viewModel.getHomeLat(), viewModel.getHomeLng())
         map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, 15.0f))
         Timber.i("Moving map to $homeLatLng")
+
+        Timber.i("onMapReady complete, trying to set up map...")
         setupMap()
 
     }
@@ -204,6 +204,7 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
+        Timber.i("onResume called, trying to set up map...")
         setupMap()
     }
 
@@ -251,33 +252,13 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
                 drawMap()
             }
 
-
-
         }
 
         (viewModel as MapViewModel).tenthVenueDistance.observe(viewLifecycleOwner) { distance ->
             Timber.i("Distance observer called")
 
-            val zoom: Float
-
-            if (distance != null) {
-                if (distance < 100) {
-                    zoom = 18.0f
-                } else if (distance < 200) {
-                    zoom = 17.0f
-                } else if (distance < 500) {
-                    zoom = 16.0f
-                } else if (distance < 1000) {
-                    zoom = 15.0f
-                } else if (distance < 2000) {
-                    zoom = 14.0f
-                } else if (distance < 5000) {
-                    zoom = 13.0f
-                } else if (distance < 10_000) {
-                    zoom = 12.0f
-                } else if (distance < 20_000) {
-                    zoom = 11.0f
-                } else zoom = 10.0f
+            distance?.let {
+                val zoom = distanceToZoom(distance)
                 Timber.i("Distance: %f, Zoom: %f", distance, zoom)
                 map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoom))
                 //}
@@ -300,6 +281,46 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
         return (dp * scale + 0.5f).toInt()
     }
 
+    private fun distanceToZoom(distance: Double): Float {
+        return if (distance < 100) {
+            18.0f
+        } else if (distance < 200) {
+            17.0f
+        } else if (distance < 500) {
+            16.0f
+        } else if (distance < 1000) {
+            15.0f
+        } else if (distance < 2000) {
+            14.0f
+        } else if (distance < 5000) {
+            13.0f
+        } else if (distance < 10_000) {
+            12.0f
+        } else if (distance < 20_000) {
+            11.0f
+        } else 10.0f
+    }
 
+    override fun showLoadingIndicator() {
+        Timber.d("Showing loading circle")
+        val r = RotateAnimation(
+            360f,
+            0f,
+            Animation.RELATIVE_TO_SELF,
+            0.5f,
+            Animation.RELATIVE_TO_SELF,
+            0.5f
+        )
+        r.duration = 800
+        r.repeatCount = Animation.INFINITE
+        binding.loadingCircle.startAnimation(r)
+        binding.loadingCircle.visibility = View.VISIBLE
+    }
+
+    override fun hideLoadingIndicator() {
+        Timber.d("Hiding loading circle")
+        binding.loadingCircle.clearAnimation()
+        binding.loadingCircle.visibility = View.GONE
+    }
 }
 

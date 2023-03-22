@@ -96,11 +96,11 @@ class SetupFragment : Fragment() {
         viewModel.venuesChanged.observe(viewLifecycleOwner) { changed ->
             Timber.i("Venues list changed")
             if (changed) {
+                binding.venuesStatusIcon.clearAnimation()
                 if (viewModel.numVenues.value == 0) {
                     binding.venuesStatusIcon.setImageResource(R.drawable.baseline_dangerous_36)
                     binding.venuesStatusText.text = getText(R.string.venue_search_failed)
                 } else {
-                    binding.venuesStatusIcon.clearAnimation()
                     binding.venuesStatusIcon.setImageResource(R.drawable.baseline_check_circle_36)
                     binding.venuesStatusText.text =
                         "Downloaded ${viewModel.numVenues.value} venues!"

@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.ryanschoen.radius.repository.getRepository
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 open class RadiusViewModel(application: Application) : AndroidViewModel(application) {
     internal val repo = getRepository(application)
@@ -19,6 +20,28 @@ open class RadiusViewModel(application: Application) : AndroidViewModel(applicat
     internal var _quitActivity = MutableLiveData<Boolean>()
     val quitActivity: LiveData<Boolean>
         get() = _quitActivity
+
+    private var _startedDownloadingVenues = MutableLiveData<Boolean>()
+    val startedDownloadingVenues: LiveData<Boolean>
+        get() = _startedDownloadingVenues
+
+
+    private var _doneDownloadingVenues = MutableLiveData<Boolean>()
+    val doneDownloadingVenues: LiveData<Boolean>
+        get() = _doneDownloadingVenues
+
+    init {
+        if(!repo.isAddressReady()) {
+            Timber.i("No saved address found, redirecting to setup")
+            _navigateToSetup.value = true
+        } else if(repo.shouldRefreshYelpData) {
+            viewModelScope.launch {
+                _startedDownloadingVenues.value = true
+                repo.downloadVenues(repo.getSavedAddress()!!)
+                _doneDownloadingVenues.value = true
+            }
+        }
+    }
 
     fun clearAllData() {
         viewModelScope.launch {
@@ -42,6 +65,7 @@ open class RadiusViewModel(application: Application) : AndroidViewModel(applicat
     fun clearYelpData() {
         viewModelScope.launch {
             repo.clearYelpData()
+            repo.yelpDataReady = false
         }
     }
 
@@ -49,5 +73,13 @@ open class RadiusViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch {
             repo.setVenueVisited(venueId, visited)
         }
+    }
+
+
+    fun onStartedDownloadingVenues() {
+        _startedDownloadingVenues.value = false
+    }
+    fun onDoneDownloadingVenues() {
+        _doneDownloadingVenues.value = false
     }
 }

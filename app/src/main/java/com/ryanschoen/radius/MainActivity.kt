@@ -9,8 +9,6 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.ryanschoen.radius.databinding.ActivityMainBinding
-import timber.log.Timber
-import timber.log.Timber.Forest.plant
 
 
 class MainActivity : AppCompatActivity() {
@@ -19,9 +17,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (BuildConfig.DEBUG) {
-            plant(Timber.DebugTree())
-        }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.venues.VenuesFragment">
 
+
     <CheckBox
         android:id="@+id/checkbox_filter_visited"
         android:layout_width="wrap_content"
@@ -87,5 +88,23 @@
         android:src="@drawable/yelp_logo"
         app:layout_constraintBottom_toBottomOf="@id/venue_attribution"
         app:layout_constraintStart_toEndOf="@id/venue_attribution"
-        app:layout_constraintTop_toTopOf="@id/venue_attribution" />
+        app:layout_constraintTop_toTopOf="@id/venue_attribution"
+        android:contentDescription="@string/yelp_logo"/>
+
+
+    <ImageView
+        android:id="@+id/loading_circle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/outline_change_circle_128"
+        tools:visibility="visible"
+        android:contentDescription="@string/loading_circle_contentdescription"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

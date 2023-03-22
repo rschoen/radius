@@ -18,6 +18,20 @@ abstract class RadiusFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.startedDownloadingVenues.observe(viewLifecycleOwner) { started ->
+            if(started) {
+                showLoadingIndicator()
+                viewModel.onStartedDownloadingVenues()
+            }
+        }
+        viewModel.doneDownloadingVenues.observe(viewLifecycleOwner) { done ->
+            if(done) {
+                hideLoadingIndicator()
+                viewModel.onDoneDownloadingVenues()
+            }
+        }
+
         setupMenu()
     }
 
@@ -52,5 +66,7 @@ abstract class RadiusFragment : Fragment() {
     }
 
     abstract fun navigateToSetup()
+    abstract fun showLoadingIndicator()
+    abstract fun hideLoadingIndicator()
 
 }

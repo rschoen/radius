@@ -25,4 +25,6 @@
     <string name="unvisited">Unvisited</string>
     <string name="hidden">Hidden</string>
     <string name="debug_clear_yelp_data">[DEBUG] Clear Yelp data</string>
+    <string name="loading_circle_contentdescription">Animated circle indicating that venue data is loading</string>
+    <string name="yelp_logo">Yelp logo</string>
 </resources>
