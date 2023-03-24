@@ -4,6 +4,7 @@ import android.graphics.Typeface
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import com.ryanschoen.radius.R
 import com.ryanschoen.radius.domain.Venue
 import com.ryanschoen.radius.metersToMiles
 import com.ryanschoen.radius.yelpRatingToImageRes
@@ -14,7 +15,7 @@ import java.util.*
 @BindingAdapter("reviewString")
 fun TextView.setReviewString(item: Venue?) {
     item?.let {
-        text =  "${withCommas(item.reviews)} reviews"
+        text =  String.format(context.getString(R.string.reviews_count), withCommas(item.reviews))
     }
 }
 
@@ -44,7 +45,7 @@ fun TextView.metersToMilesDisplay(item: Venue?) {
 fun TextView.nameWithHidden(item: Venue?) {
     item?.let {
         if(item.hidden) {
-            text = "${item.name} (hidden)"
+            text = String.format(context.getString(R.string.venue_name_hidden), item.name)
             setTypeface(typeface, Typeface.ITALIC)
         } else {
             text = item.name

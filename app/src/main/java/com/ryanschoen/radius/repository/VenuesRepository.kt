@@ -61,22 +61,22 @@ class VenuesRepository(application: Application) {
     fun isAddressReady(): Boolean {
         return sharedPref.getBoolean(SAVED_ADDRESS_READY,false)
     }
-    fun setAddressReady(ready: Boolean) {
-        sharedPref.edit().putBoolean(SAVED_ADDRESS_READY,ready).apply()
+    private fun setAddressIsReady() {
+        sharedPref.edit().putBoolean(SAVED_ADDRESS_READY,true).apply()
     }
 
     var yelpDataReady: Boolean
         get() = sharedPref.getBoolean(YELP_DATA_READY,false)
         set(ready) = sharedPref.edit().putBoolean(YELP_DATA_READY,ready).apply()
 
-    val yelpDataHasExpired = LocalDateTime.now().isAfter(yelpDataExpiration)
+    private val yelpDataHasExpired = LocalDateTime.now().isAfter(yelpDataExpiration)
     val shouldRefreshYelpData = !yelpDataReady || yelpDataHasExpired
 
-    fun refreshYelpExpiration(hours: Int = YELP_DATA_EXPIRATION_HOURS) {
+    private fun refreshYelpExpiration(hours: Int = YELP_DATA_EXPIRATION_HOURS) {
         val yelpDataExpiration = LocalDateTime.now().plusHours(hours.toLong())
         sharedPref.edit().putString(YELP_DATA_EXPIRATION,yelpDataExpiration.toString()).apply()
     }
-    val yelpDataExpiration: LocalDateTime
+    private val yelpDataExpiration: LocalDateTime
         get() = LocalDateTime.parse(sharedPref.getString(YELP_DATA_EXPIRATION,"2018-12-30T19:34:50.63"))
 
     fun setSavedAddressLatLong(address: String, lat: Double, lng: Double) {
@@ -88,7 +88,7 @@ class VenuesRepository(application: Application) {
         }
     }
 
-    fun clearSharedPrefs() {
+    private fun clearSharedPrefs() {
         sharedPref.edit().clear().apply()
     }
 
@@ -113,7 +113,7 @@ class VenuesRepository(application: Application) {
         refreshYelpExpiration()
         yelpDataReady=true
         Timber.d("Inserted ${venues.businesses.size} venues")
-        setAddressReady(true)
+        setAddressIsReady()
         venues.businesses.size
     }
 
@@ -122,11 +122,11 @@ class VenuesRepository(application: Application) {
         clearSharedPrefs()
     }
     suspend fun setVenueVisited(venueId: String, visited: Boolean) = withContext(Dispatchers.IO) {
-        Timber.d("Storing async into the database: ${venueId}.visited = ${visited}")
+        Timber.d("Storing async into the database: ${venueId}.visited = $visited")
         database.venueDao.setVenueVisited(venueId, visited)
     }
 
-    suspend fun deactivateAllVenues() = withContext(Dispatchers.IO) {
+    private suspend fun deactivateAllVenues() = withContext(Dispatchers.IO) {
         database.venueDao.deactivateAllVenues()
     }
 

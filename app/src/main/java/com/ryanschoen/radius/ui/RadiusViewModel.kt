@@ -17,7 +17,7 @@ open class RadiusViewModel(application: Application) : AndroidViewModel(applicat
         get() = _navigateToSetup
 
 
-    internal var _quitActivity = MutableLiveData<Boolean>()
+    private var _quitActivity = MutableLiveData<Boolean>()
     val quitActivity: LiveData<Boolean>
         get() = _quitActivity
 

@@ -64,12 +64,11 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
 
         val backStackEntry = navController.previousBackStackEntry
-        if (backStackEntry != null) {
+        return if (backStackEntry != null) {
             navController.navigate(backStackEntry.destination.id)
-            return true
-        }
-        else {
-            return super.onSupportNavigateUp()
+            true
+        } else {
+            super.onSupportNavigateUp()
         }
     }
 }

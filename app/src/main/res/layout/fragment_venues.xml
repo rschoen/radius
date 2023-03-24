@@ -26,8 +26,6 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_small"
         android:checked="true"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
         android:text="@string/unvisited"
         style="@style/VenueFilterCheckbox"
         app:layout_constraintEnd_toStartOf="@id/checkbox_filter_hidden"
@@ -106,5 +104,5 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/outline_change_circle_128"
         tools:visibility="visible"
-        android:contentDescription="@string/loading_circle_contentdescription"/>
+        android:contentDescription="@string/loading_circle_content_description"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

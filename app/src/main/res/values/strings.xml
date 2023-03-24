@@ -24,6 +24,12 @@
     <string name="unvisited">Unvisited</string>
     <string name="hidden">Hidden</string>
     <string name="debug_clear_yelp_data">[DEBUG] Clear Yelp data</string>
-    <string name="loading_circle_contentdescription">Animated circle indicating that venue data is loading</string>
+    <string name="loading_circle_content_description">Animated circle indicating that venue data is loading</string>
     <string name="yelp_logo">Yelp logo</string>
+    <string name="loading_indicator_content_description">Loading indicator showing whether venues are loaded or not</string>
+    <string name="venue_photo_content_description">Photo of the venue provided by Yelp</string>
+    <string name="review_stars_content_description">Visual representation of the number of review stars the venue has</string>
+    <string name="reviews_count">%1$s reviews</string>
+    <string name="venue_name_hidden">%1$s (hidden)</string>
+    <string name="downloaded_venues">Downloaded %1$d venues!</string>
 </resources>

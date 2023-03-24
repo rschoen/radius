@@ -38,13 +38,13 @@ data class NetworkVenue(
     val url: String,
     @Json(name="review_count") val reviews: String,
     val rating: String,
-    val coordinates: _YelpCoordinates,
+    val coordinates: YelpCoordinates,
     var distance: String
 
 )
 
 @JsonClass(generateAdapter = true)
-data class _YelpCoordinates(
+data class YelpCoordinates(
     val latitude: String = "",
     val longitude: String = ""
 )

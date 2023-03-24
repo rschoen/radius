@@ -36,7 +36,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/outline_change_circle_128"
             tools:visibility="visible"
-            android:contentDescription="@string/loading_circle_contentdescription"/>
+            android:contentDescription="@string/loading_circle_content_description"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.ryanschoen.radius.ui.map.MapWrapperLayout>
 

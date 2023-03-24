@@ -1,7 +1,6 @@
 package com.ryanschoen.radius.ui.map
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
@@ -19,6 +18,7 @@ import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentMapBinding
 import com.ryanschoen.radius.databinding.VenueInfoWindowBinding
 import com.ryanschoen.radius.domain.Venue
+import com.ryanschoen.radius.getPixelsFromDp
 import com.ryanschoen.radius.metersEquals
 import com.ryanschoen.radius.ui.RadiusFragment
 import com.ryanschoen.radius.yelpIntent
@@ -276,10 +276,7 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
         findNavController().navigate(MapFragmentDirections.actionNavigationMapToNavigationSetup(true))
     }
 
-    fun getPixelsFromDp(context: Context, dp: Float): Int {
-        val scale: Float = context.getResources().getDisplayMetrics().density
-        return (dp * scale + 0.5f).toInt()
-    }
+
 
     private fun distanceToZoom(distance: Double): Float {
         return if (distance < 100) {

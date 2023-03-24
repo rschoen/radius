@@ -82,7 +82,6 @@ class VenuesFragment : RadiusFragment() {
             Timber.i("UPDATE THAT LIST!")
             adapter.filterAndSubmitList(venues)
 
-            // TODO: we only want to do this on the first load. how do we know if it's first or not?
         }
 
         binding.checkboxFilterVisited.setOnClickListener {

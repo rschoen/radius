@@ -1,32 +1,14 @@
 package com.ryanschoen.radius
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat.startActivity
-import androidx.fragment.app.Fragment
 import kotlin.math.abs
 
 
-fun Fragment.hideKeyboard() {
-    view?.let { activity?.hideKeyboard(it) }
-}
-
-fun Activity.hideKeyboard() {
-    hideKeyboard(currentFocus ?: View(this))
-}
-
-fun Context.hideKeyboard(view: View) {
-    val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-    inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
-}
-
 fun yelpRatingToImageRes(rating: Double): Int {
-    val ratingInt = (rating*2).toInt()
-    return when(ratingInt) {
+    return when((rating*2).toInt()) {
         2 -> R.drawable.stars_regular_1
         3 -> R.drawable.stars_regular_1_half
         4 -> R.drawable.stars_regular_2
@@ -52,4 +34,9 @@ fun metersEquals(a: Double, b: Double, delta: Double = 0.1): Boolean {
 
 fun metersToMiles(m: Double): Double {
     return m / 1609.344
+}
+
+fun getPixelsFromDp(context: Context, dp: Float): Int {
+    val scale: Float = context.resources.displayMetrics.density
+    return (dp * scale + 0.5f).toInt()
 }

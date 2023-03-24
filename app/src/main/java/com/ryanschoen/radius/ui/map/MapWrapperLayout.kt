@@ -38,14 +38,13 @@ class MapWrapperLayout : RelativeLayout {
      */
     private var infoWindow: View? = null
 
-    constructor(context: Context?) : super(context) {}
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
+    constructor(context: Context?) : super(context)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyle: Int) : super(
         context,
         attrs,
         defStyle
-    ) {
-    }
+    )
 
     /**
      * Must be called before we can route the touch events
@@ -67,7 +66,7 @@ class MapWrapperLayout : RelativeLayout {
 
     fun redrawMarker(visited: Boolean) {
         this.marker?.apply {
-            Timber.d("Recoloring the marker with visited = ${visited}")
+            Timber.d("Recoloring the marker with visited = $visited")
             if(visited) {
                 setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
             } else {

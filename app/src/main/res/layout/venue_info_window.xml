@@ -42,7 +42,8 @@
             app:layout_constraintTop_toBottomOf="@+id/venueName"
             app:srcCompat="@drawable/stars_regular_4_half"
             tools:srcCompat="@drawable/stars_regular_4_half"
-            app:ratingImage="@{venue}"/>
+            app:ratingImage="@{venue}"
+            android:contentDescription="@string/review_stars_content_description" />
 
 
         <TextView

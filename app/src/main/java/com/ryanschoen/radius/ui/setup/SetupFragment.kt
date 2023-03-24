@@ -2,6 +2,8 @@ package com.ryanschoen.radius.ui.setup
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +23,7 @@ import com.ryanschoen.radius.MainActivity
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentSetupBinding
 import timber.log.Timber
+import java.nio.charset.Charset
 
 
 class SetupFragment : Fragment() {
@@ -47,10 +50,13 @@ class SetupFragment : Fragment() {
         val root: View = binding.root
 
         // Initialize the SDK
-        Places.initialize(requireContext(), BuildConfig.MAPS_API_KEY)
+        val apiKey = String(
+            Base64.decode(BuildConfig.MAPS_API_KEY_BASE64.toByteArray(), Base64.DEFAULT),
+            Charset.defaultCharset())
+        Places.initialize(requireContext(), apiKey)
 
         // Create a new PlacesClient instance
-        val placesClient = Places.createClient(requireContext())
+        Places.createClient(requireContext())
         // Initialize the AutocompleteSupportFragment.
         val autocompleteFragment = childFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
 
@@ -61,8 +67,8 @@ class SetupFragment : Fragment() {
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
-                Handler().postDelayed({
-                    autocompleteFragment.setText(place.getAddress())
+                Handler(Looper.getMainLooper()).postDelayed({
+                    autocompleteFragment.setText(place.address)
                 }, 300)
                 autocompleteFragment.setText(place.address)
                 binding.venuesStatusIcon.setImageResource(R.drawable.baseline_change_circle_36)
@@ -82,7 +88,7 @@ class SetupFragment : Fragment() {
 
                 binding.venuesStatusText.text = getString(R.string.venue_search_processing)
                 binding.venuesStatusText.visibility = View.VISIBLE
-                viewModel.loadVenues(place.address, place.latLng)
+                viewModel.loadVenues(place.address!!, place.latLng!!)
             }
 
             override fun onError(status: Status) {
@@ -102,8 +108,8 @@ class SetupFragment : Fragment() {
                     binding.venuesStatusText.text = getText(R.string.venue_search_failed)
                 } else {
                     binding.venuesStatusIcon.setImageResource(R.drawable.baseline_check_circle_36)
-                    binding.venuesStatusText.text =
-                        "Downloaded ${viewModel.numVenues.value} venues!"
+                    binding.venuesStatusText.text = String.format(
+                        getString(R.string.downloaded_venues), viewModel.numVenues.value)
                     findNavController().navigate(SetupFragmentDirections.actionNavigationSetupToNavigationMap())
                 }
                 viewModel.onVenuesChangedComplete()

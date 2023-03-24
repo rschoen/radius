@@ -14,7 +14,7 @@ import com.ryanschoen.radius.domain.Venue
 import timber.log.Timber
 import java.util.*
 
-private val ITEM_VIEW_TYPE_VENUE = 1
+private const val ITEM_VIEW_TYPE_VENUE = 1
 
 
 class VenueAdapter(venues: List<Venue>, private val onClickListener: OnClickListener, private val onLongClickListener: OnLongClickListener, private val onCheckListener: OnCheckListener) : ListAdapter<Venue, RecyclerView.ViewHolder>(VenueDiffCallback()), Filterable {
@@ -25,7 +25,7 @@ class VenueAdapter(venues: List<Venue>, private val onClickListener: OnClickList
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             ITEM_VIEW_TYPE_VENUE -> ViewHolder.from(parent)
-            else -> throw ClassCastException("Unknown viewType ${viewType}")
+            else -> throw ClassCastException("Unknown viewType $viewType")
         }
     }
 
@@ -52,7 +52,7 @@ class VenueAdapter(venues: List<Venue>, private val onClickListener: OnClickList
     }
 
 
-    class ViewHolder private constructor (val binding: ListItemVenueBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder private constructor (private val binding: ListItemVenueBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Venue, onClickListener: OnClickListener, onLongClickListener: OnLongClickListener, onCheckListener: OnCheckListener) {
             binding.venue = item
 
@@ -105,7 +105,7 @@ class VenueAdapter(venues: List<Venue>, private val onClickListener: OnClickList
         fun onCheck(venue: Venue, checked: Boolean) = checkListener(venue, checked)
     }
 
-    inner class VenueFilter() : Filter() {
+    inner class VenueFilter : Filter() {
 
         private var showVisited = true
         private var showUnvisited = true
@@ -132,11 +132,12 @@ class VenueAdapter(venues: List<Venue>, private val onClickListener: OnClickList
             }
             results.values = newList
             results.count = newList.size
-            Timber.d("Started with ${count} items, returning ${results.count} items")
+            Timber.d("Started with $count items, returning ${results.count} items")
             return results
         }
 
         override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
+            @Suppress("UNCHECKED_CAST")
             modelVenues = filterResults.values as List<Venue>
             submitList(modelVenues)
         }
