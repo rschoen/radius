@@ -31,7 +31,7 @@ interface VenueDao {
     @Query("update databasevenue set active=0,distance=-1")
     fun deactivateAllVenues()
 
-    @Query("update databasevenue set active=TRUE where distance>=0 and distance < :distance")
+    @Query("update databasevenue set active=1 where distance>=0 and distance < :distance")
     fun activateVenuesInRange(distance: Double)
 
     @Insert(onConflict = OnConflictStrategy.ABORT)

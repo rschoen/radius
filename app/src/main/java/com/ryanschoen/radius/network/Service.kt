@@ -1,6 +1,5 @@
 package com.ryanschoen.radius.network
 
-import com.ryanschoen.radius.BuildConfig.MAPS_API_KEY
 import com.ryanschoen.radius.BuildConfig.YELP_API_KEY
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -15,7 +14,7 @@ import retrofit2.http.*
 import timber.log.Timber
 
 const val RESULTS_PER_QUERY = 50
-const val QUERIES_PER_CATEGORY = 1
+const val QUERIES_PER_CATEGORY = 4
 val CATEGORIES = listOf("restaurant","bar")
 const val MINIMUM_REVIEWS = 10
 
@@ -54,7 +53,7 @@ suspend fun fetchVenues(address: String): NetworkYelpSearchResults {
             for(category in CATEGORIES) {
                 for(i in 0 until QUERIES_PER_CATEGORY) {
                     queriesMade++
-                    val newVenues = Network.venueList.getVenues(address, category, RESULTS_PER_QUERY, i).businesses
+                    val newVenues = Network.venueList.getVenues(address, category, RESULTS_PER_QUERY, i*RESULTS_PER_QUERY).businesses
                     for (venue in newVenues) {
                         if(!venuesAdded.contains(venue.id) && !venue.closed && venue.reviews.toInt() >= MINIMUM_REVIEWS) {
                             //Timber.i("Calculated distance to be %f",venue.distance)
