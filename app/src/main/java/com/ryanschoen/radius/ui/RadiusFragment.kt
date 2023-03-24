@@ -21,13 +21,13 @@ abstract class RadiusFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.startedDownloadingVenues.observe(viewLifecycleOwner) { started ->
-            if(started) {
+            if (started) {
                 showLoadingIndicator()
                 viewModel.onStartedDownloadingVenues()
             }
         }
         viewModel.doneDownloadingVenues.observe(viewLifecycleOwner) { done ->
-            if(done) {
+            if (done) {
                 hideLoadingIndicator()
                 viewModel.onDoneDownloadingVenues()
             }
@@ -39,7 +39,7 @@ abstract class RadiusFragment : Fragment() {
     private fun setupMenu() {
         (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
             override fun onPrepareMenu(menu: Menu) {
-                if(!BuildConfig.DEBUG) {
+                if (!BuildConfig.DEBUG) {
                     val debugOptions = listOf(R.id.clear_data, R.id.clear_yelp_data)
                     for (option in debugOptions) {
                         val item = menu.findItem(option)

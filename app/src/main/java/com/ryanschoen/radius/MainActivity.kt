@@ -2,6 +2,7 @@ package com.ryanschoen.radius
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -36,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if(destination.id == R.id.navigation_setup) {
+            if (destination.id == R.id.navigation_setup) {
                 binding.navView.visibility = View.GONE
             } else {
 
@@ -44,8 +45,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                onSupportNavigateUp()
+            }
+        })
     }
-
 
 
     fun showUpButton(show: Boolean) {
@@ -56,19 +61,14 @@ class MainActivity : AppCompatActivity() {
     // Workaround to navigate back without triggering Maps SDK "background" mode
     // which causes it to drop to 2fps :(
     override fun onSupportNavigateUp(): Boolean {
-
-        /*Timber.i("Navigating up...")
-        return findNavController(R.id.nav_host_fragment_activity_main).navigateUp()
-                    || super.onSupportNavigateUp();*/
-
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
 
         val backStackEntry = navController.previousBackStackEntry
-        return if (backStackEntry != null) {
+        if (backStackEntry != null) {
             navController.navigate(backStackEntry.destination.id)
-            true
+            return true
         } else {
-            super.onSupportNavigateUp()
+            return super.onSupportNavigateUp()
         }
     }
 }

@@ -6,7 +6,10 @@ import com.google.android.gms.maps.model.Marker
 import com.ryanschoen.radius.databinding.VenueInfoWindowBinding
 import com.ryanschoen.radius.domain.Venue
 
-class VenueInfoWindowAdapter(private val binding: VenueInfoWindowBinding, private val mapWrapperLayout: MapWrapperLayout) : InfoWindowAdapter {
+class VenueInfoWindowAdapter(
+    private val binding: VenueInfoWindowBinding,
+    private val mapWrapperLayout: MapWrapperLayout
+) : InfoWindowAdapter {
 
     override fun getInfoContents(marker: Marker): View? {
         marker.tag?.let {

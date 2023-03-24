@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.ryanschoen.radius.repository.getRepository
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 open class RadiusViewModel(application: Application) : AndroidViewModel(application) {
     internal val repo = getRepository(application)
@@ -31,10 +30,9 @@ open class RadiusViewModel(application: Application) : AndroidViewModel(applicat
         get() = _doneDownloadingVenues
 
     init {
-        if(!repo.isAddressReady()) {
-            Timber.i("No saved address found, redirecting to setup")
+        if (!repo.isAddressReady()) {
             _navigateToSetup.value = true
-        } else if(repo.shouldRefreshYelpData) {
+        } else if (repo.shouldRefreshYelpData) {
             viewModelScope.launch {
                 _startedDownloadingVenues.value = true
                 repo.downloadVenues(repo.getSavedAddress()!!)
@@ -58,6 +56,7 @@ open class RadiusViewModel(application: Application) : AndroidViewModel(applicat
     fun getHomeLat(): Double {
         return repo.getSavedLatitude()
     }
+
     fun getHomeLng(): Double {
         return repo.getSavedLongitude()
     }
@@ -79,6 +78,7 @@ open class RadiusViewModel(application: Application) : AndroidViewModel(applicat
     fun onStartedDownloadingVenues() {
         _startedDownloadingVenues.value = false
     }
+
     fun onDoneDownloadingVenues() {
         _doneDownloadingVenues.value = false
     }

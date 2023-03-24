@@ -49,9 +49,11 @@ class SetupFragment : Fragment() {
         _binding = FragmentSetupBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val welcomeVisibility = if(args.isAddressAlreadySet) {
+        val welcomeVisibility = if (args.isAddressAlreadySet) {
             View.GONE
-        } else { View.VISIBLE }
+        } else {
+            View.VISIBLE
+        }
 
         binding.welcomeExplainer.visibility = welcomeVisibility
         binding.welcomeImage.visibility = welcomeVisibility
@@ -61,13 +63,15 @@ class SetupFragment : Fragment() {
         // Initialize the SDK
         val apiKey = String(
             Base64.decode(BuildConfig.MAPS_API_KEY_BASE64.toByteArray(), Base64.DEFAULT),
-            Charset.defaultCharset())
+            Charset.defaultCharset()
+        )
         Places.initialize(requireContext(), apiKey)
 
         // Create a new PlacesClient instance
         Places.createClient(requireContext())
         // Initialize the AutocompleteSupportFragment.
-        val autocompleteFragment = childFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
+        val autocompleteFragment =
+            childFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
 
         // Specify the types of place data to return.
         autocompleteFragment.setPlaceFields(listOf(Place.Field.ADDRESS, Place.Field.LAT_LNG))
@@ -109,7 +113,6 @@ class SetupFragment : Fragment() {
 
 
         viewModel.venuesChanged.observe(viewLifecycleOwner) { changed ->
-            Timber.i("Venues list changed")
             if (changed) {
                 binding.venuesStatusIcon.clearAnimation()
                 if (viewModel.numVenues.value == 0) {
@@ -118,7 +121,8 @@ class SetupFragment : Fragment() {
                 } else {
                     binding.venuesStatusIcon.setImageResource(R.drawable.baseline_check_circle_36)
                     binding.venuesStatusText.text = String.format(
-                        getString(R.string.downloaded_venues), viewModel.numVenues.value)
+                        getString(R.string.downloaded_venues), viewModel.numVenues.value
+                    )
                     findNavController().navigate(SetupFragmentDirections.actionNavigationSetupToNavigationMap())
                 }
                 viewModel.onVenuesChangedComplete()
@@ -132,9 +136,6 @@ class SetupFragment : Fragment() {
         (requireActivity() as MainActivity).showUpButton(args.isAddressAlreadySet)
 
     }
-
-
-
 
 
 

@@ -15,7 +15,7 @@ import java.util.*
 @BindingAdapter("reviewString")
 fun TextView.setReviewString(item: Venue?) {
     item?.let {
-        text =  String.format(context.getString(R.string.reviews_count), withCommas(item.reviews))
+        text = String.format(context.getString(R.string.reviews_count), withCommas(item.reviews))
     }
 }
 
@@ -44,7 +44,7 @@ fun TextView.metersToMilesDisplay(item: Venue?) {
 @BindingAdapter("nameWithHidden")
 fun TextView.nameWithHidden(item: Venue?) {
     item?.let {
-        if(item.hidden) {
+        if (item.hidden) {
             text = String.format(context.getString(R.string.venue_name_hidden), item.name)
             setTypeface(typeface, Typeface.ITALIC)
         } else {

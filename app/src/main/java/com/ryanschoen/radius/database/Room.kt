@@ -50,7 +50,7 @@ interface VenueDao {
     fun clearYelpData()
 }
 
-@Database(entities = [DatabaseVenue::class], version=1)
+@Database(entities = [DatabaseVenue::class], version = 1)
 abstract class VenuesDatabase : RoomDatabase() {
     abstract val venueDao: VenueDao
 }
@@ -60,8 +60,12 @@ private lateinit var INSTANCE: VenuesDatabase
 
 fun getDatabase(context: Context): VenuesDatabase {
     synchronized(VenuesDatabase::class.java) {
-        if(!::INSTANCE.isInitialized) {
-            INSTANCE = Room.databaseBuilder(context.applicationContext, VenuesDatabase::class.java, "venues")
+        if (!::INSTANCE.isInitialized) {
+            INSTANCE = Room.databaseBuilder(
+                context.applicationContext,
+                VenuesDatabase::class.java,
+                "venues"
+            )
                 .build()
         }
     }

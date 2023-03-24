@@ -11,13 +11,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.ryanschoen.radius.databinding.ListItemVenueBinding
 import com.ryanschoen.radius.domain.Venue
-import timber.log.Timber
 import java.util.*
 
 private const val ITEM_VIEW_TYPE_VENUE = 1
 
 
-class VenueAdapter(venues: List<Venue>, private val onClickListener: OnClickListener, private val onLongClickListener: OnLongClickListener, private val onCheckListener: OnCheckListener) : ListAdapter<Venue, RecyclerView.ViewHolder>(VenueDiffCallback()), Filterable {
+class VenueAdapter(
+    venues: List<Venue>,
+    private val onClickListener: OnClickListener,
+    private val onLongClickListener: OnLongClickListener,
+    private val onCheckListener: OnCheckListener
+) : ListAdapter<Venue, RecyclerView.ViewHolder>(VenueDiffCallback()), Filterable {
 
     var originalVenues: List<Venue> = venues
     var modelVenues: List<Venue> = listOf()
@@ -33,47 +37,49 @@ class VenueAdapter(venues: List<Venue>, private val onClickListener: OnClickList
         return filter
     }
 
-    /*override fun submitList(list: List<Venue>?) {
-        originalVenues = list?.toList() ?: listOf()
-        super.submitList(list)
-    }*/
-
     fun filterAndSubmitList(list: List<Venue>) {
         originalVenues = list
         filter.filter("")
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when(holder) {
+        when (holder) {
             is ViewHolder -> {
-                holder.bind(getItem(position), onClickListener, onLongClickListener, onCheckListener)
+                holder.bind(
+                    getItem(position),
+                    onClickListener,
+                    onLongClickListener,
+                    onCheckListener
+                )
             }
         }
     }
 
 
-    class ViewHolder private constructor (private val binding: ListItemVenueBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: Venue, onClickListener: OnClickListener, onLongClickListener: OnLongClickListener, onCheckListener: OnCheckListener) {
+    class ViewHolder private constructor(private val binding: ListItemVenueBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(
+            item: Venue,
+            onClickListener: OnClickListener,
+            onLongClickListener: OnLongClickListener,
+            onCheckListener: OnCheckListener
+        ) {
             binding.venue = item
 
-            //var requestOptions = RequestOptions()
-           // requestOptions = requestOptions.transform(RoundedCorners(16))
             Glide.with(this.itemView.context)
                 .load(item.imageUrl)
-                //.apply(requestOptions)
                 .skipMemoryCache(true) //for caching the image url in case phone is offline
                 .centerCrop()
                 .into(binding.venuePhoto)
 
             binding.visitedCheckbox.setOnClickListener {
-                if(it is CheckBox) {
+                if (it is CheckBox) {
                     onCheckListener.onCheck(item, it.isChecked)
                 }
             }
 
             this.itemView.setOnClickListener {
                 onClickListener.onClick(item)
-                //binding.executePendingBindings()
             }
             this.itemView.setOnLongClickListener {
                 onLongClickListener.onLongClick(item)
@@ -98,9 +104,11 @@ class VenueAdapter(venues: List<Venue>, private val onClickListener: OnClickList
     class OnClickListener(val clickListener: (venue: Venue) -> Unit) {
         fun onClick(venue: Venue) = clickListener(venue)
     }
+
     class OnLongClickListener(val longClickListener: (venue: Venue) -> Boolean) {
         fun onLongClick(venue: Venue) = longClickListener(venue)
     }
+
     class OnCheckListener(val checkListener: (venue: Venue, checked: Boolean) -> Unit) {
         fun onCheck(venue: Venue, checked: Boolean) = checkListener(venue, checked)
     }
@@ -132,7 +140,6 @@ class VenueAdapter(venues: List<Venue>, private val onClickListener: OnClickList
             }
             results.values = newList
             results.count = newList.size
-            Timber.d("Started with $count items, returning ${results.count} items")
             return results
         }
 

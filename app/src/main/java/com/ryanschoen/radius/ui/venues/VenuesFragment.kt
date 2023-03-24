@@ -16,9 +16,6 @@ import timber.log.Timber
 class VenuesFragment : RadiusFragment() {
 
     private var _binding: FragmentVenuesBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     private var listLoaded = false
@@ -62,7 +59,7 @@ class VenuesFragment : RadiusFragment() {
                         true
                     },
                     VenueAdapter.OnCheckListener { venue, checked ->
-                        if(venue.visited != checked) {
+                        if (venue.visited != checked) {
                             Timber.i("Changed venue ${venue.id} from ${venue.visited} to ${checked}")
                             viewModel.setVenueVisited(
                                 venue.id,
@@ -98,18 +95,23 @@ class VenuesFragment : RadiusFragment() {
     }
 
     private fun filterList() {
-        Timber.d("Filtering list...")
         val adapter = binding.venueList.adapter as VenueAdapter
         val filter = adapter.filter as VenueAdapter.VenueFilter
-        filter.setFilterAttributes(binding.checkboxFilterVisited.isChecked,
+        filter.setFilterAttributes(
+            binding.checkboxFilterVisited.isChecked,
             binding.checkboxFilterUnvisited.isChecked,
-            binding.checkboxFilterHidden.isChecked)
+            binding.checkboxFilterHidden.isChecked
+        )
         filter.filter("")
     }
 
 
     override fun navigateToSetup() {
-        findNavController().navigate(VenuesFragmentDirections.actionNavigationVenuesToNavigationSetup(true))
+        findNavController().navigate(
+            VenuesFragmentDirections.actionNavigationVenuesToNavigationSetup(
+                true
+            )
+        )
     }
 
     override fun onDestroyView() {
@@ -123,7 +125,6 @@ class VenuesFragment : RadiusFragment() {
     }
 
     override fun showLoadingIndicator() {
-        Timber.d("Showing loading circle")
         val r = RotateAnimation(
             360f,
             0f,
@@ -139,7 +140,6 @@ class VenuesFragment : RadiusFragment() {
     }
 
     override fun hideLoadingIndicator() {
-        Timber.d("Hiding loading circle")
         binding.loadingCircle.clearAnimation()
         binding.loadingCircle.visibility = View.GONE
     }

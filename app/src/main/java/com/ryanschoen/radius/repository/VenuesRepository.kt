@@ -20,8 +20,9 @@ import java.time.LocalDateTime
 class VenuesRepository(application: Application) {
     private val database = getDatabase(application)
     private val sharedPref = application.getSharedPreferences(
-    application.getString(R.string.preference_file_key),
-    Context.MODE_PRIVATE)
+        application.getString(R.string.preference_file_key),
+        Context.MODE_PRIVATE
+    )
 
     companion object {
         const val SAVED_ADDRESS_STRING = "saved_address"
@@ -50,37 +51,47 @@ class VenuesRepository(application: Application) {
 
 
     fun getSavedAddress(): String? {
-        return sharedPref.getString(SAVED_ADDRESS_STRING,"")
+        return sharedPref.getString(SAVED_ADDRESS_STRING, "")
     }
+
     fun getSavedLatitude(): Double {
-        return sharedPref.getFloat(SAVED_LATITUDE_STRING,0.0f).toDouble()
+        return sharedPref.getFloat(SAVED_LATITUDE_STRING, 0.0f).toDouble()
     }
+
     fun getSavedLongitude(): Double {
-        return sharedPref.getFloat(SAVED_LONGITUDE_STRING,0.0f).toDouble()
+        return sharedPref.getFloat(SAVED_LONGITUDE_STRING, 0.0f).toDouble()
     }
+
     fun isAddressReady(): Boolean {
-        return sharedPref.getBoolean(SAVED_ADDRESS_READY,false)
+        return sharedPref.getBoolean(SAVED_ADDRESS_READY, false)
     }
+
     private fun setAddressIsReady() {
-        sharedPref.edit().putBoolean(SAVED_ADDRESS_READY,true).apply()
+        sharedPref.edit().putBoolean(SAVED_ADDRESS_READY, true).apply()
     }
 
     var yelpDataReady: Boolean
-        get() = sharedPref.getBoolean(YELP_DATA_READY,false)
-        set(ready) = sharedPref.edit().putBoolean(YELP_DATA_READY,ready).apply()
+        get() = sharedPref.getBoolean(YELP_DATA_READY, false)
+        set(ready) = sharedPref.edit().putBoolean(YELP_DATA_READY, ready).apply()
 
     private val yelpDataHasExpired = LocalDateTime.now().isAfter(yelpDataExpiration)
     val shouldRefreshYelpData = !yelpDataReady || yelpDataHasExpired
 
     private fun refreshYelpExpiration(hours: Int = YELP_DATA_EXPIRATION_HOURS) {
         val yelpDataExpiration = LocalDateTime.now().plusHours(hours.toLong())
-        sharedPref.edit().putString(YELP_DATA_EXPIRATION,yelpDataExpiration.toString()).apply()
+        sharedPref.edit().putString(YELP_DATA_EXPIRATION, yelpDataExpiration.toString()).apply()
     }
+
     private val yelpDataExpiration: LocalDateTime
-        get() = LocalDateTime.parse(sharedPref.getString(YELP_DATA_EXPIRATION,"2018-12-30T19:34:50.63"))
+        get() = LocalDateTime.parse(
+            sharedPref.getString(
+                YELP_DATA_EXPIRATION,
+                "2018-12-30T19:34:50.63"
+            )
+        )
 
     fun setSavedAddressLatLong(address: String, lat: Double, lng: Double) {
-        with (sharedPref.edit()) {
+        with(sharedPref.edit()) {
             putString(SAVED_ADDRESS_STRING, address)
             putFloat(SAVED_LATITUDE_STRING, lat.toFloat())
             putFloat(SAVED_LONGITUDE_STRING, lng.toFloat())
@@ -100,18 +111,18 @@ class VenuesRepository(application: Application) {
         val dbVenues = venues.asDatabaseModel()
 
         var maxDistance: Double = -1.0
-        for(venue in dbVenues) {
-            if(venue.lat == null || venue.lng == null) {
+        for (venue in dbVenues) {
+            if (venue.lat == null || venue.lng == null) {
                 continue
             }
             upsertVenue(venue)
-            if(venue.distance > maxDistance) {
+            if (venue.distance > maxDistance) {
                 maxDistance = venue.distance
             }
         }
         database.venueDao.activateVenuesInRange(maxDistance)
         refreshYelpExpiration()
-        yelpDataReady=true
+        yelpDataReady = true
         Timber.d("Inserted ${venues.businesses.size} venues")
         setAddressIsReady()
         venues.businesses.size
@@ -121,8 +132,8 @@ class VenuesRepository(application: Application) {
         database.venueDao.deleteVenuesData()
         clearSharedPrefs()
     }
+
     suspend fun setVenueVisited(venueId: String, visited: Boolean) = withContext(Dispatchers.IO) {
-        Timber.d("Storing async into the database: ${venueId}.visited = $visited")
         database.venueDao.setVenueVisited(venueId, visited)
     }
 
@@ -134,10 +145,10 @@ class VenuesRepository(application: Application) {
         database.venueDao.toggleVenueIsHidden(id)
     }
 
-     private fun upsertVenue(item: DatabaseVenue) {
-        try{
+    private fun upsertVenue(item: DatabaseVenue) {
+        try {
             database.venueDao.insertVenue(item)
-        }catch (exception: SQLiteConstraintException){
+        } catch (exception: SQLiteConstraintException) {
             val oldItem = database.venueDao.getVenueById(item.id)
             database.venueDao.updateVenue(item.apply {
                 active = oldItem.active
@@ -145,7 +156,7 @@ class VenuesRepository(application: Application) {
                 hidden = oldItem.hidden
                 // you can add more fields here
             })
-        }catch (throwable: Throwable){
+        } catch (throwable: Throwable) {
             val oldItem = database.venueDao.getVenueById(item.id)
             database.venueDao.updateVenue(item.apply {
                 active = oldItem.active
@@ -161,7 +172,7 @@ private lateinit var INSTANCE: VenuesRepository
 
 fun getRepository(application: Application): VenuesRepository {
     synchronized(VenuesRepository::class.java) {
-        if(!::INSTANCE.isInitialized) {
+        if (!::INSTANCE.isInitialized) {
             INSTANCE = VenuesRepository(application)
         }
     }

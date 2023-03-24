@@ -67,7 +67,7 @@ class MapWrapperLayout : RelativeLayout {
     fun redrawMarker(visited: Boolean) {
         this.marker?.apply {
             Timber.d("Recoloring the marker with visited = $visited")
-            if(visited) {
+            if (visited) {
                 setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
             } else {
                 setIcon(BitmapDescriptorFactory.defaultMarker())

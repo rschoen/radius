@@ -22,8 +22,8 @@ data class DatabaseVenue constructor(
 )
 
 fun List<DatabaseVenue>.asDomainModel(): List<Venue> {
-    return map{
-        Venue (
+    return map {
+        Venue(
             id = it.id,
             name = it.name,
             lat = it.lat!!,

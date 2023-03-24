@@ -8,7 +8,7 @@ import kotlin.math.abs
 
 
 fun yelpRatingToImageRes(rating: Double): Int {
-    return when((rating*2).toInt()) {
+    return when ((rating * 2).toInt()) {
         2 -> R.drawable.stars_regular_1
         3 -> R.drawable.stars_regular_1_half
         4 -> R.drawable.stars_regular_2
@@ -20,7 +20,6 @@ fun yelpRatingToImageRes(rating: Double): Int {
         10 -> R.drawable.stars_regular_5
         else -> R.drawable.stars_regular_0
     }
-
 }
 
 fun yelpIntent(context: Context, url: String) {
@@ -29,7 +28,7 @@ fun yelpIntent(context: Context, url: String) {
 }
 
 fun metersEquals(a: Double, b: Double, delta: Double = 0.1): Boolean {
-    return abs(a-b) < delta
+    return abs(a - b) < delta
 }
 
 fun metersToMiles(m: Double): Double {

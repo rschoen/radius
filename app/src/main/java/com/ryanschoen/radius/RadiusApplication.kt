@@ -30,7 +30,8 @@ class RadiusApplication : Application() {
                 .build()
 
             val repeatingRequest = PeriodicWorkRequestBuilder<RefreshYelpDataWorker>(
-                1, TimeUnit.DAYS)
+                1, TimeUnit.DAYS
+            )
                 .setConstraints(constraints)
                 .build()
 
@@ -39,8 +40,6 @@ class RadiusApplication : Application() {
                 ExistingPeriodicWorkPolicy.UPDATE,
                 repeatingRequest
             )
-
-            Timber.i("Work scheduled!")
 
         }
     }

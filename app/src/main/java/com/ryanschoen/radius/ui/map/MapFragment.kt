@@ -44,7 +44,6 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
     private var maxVisitedDistanceOnMap: Double = 0.0
 
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -77,7 +76,7 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
 
 
 
-        if((viewModel as MapViewModel).addressIsReady) {
+        if ((viewModel as MapViewModel).addressIsReady) {
 
             val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
             mapFragment.getMapAsync(this)
@@ -96,11 +95,13 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
         map = googleMap
         map!!.setMapStyle(
             MapStyleOptions.loadRawResourceStyle(
-                requireContext(), R.raw.map_style))
-        binding.mapRelativeLayout.init(map, getPixelsFromDp(requireContext(), (39+20).toFloat()))
+                requireContext(), R.raw.map_style
+            )
+        )
+        binding.mapRelativeLayout.init(map, getPixelsFromDp(requireContext(), (39 + 20).toFloat()))
         infoWindowBinding = VenueInfoWindowBinding.inflate(layoutInflater)
-        infoWindowBinding.infoWindowVisitedCheckbox.setOnTouchListener  { v,m ->
-            if(m.action == MotionEvent.ACTION_UP) {
+        infoWindowBinding.infoWindowVisitedCheckbox.setOnTouchListener { v, m ->
+            if (m.action == MotionEvent.ACTION_UP) {
                 val newState = !(v as CheckBox).isChecked
                 v.performClick()
                 infoWindowBinding.venue!!.visited = newState
@@ -111,7 +112,12 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
         }
         infoWindow = infoWindowBinding.root as ViewGroup
 
-        map!!.setInfoWindowAdapter(VenueInfoWindowAdapter(infoWindowBinding, binding.mapRelativeLayout))
+        map!!.setInfoWindowAdapter(
+            VenueInfoWindowAdapter(
+                infoWindowBinding,
+                binding.mapRelativeLayout
+            )
+        )
         map!!.setOnInfoWindowClickListener { marker -> onInfoWindowClick(marker) }
         homeLatLng = LatLng(viewModel.getHomeLat(), viewModel.getHomeLng())
         map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, 15.0f))
@@ -141,7 +147,7 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
                 )
             )
 
-            if((viewModel as MapViewModel).venues.value != null && (viewModel as MapViewModel).venues.value!!.isNotEmpty()) {
+            if ((viewModel as MapViewModel).venues.value != null && (viewModel as MapViewModel).venues.value!!.isNotEmpty()) {
                 for (venue in (viewModel as MapViewModel).venues.value!!) {
                     val position = LatLng(venue.lat, venue.lng)
                     val marker = map!!.addMarker(
@@ -155,7 +161,7 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
                     )
                     marker?.let {
                         marker.tag = venue
-                        if(venue.id == infoWindowVenueId) {
+                        if (venue.id == infoWindowVenueId) {
                             marker.showInfoWindow()
                         }
                     }
@@ -166,7 +172,7 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
 
 
 
-            if(maxVenueDistanceOnMap > 0) {
+            if (maxVenueDistanceOnMap > 0) {
                 val circleOptions = CircleOptions()
                     .center(homeLatLng)
                     .radius(maxVenueDistanceOnMap)
@@ -177,7 +183,7 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
                 Timber.d("No max venue distance")
             }
 
-            if(maxVisitedDistanceOnMap > 0) {
+            if (maxVisitedDistanceOnMap > 0) {
                 val circleOptions = CircleOptions()
                     .center(homeLatLng)
                     .radius(maxVisitedDistanceOnMap)
@@ -212,7 +218,7 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
 
         (viewModel as MapViewModel).venues.observe(viewLifecycleOwner) { venues ->
             var redraw = false
-            if(venues.size != venuesOnMap) {
+            if (venues.size != venuesOnMap) {
                 redraw = true
                 venuesOnMap = venues.size
             }
@@ -220,27 +226,28 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
             var maxVisitedDistance = 0.0
             var maxVenueDistance = 0.0
             var haveSeenUnvisited = false
-            for(venue in venues) {
+            for (venue in venues) {
                 // distance guaranteed to be increasing
                 maxVenueDistance = venue.distance
-                if(!venue.visited) {
+                if (!venue.visited) {
                     haveSeenUnvisited = true
                 }
-                if(!haveSeenUnvisited) {
+                if (!haveSeenUnvisited) {
                     maxVisitedDistance = venue.distance
                 }
             }
 
 
-            if(!metersEquals(maxVenueDistance,maxVenueDistanceOnMap) ||
-                !metersEquals(maxVisitedDistance,maxVisitedDistanceOnMap)) {
+            if (!metersEquals(maxVenueDistance, maxVenueDistanceOnMap) ||
+                !metersEquals(maxVisitedDistance, maxVisitedDistanceOnMap)
+            ) {
                 maxVenueDistanceOnMap = maxVenueDistance
                 maxVisitedDistanceOnMap = maxVisitedDistance
                 redraw = true
 
             }
 
-            if(redraw) {
+            if (redraw) {
                 drawMap()
             }
 
@@ -266,7 +273,6 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
     override fun navigateToSetup() {
         findNavController().navigate(MapFragmentDirections.actionNavigationMapToNavigationSetup(true))
     }
-
 
 
     private fun distanceToZoom(distance: Double): Float {
