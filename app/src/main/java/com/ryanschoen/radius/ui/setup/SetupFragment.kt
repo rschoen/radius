@@ -49,6 +49,15 @@ class SetupFragment : Fragment() {
         _binding = FragmentSetupBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        val welcomeVisibility = if(args.isAddressAlreadySet) {
+            View.GONE
+        } else { View.VISIBLE }
+
+        binding.welcomeExplainer.visibility = welcomeVisibility
+        binding.welcomeImage.visibility = welcomeVisibility
+        binding.welcomeTitle.visibility = welcomeVisibility
+        binding.welcomeCallToAction.visibility = welcomeVisibility
+
         // Initialize the SDK
         val apiKey = String(
             Base64.decode(BuildConfig.MAPS_API_KEY_BASE64.toByteArray(), Base64.DEFAULT),

@@ -101,21 +101,17 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
         infoWindowBinding = VenueInfoWindowBinding.inflate(layoutInflater)
         infoWindowBinding.infoWindowVisitedCheckbox.setOnTouchListener  { v,m ->
             if(m.action == MotionEvent.ACTION_UP) {
-                Timber.d("Caught the click action.")
                 val newState = !(v as CheckBox).isChecked
                 v.performClick()
-                Timber.d("Setting the info window binding to visited = ${newState}.")
                 infoWindowBinding.venue!!.visited = newState
-                Timber.d("Calling viewModel's setVenueVisited with visited = ${newState}.")
                 viewModel.setVenueVisited(infoWindowBinding.venue!!.id, newState)
-                Timber.d("Asking the map overlay to redraw the marker.")
                 binding.mapRelativeLayout.redrawMarker(newState)
             }
             false
         }
         infoWindow = infoWindowBinding.root as ViewGroup
 
-        map!!.setInfoWindowAdapter(VenueInfoWindowAdapter(requireContext(), infoWindowBinding, binding.mapRelativeLayout))
+        map!!.setInfoWindowAdapter(VenueInfoWindowAdapter(infoWindowBinding, binding.mapRelativeLayout))
         map!!.setOnInfoWindowClickListener { marker -> onInfoWindowClick(marker) }
         homeLatLng = LatLng(viewModel.getHomeLat(), viewModel.getHomeLng())
         map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, 15.0f))
@@ -160,7 +156,6 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
                     marker?.let {
                         marker.tag = venue
                         if(venue.id == infoWindowVenueId) {
-                            Timber.d("Re-popping the info window!")
                             marker.showInfoWindow()
                         }
                     }
@@ -216,10 +211,8 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
         Timber.i("Setting up map...")
 
         (viewModel as MapViewModel).venues.observe(viewLifecycleOwner) { venues ->
-            Timber.i("Venues observer called. Should we redraw?")
             var redraw = false
             if(venues.size != venuesOnMap) {
-                Timber.i("Drawing map because # of venues changed!")
                 redraw = true
                 venuesOnMap = venues.size
             }
@@ -241,7 +234,6 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
 
             if(!metersEquals(maxVenueDistance,maxVenueDistanceOnMap) ||
                 !metersEquals(maxVisitedDistance,maxVisitedDistanceOnMap)) {
-                Timber.d("Drawing map because one of the circles changed")
                 maxVenueDistanceOnMap = maxVenueDistance
                 maxVisitedDistanceOnMap = maxVisitedDistance
                 redraw = true
@@ -255,7 +247,6 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
         }
 
         (viewModel as MapViewModel).tenthVenueDistance.observe(viewLifecycleOwner) { distance ->
-            Timber.i("Distance observer called")
 
             distance?.let {
                 val zoom = distanceToZoom(distance)
