@@ -19,8 +19,8 @@ fun NetworkYelpSearchResults.asDatabaseModel(): Array<DatabaseVenue> {
             imageUrl = it.imageUrl,
             reviews = it.reviews.toInt(),
             rating = it.rating.toDouble(),
-            lat = it.coordinates.latitude.toDouble(),
-            lng = it.coordinates.longitude.toDouble(),
+            lat = it.coordinates.latitude?.toDouble(),
+            lng = it.coordinates.longitude?.toDouble(),
             distance = it.distance.toDouble(),
             visited = false,
             hidden = false,
@@ -45,8 +45,8 @@ data class NetworkVenue(
 
 @JsonClass(generateAdapter = true)
 data class YelpCoordinates(
-    val latitude: String = "",
-    val longitude: String = ""
+    val latitude: String? = "",
+    val longitude: String? = ""
 )
 /*
 fun NetworkYelpSearchResults.asDomainModel(): List<Venue> {
