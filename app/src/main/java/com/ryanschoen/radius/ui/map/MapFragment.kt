@@ -1,12 +1,15 @@
 package com.ryanschoen.radius.ui.map
 
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
 import android.widget.CheckBox
+import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -14,6 +17,8 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import android.Manifest
+import androidx.core.app.ActivityCompat
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentMapBinding
 import com.ryanschoen.radius.databinding.VenueInfoWindowBinding
@@ -25,7 +30,7 @@ import com.ryanschoen.radius.yelpIntent
 import timber.log.Timber
 
 
-class MapFragment : RadiusFragment(), OnMapReadyCallback {
+class MapFragment : RadiusFragment(), OnMapReadyCallback, OnRequestPermissionsResultCallback {
 
 
     private var _binding: FragmentMapBinding? = null
@@ -35,6 +40,9 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
     private val binding get() = _binding!!
     private var map: GoogleMap? = null
     private lateinit var homeLatLng: LatLng
+
+    private var locationPermissionDenied = false
+    private var askedForLocationPermission = false
 
     private lateinit var infoWindowBinding: VenueInfoWindowBinding
     private lateinit var infoWindow: ViewGroup
@@ -264,6 +272,10 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
             (viewModel as MapViewModel).tenthVenueDistance.removeObservers(viewLifecycleOwner)
         }
 
+        if(!locationPermissionDenied) {
+            enableMyLocation()
+        }
+
     }
 
     private fun onInfoWindowClick(p0: Marker) {
@@ -316,5 +328,85 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback {
         binding.loadingCircle.clearAnimation()
         binding.loadingCircle.visibility = View.GONE
     }
+    @SuppressLint("MissingPermission")
+    private fun enableMyLocation() {
+
+        // 1. Check if permissions are granted, if so, enable the my location layer
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            map?.let { it.isMyLocationEnabled = true }
+
+            return
+        }
+
+        // 2. If if a permission rationale dialog should be shown
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                requireActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                requireActivity(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        ) {
+            locationPermissionDenied = true
+            return
+        }
+
+        // 3. Otherwise, request permission
+        if(!askedForLocationPermission) {
+            askedForLocationPermission = true
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
+            super.onRequestPermissionsResult(
+                requestCode,
+                permissions,
+                grantResults
+            )
+            return
+        }
+
+        if (isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)
+            || isPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)
+        ) {
+            // Enable the my location layer if the permission has been granted.
+            enableMyLocation()
+        } else {
+            // Permission was denied. Display an error message
+            // Display the missing permission error dialog when the fragments resume.
+            locationPermissionDenied = true
+        }
+    }
+    private fun isPermissionGranted(permission: String) : Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            permission) == PackageManager.PERMISSION_GRANTED
+    }
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+    }
+
 }
+
 
