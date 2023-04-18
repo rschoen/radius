@@ -74,8 +74,11 @@ class VenuesRepository(application: Application) {
         get() = sharedPref.getBoolean(YELP_DATA_READY, false)
         set(ready) = sharedPref.edit().putBoolean(YELP_DATA_READY, ready).apply()
 
-    private val yelpDataHasExpired = LocalDateTime.now().isAfter(yelpDataExpiration)
-    val shouldRefreshYelpData = !yelpDataReady || yelpDataHasExpired
+    private val yelpDataHasExpired: Boolean
+        get() = LocalDateTime.now().isAfter(yelpDataExpiration)
+    val shouldRefreshYelpData: Boolean
+        get() = !yelpDataReady || yelpDataHasExpired
+
 
     private fun refreshYelpExpiration(hours: Int = YELP_DATA_EXPIRATION_HOURS) {
         val yelpDataExpiration = LocalDateTime.now().plusHours(hours.toLong())
