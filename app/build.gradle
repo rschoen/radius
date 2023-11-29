@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'androidx.navigation.safeargs.kotlin'
+    id 'com.google.devtools.ksp'
 }
 apply plugin: 'kotlin-kapt'
 
@@ -17,20 +18,18 @@ android {
         }
     }
     namespace 'com.ryanschoen.radius'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.ryanschoen.radius"
         minSdk 26
-        targetSdk 33
-        versionCode 7
-        versionName "1.0.0"
+        targetSdk 34
+        versionCode 8
+        versionName "1.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        kapt {
-            arguments {
-                arg("room.schemaLocation", "$projectDir/schemas")
-            }
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
         }
     }
 
@@ -50,11 +49,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = '17'
+        jvmTarget = '1.8'
         freeCompilerArgs += [
                 '-opt-in=androidx.compose.material3.ExperimentalMaterial3Api'
         ]
@@ -81,17 +80,17 @@ dependencies {
     implementation "androidx.room:room-runtime:$version_room"
     implementation "com.google.android.libraries.places:places:$version_places"
     annotationProcessor "androidx.room:room-compiler:$version_room"
-    kapt "androidx.room:room-compiler:$version_room"
+    ksp "androidx.room:room-compiler:$version_room"
 
     implementation "com.squareup.retrofit2:retrofit:$version_retrofit"
     implementation "com.squareup.retrofit2:converter-moshi:$version_retrofit"
     implementation "com.squareup.moshi:moshi-kotlin:$version_moshi"
-    kapt "com.squareup.moshi:moshi-kotlin-codegen:$version_moshi"
+    ksp "com.squareup.moshi:moshi-kotlin-codegen:$version_moshi"
     implementation "com.jakewharton.timber:timber:$version_timber"
     implementation "com.squareup.okhttp3:logging-interceptor:$version_okhttp_logging"
 
     implementation "com.github.bumptech.glide:glide:$version_glide"
-    kapt "com.github.bumptech.glide:compiler:$version_glide"
+    ksp "com.github.bumptech.glide:compiler:$version_glide"
 
     testImplementation "junit:junit:$version_junit"
     androidTestImplementation "androidx.test.ext:junit:$version_junit_ext"

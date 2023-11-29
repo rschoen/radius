@@ -6,7 +6,6 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -35,8 +34,8 @@ private val moshi = Moshi.Builder()
     .build()
 
 object Network {
-    private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-    private val httpClient = OkHttpClient.Builder().addInterceptor(logging)
+    //private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    private val httpClient = OkHttpClient.Builder()//.addInterceptor(logging)
 
 
     private val venueRetrofit = Retrofit.Builder()
