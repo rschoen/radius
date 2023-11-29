@@ -24,8 +24,8 @@ android {
         applicationId "com.ryanschoen.radius"
         minSdk 26
         targetSdk 34
-        versionCode 8
-        versionName "1.0.1"
+        versionCode 10
+        versionName "1.0.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         ksp {
@@ -76,10 +76,10 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$version_navigation"
     implementation "androidx.navigation:navigation-ui-ktx:$version_navigation"
     implementation "androidx.activity:activity-ktx:$version_activity"
+    implementation "com.google.android.libraries.places:places:$version_places"
 
     implementation "androidx.room:room-runtime:$version_room"
-    implementation "com.google.android.libraries.places:places:$version_places"
-    annotationProcessor "androidx.room:room-compiler:$version_room"
+    //annotationProcessor "androidx.room:room-compiler:$version_room"
     ksp "androidx.room:room-compiler:$version_room"
 
     implementation "com.squareup.retrofit2:retrofit:$version_retrofit"
@@ -87,7 +87,8 @@ dependencies {
     implementation "com.squareup.moshi:moshi-kotlin:$version_moshi"
     ksp "com.squareup.moshi:moshi-kotlin-codegen:$version_moshi"
     implementation "com.jakewharton.timber:timber:$version_timber"
-    implementation "com.squareup.okhttp3:logging-interceptor:$version_okhttp_logging"
+    implementation "com.squareup.okhttp3:okhttp:$version_okhttp"
+    implementation "com.squareup.okhttp3:logging-interceptor:$version_okhttp"
 
     implementation "com.github.bumptech.glide:glide:$version_glide"
     ksp "com.github.bumptech.glide:compiler:$version_glide"
