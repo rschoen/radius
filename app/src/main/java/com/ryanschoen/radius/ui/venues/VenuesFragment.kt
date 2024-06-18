@@ -2,8 +2,6 @@ package com.ryanschoen.radius.ui.venues
 
 import android.os.Bundle
 import android.view.*
-import android.view.animation.Animation
-import android.view.animation.RotateAnimation
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -125,23 +123,11 @@ class VenuesFragment : RadiusFragment() {
     }
 
     override fun showLoadingIndicator() {
-        val r = RotateAnimation(
-            360f,
-            0f,
-            Animation.RELATIVE_TO_SELF,
-            0.5f,
-            Animation.RELATIVE_TO_SELF,
-            0.5f
-        )
-        r.duration = 800
-        r.repeatCount = Animation.INFINITE
-        binding.loadingCircle.startAnimation(r)
-        binding.loadingCircle.visibility = View.VISIBLE
+        binding.loadingVenuesSpinnerCard.visibility = View.VISIBLE
     }
 
     override fun hideLoadingIndicator() {
-        binding.loadingCircle.clearAnimation()
-        binding.loadingCircle.visibility = View.GONE
+        binding.loadingVenuesSpinnerCard.visibility = View.GONE
     }
 
 }

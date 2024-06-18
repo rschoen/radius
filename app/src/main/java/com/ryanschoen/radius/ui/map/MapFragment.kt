@@ -5,8 +5,6 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
-import android.view.animation.Animation
-import android.view.animation.RotateAnimation
 import android.widget.CheckBox
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback
 import androidx.core.content.ContextCompat
@@ -308,25 +306,11 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback, OnRequestPermissionsRe
     }
 
     override fun showLoadingIndicator() {
-        Timber.d("Showing loading circle")
-        val r = RotateAnimation(
-            360f,
-            0f,
-            Animation.RELATIVE_TO_SELF,
-            0.5f,
-            Animation.RELATIVE_TO_SELF,
-            0.5f
-        )
-        r.duration = 800
-        r.repeatCount = Animation.INFINITE
-        binding.loadingCircle.startAnimation(r)
-        binding.loadingCircle.visibility = View.VISIBLE
+        binding.loadingVenuesSpinnerCard.visibility = View.VISIBLE
     }
 
     override fun hideLoadingIndicator() {
-        Timber.d("Hiding loading circle")
-        binding.loadingCircle.clearAnimation()
-        binding.loadingCircle.visibility = View.GONE
+        binding.loadingVenuesSpinnerCard.visibility = View.GONE
     }
     @SuppressLint("MissingPermission")
     private fun enableMyLocation() {

@@ -4,6 +4,7 @@ plugins {
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'androidx.navigation.safeargs.kotlin'
     id 'com.google.devtools.ksp'
+    id 'com.google.gms.google-services'
 }
 apply plugin: 'kotlin-kapt'
 
@@ -99,4 +100,10 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$version_espresso"
 
     implementation "androidx.work:work-runtime-ktx:$version_work"
+
+    implementation platform("com.google.firebase:firebase-bom:$version_firebase")
+    implementation "com.google.firebase:firebase-database"
+    implementation "com.google.firebase:firebase-auth"
+    implementation "com.firebaseui:firebase-ui-auth:$version_firebaseui_auth"
+
 }

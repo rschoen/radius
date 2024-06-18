@@ -90,19 +90,47 @@
         android:contentDescription="@string/yelp_logo"/>
 
 
-    <ImageView
-        android:id="@+id/loading_circle"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/loading_venues_spinner_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:visibility="gone"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/outline_change_circle_128"
         tools:visibility="visible"
-        android:contentDescription="@string/loading_circle_content_description"/>
+        android:visibility="gone" >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleLarge"
+                android:id="@+id/progress_circle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/refreshing_venues_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_normal"
+                android:text="@string/refreshing_venue_data"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/progress_circle"
+                app:layout_constraintStart_toStartOf="@+id/progress_circle"
+                app:layout_constraintTop_toBottomOf="@+id/progress_circle" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
