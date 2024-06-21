@@ -31,6 +31,8 @@ class VenuesRepository(application: Application) {
         const val SAVED_ADDRESS_READY = "saved_address_ready"
         const val YELP_DATA_READY = "yelp_data_read"
         const val YELP_DATA_EXPIRATION = "yelp_data_expiration"
+        const val SAVED_USER_EMAIL = "saved_user_email"
+        const val SAVED_USER_FIREBASE_ID = "saved_user_firebase_id"
 
         const val YELP_DATA_EXPIRATION_HOURS = 24
     }
@@ -73,6 +75,15 @@ class VenuesRepository(application: Application) {
     var yelpDataReady: Boolean
         get() = sharedPref.getBoolean(YELP_DATA_READY, false)
         set(ready) = sharedPref.edit().putBoolean(YELP_DATA_READY, ready).apply()
+
+    var userEmail: String
+        get() = sharedPref.getString(SAVED_USER_EMAIL, "") ?: ""
+        set(email) = sharedPref.edit().putString(SAVED_USER_EMAIL, email).apply()
+
+
+    var userFirebaseId: String
+        get() = sharedPref.getString(SAVED_USER_FIREBASE_ID, "") ?: ""
+        set(email) = sharedPref.edit().putString(SAVED_USER_FIREBASE_ID, email).apply()
 
     private val yelpDataHasExpired: Boolean
         get() = LocalDateTime.now().isAfter(yelpDataExpiration)
@@ -169,6 +180,14 @@ class VenuesRepository(application: Application) {
             })
         }
     }
+
+    fun setUserData(email: String?, uid: String) {
+        userEmail = email ?: ""
+        userFirebaseId = uid
+    }
+    val userIsSignedIn: Boolean
+        get() = userEmail.isNotEmpty()
+
 }
 
 private lateinit var INSTANCE: VenuesRepository

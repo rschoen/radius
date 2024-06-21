@@ -14,22 +14,8 @@ abstract class RadiusFragment : Fragment() {
 
 
     internal lateinit var viewModel: RadiusViewModel
+    private lateinit var auth: FirebaseAuth
 
-    private val signInLauncher = registerForActivityResult(
-        FirebaseAuthUIActivityResultContract(),
-    ) { res ->
-        this.onSignInResult(res)
-    }
-
-    private fun onSignInResult(res: FirebaseAuthUIAuthenticationResult) {
-        val response = res.idpResponse
-        if (res.resultCode == RESULT_OK) {
-            val user = FirebaseAuth.getInstance().currentUser
-            Timber.d("FIREBASE AUTH: logged in with user %s", user.toString())
-        } else {
-            Timber.d("FIREBASE AUTH: sign in failed")
-        }
-    }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,12 +34,13 @@ abstract class RadiusFragment : Fragment() {
             }
         }
 
-        val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
-        val signInIntent = AuthUI.getInstance()
-            .createSignInIntentBuilder()
-            .setAvailableProviders(providers)
-            .build()
-        //signInLauncher.launch(signInIntent)
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
+            viewModel.clearCurrentUser()
+        } else {
+            viewModel.setCurrentUser(user)
+        }
+
 
     }
 

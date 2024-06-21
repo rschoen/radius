@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseUser
 import com.ryanschoen.radius.repository.getRepository
 import kotlinx.coroutines.launch
 
@@ -65,5 +66,13 @@ open class RadiusViewModel(application: Application) : AndroidViewModel(applicat
 
     fun onDoneDownloadingVenues() {
         _doneDownloadingVenues.value = false
+    }
+
+    fun setCurrentUser(user: FirebaseUser) {
+        repo.setUserData(user.email, user.uid)
+    }
+
+    fun clearCurrentUser() {
+        repo.setUserData("", "")
     }
 }

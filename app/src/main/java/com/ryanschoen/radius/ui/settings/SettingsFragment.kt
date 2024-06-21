@@ -1,14 +1,22 @@
 package com.ryanschoen.radius.ui.settings
 
+import android.app.Activity.RESULT_OK
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
+import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
+import com.google.firebase.auth.FirebaseAuth
 import com.ryanschoen.radius.BuildConfig
+import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentSettingsBinding
 import com.ryanschoen.radius.ui.RadiusFragment
+import timber.log.Timber
 
 
 class SettingsFragment : RadiusFragment() {
@@ -44,46 +52,55 @@ class SettingsFragment : RadiusFragment() {
         binding.changeHomeBaseButton.setOnClickListener {
             navigateToSetup()
         }
+        binding.signInButton.setOnClickListener {
+            if((viewModel as SettingsViewModel).userIsSignedIn) {
+                (viewModel as SettingsViewModel).clearCurrentUser()
+                AuthUI.getInstance()
+                    .signOut(requireContext())
+                    .addOnCompleteListener {
+                        refreshSigninStatus()
+                    }
+            } else {
+                val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
+                val signInIntent = AuthUI.getInstance()
+                    .createSignInIntentBuilder()
+                    .setAvailableProviders(providers)
+                    .build()
+                signInLauncher.launch(signInIntent)
+            }
+        }
         binding.clearDataButton.setOnClickListener {
             (viewModel as SettingsViewModel).clearAllData()
         }
         binding.clearYelpDataButton.setOnClickListener {
             (viewModel as SettingsViewModel).clearYelpData()
         }
-//
-//        val welcomeVisibility = if (args.isAddressAlreadySet) {
-//            View.GONE
-//        } else {
-//            View.VISIBLE
-//        }
-//
-//        binding.welcomeExplainer.visibility = welcomeVisibility
-//        binding.welcomeImage.visibility = welcomeVisibility
-//        binding.welcomeTitle.visibility = welcomeVisibility
-//        binding.welcomeCallToAction.visibility = welcomeVisibility
-//
-//
-//
-//
-//        viewModel.venuesChanged.observe(viewLifecycleOwner) { changed ->
-//            if (changed) {
-//                binding.venuesStatusIcon.clearAnimation()
-//                if (viewModel.numVenues.value == 0) {
-//                    binding.venuesStatusIcon.setImageResource(R.drawable.baseline_dangerous_36)
-//                    binding.venuesStatusText.text = getText(R.string.venue_search_failed)
-//                } else {
-//                    binding.venuesStatusIcon.setImageResource(R.drawable.baseline_check_circle_36)
-//                    binding.venuesStatusText.text = String.format(
-//                        getString(R.string.downloaded_venues), viewModel.numVenues.value
-//                    )
-//                    findNavController().navigate(SetupFragmentDirections.actionNavigationSetupToNavigationMap())
-//                }
-//                viewModel.onVenuesChangedComplete()
-//            }
-//        }
+
+        (viewModel as SettingsViewModel).address?.let {
+            binding.changeHomeBase.text = it
+        }
+        refreshSigninStatus()
         return root
     }
 
+    private val signInLauncher = registerForActivityResult(
+        FirebaseAuthUIActivityResultContract(),
+    ) { res ->
+        this.onSignInResult(res)
+    }
+
+    private fun onSignInResult(res: FirebaseAuthUIAuthenticationResult) {
+        //val response = res.idpResponse
+        if (res.resultCode == RESULT_OK) {
+            val user = FirebaseAuth.getInstance().currentUser
+            user?.let { viewModel.setCurrentUser(it) }
+            Timber.d("FIREBASE AUTH: logged in with user %s", user.toString())
+        } else {
+            viewModel.clearCurrentUser()
+            Timber.d("FIREBASE AUTH: sign in failed")
+        }
+        refreshSigninStatus()
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -106,4 +123,13 @@ class SettingsFragment : RadiusFragment() {
         binding.loadingVenuesSpinnerCard.visibility = View.GONE
     }
 
+    fun refreshSigninStatus() {
+        if((viewModel as SettingsViewModel).userIsSignedIn) {
+            binding.signInTitle.text = "Sign out"
+            binding.signIn.text = "Signed in as ${(viewModel as SettingsViewModel).userEmail}"
+        } else {
+            binding.signInTitle.text = resources.getString(R.string.sign_in)
+            binding.signIn.text = resources.getString(R.string.sign_in_to_google_to_sync_your_data)
+        }
+    }
 }
