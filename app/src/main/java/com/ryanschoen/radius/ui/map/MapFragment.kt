@@ -74,12 +74,6 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback, OnRequestPermissionsRe
             }
         }
 
-        viewModel.quitActivity.observe(viewLifecycleOwner) { quit ->
-            if (quit) {
-                requireActivity().finish()
-            }
-        }
-
 
 
         if ((viewModel as MapViewModel).addressIsReady) {

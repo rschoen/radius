@@ -39,11 +39,6 @@ class VenuesFragment : RadiusFragment() {
             }
         }
 
-        viewModel.quitActivity.observe(viewLifecycleOwner) { quit ->
-            if (quit) {
-                requireActivity().finish()
-            }
-        }
 
         (viewModel as VenuesViewModel).venues.observe(viewLifecycleOwner) { venues ->
             if (!listLoaded) {

@@ -2,20 +2,12 @@ package com.ryanschoen.radius.ui
 
 import android.app.Activity.RESULT_OK
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
-import com.ryanschoen.radius.BuildConfig
-import com.ryanschoen.radius.R
 import timber.log.Timber
 
 abstract class RadiusFragment : Fragment() {
@@ -56,7 +48,6 @@ abstract class RadiusFragment : Fragment() {
             }
         }
 
-        setupMenu()
         val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
         val signInIntent = AuthUI.getInstance()
             .createSignInIntentBuilder()
@@ -66,41 +57,6 @@ abstract class RadiusFragment : Fragment() {
 
     }
 
-    private fun setupMenu() {
-        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
-            override fun onPrepareMenu(menu: Menu) {
-                if (!BuildConfig.DEBUG) {
-                    val debugOptions = listOf(R.id.clear_data, R.id.clear_yelp_data)
-                    for (option in debugOptions) {
-                        val item = menu.findItem(option)
-                        item.isVisible = false
-                    }
-                }
-            }
-
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.overflow_menu, menu)
-            }
-
-            override fun onMenuItemSelected(item: MenuItem): Boolean {
-                return when (item.itemId) {
-                    R.id.change_home_base -> {
-                        navigateToSetup()
-                        true
-                    }
-                    R.id.clear_data -> {
-                        viewModel.clearAllData()
-                        true
-                    }
-                    R.id.clear_yelp_data -> {
-                        viewModel.clearYelpData()
-                        true
-                    }
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-    }
 
     abstract fun navigateToSetup()
     abstract fun showLoadingIndicator()

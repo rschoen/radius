@@ -16,10 +16,6 @@ open class RadiusViewModel(application: Application) : AndroidViewModel(applicat
         get() = _navigateToSetup
 
 
-    private var _quitActivity = MutableLiveData<Boolean>()
-    val quitActivity: LiveData<Boolean>
-        get() = _quitActivity
-
     private var _startedDownloadingVenues = MutableLiveData<Boolean>()
     val startedDownloadingVenues: LiveData<Boolean>
         get() = _startedDownloadingVenues
@@ -41,12 +37,6 @@ open class RadiusViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-    fun clearAllData() {
-        viewModelScope.launch {
-            repo.deleteAllData()
-            _quitActivity.value = true
-        }
-    }
 
 
     fun onNavigateToSetupDone() {
@@ -61,12 +51,6 @@ open class RadiusViewModel(application: Application) : AndroidViewModel(applicat
         return repo.getSavedLongitude()
     }
 
-    fun clearYelpData() {
-        viewModelScope.launch {
-            repo.clearYelpData()
-            repo.yelpDataReady = false
-        }
-    }
 
     fun setVenueVisited(venueId: String, visited: Boolean) {
         viewModelScope.launch {
