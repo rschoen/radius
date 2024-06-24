@@ -48,15 +48,16 @@ class VenuesFragment : RadiusFragment() {
                         yelpIntent(requireContext(), venue.url)
                     },
                     VenueAdapter.OnLongClickListener { venue ->
-                        (viewModel as VenuesViewModel).toggleVenueIsHidden(venue.id)
+                        (viewModel as VenuesViewModel).setVenueState(venue.id, venue.visited, !venue.hidden)
                         true
                     },
                     VenueAdapter.OnCheckListener { venue, checked ->
                         if (venue.visited != checked) {
                             Timber.i("Changed venue ${venue.id} from ${venue.visited} to ${checked}")
-                            viewModel.setVenueVisited(
+                            viewModel.setVenueState(
                                 venue.id,
-                                checked
+                                checked,
+                                venue.hidden
                             )
                         }
                     })

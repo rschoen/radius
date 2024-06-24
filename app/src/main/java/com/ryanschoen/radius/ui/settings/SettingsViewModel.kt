@@ -31,8 +31,6 @@ class SettingsViewModel(application: Application) : RadiusViewModel(application)
     var address = repo.getSavedAddress()
     val userEmail: String
         get() = repo.userEmail
-    val userUid: String
-        get() = repo.userFirebaseId
     val userIsSignedIn: Boolean
         get() = repo.userIsSignedIn
 

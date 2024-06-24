@@ -25,8 +25,8 @@ interface VenueDao {
     @Query("delete from databasevenue")
     fun deleteVenuesData()
 
-    @Query("update databasevenue set visited=:visited where id=:id")
-    fun setVenueVisited(id: String, visited: Boolean)
+    @Query("update databasevenue set visited=:visited, hidden=:hidden, lastUserUpdate=UNIXEPOCH('now') where id=:id")
+    fun setVenueState(id: String, visited: Boolean, hidden: Boolean)
 
     @Query("update databasevenue set active=0,distance=-1")
     fun deactivateAllVenues()
@@ -43,14 +43,17 @@ interface VenueDao {
     @Query("select * from databasevenue where id= :id")
     fun getVenueById(id: String): DatabaseVenue
 
-    @Query("update databasevenue set hidden= NOT hidden where id=:id")
-    fun toggleVenueIsHidden(id: String)
-
     @Query("update databasevenue set name='', url='', lat=0.0, lng=0.0, reviews=0, rating=0.0, imageUrl=''")
     fun clearYelpData()
 }
 
-@Database(entities = [DatabaseVenue::class], version = 1)
+@Database(
+    version = 2,
+    entities = [DatabaseVenue::class],
+    autoMigrations = [
+        AutoMigration (from = 1, to = 2)
+    ]
+)
 abstract class VenuesDatabase : RoomDatabase() {
     abstract val venueDao: VenueDao
 }

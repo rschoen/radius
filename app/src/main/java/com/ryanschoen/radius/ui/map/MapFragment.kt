@@ -105,7 +105,7 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback, OnRequestPermissionsRe
                 val newState = !(v as CheckBox).isChecked
                 v.performClick()
                 infoWindowBinding.venue!!.visited = newState
-                viewModel.setVenueVisited(infoWindowBinding.venue!!.id, newState)
+                viewModel.setVenueState(infoWindowBinding.venue!!.id, newState, infoWindowBinding.venue!!.hidden)
                 binding.mapRelativeLayout.redrawMarker(newState)
             }
             false

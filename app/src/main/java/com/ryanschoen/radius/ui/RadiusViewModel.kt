@@ -53,9 +53,9 @@ open class RadiusViewModel(application: Application) : AndroidViewModel(applicat
     }
 
 
-    fun setVenueVisited(venueId: String, visited: Boolean) {
+    fun setVenueState(venueId: String, visited: Boolean, hidden: Boolean) {
         viewModelScope.launch {
-            repo.setVenueVisited(venueId, visited)
+            repo.setVenueState(venueId, visited, hidden)
         }
     }
 

@@ -1,14 +1,9 @@
 package com.ryanschoen.radius.ui
 
-import android.app.Activity.RESULT_OK
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
-import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
-import timber.log.Timber
 
 abstract class RadiusFragment : Fragment() {
 

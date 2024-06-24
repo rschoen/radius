@@ -8,6 +8,7 @@ import androidx.lifecycle.map
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.database.DatabaseVenue
 import com.ryanschoen.radius.database.asDomainModel
+import com.ryanschoen.radius.database.getCloudDatabase
 import com.ryanschoen.radius.database.getDatabase
 import com.ryanschoen.radius.domain.Venue
 import com.ryanschoen.radius.network.asDatabaseModel
@@ -19,10 +20,15 @@ import java.time.LocalDateTime
 
 class VenuesRepository(application: Application) {
     private val database = getDatabase(application)
+    private val cloudDatabase = getCloudDatabase(application)
     private val sharedPref = application.getSharedPreferences(
         application.getString(R.string.preference_file_key),
         Context.MODE_PRIVATE
     )
+
+    init {
+        cloudDatabase.setUserId(userFirebaseId)
+    }
 
     companion object {
         const val SAVED_ADDRESS_STRING = "saved_address"
@@ -111,6 +117,7 @@ class VenuesRepository(application: Application) {
             putFloat(SAVED_LONGITUDE_STRING, lng.toFloat())
             apply()
         }
+        // TODO: update database
     }
 
     private fun clearSharedPrefs() {
@@ -147,16 +154,13 @@ class VenuesRepository(application: Application) {
         clearSharedPrefs()
     }
 
-    suspend fun setVenueVisited(venueId: String, visited: Boolean) = withContext(Dispatchers.IO) {
-        database.venueDao.setVenueVisited(venueId, visited)
+    suspend fun setVenueState(venueId: String, visited: Boolean, hidden: Boolean) = withContext(Dispatchers.IO) {
+        database.venueDao.setVenueState(venueId, visited, hidden)
+        cloudDatabase.setVenueState(venueId, visited, hidden)
     }
 
     private suspend fun deactivateAllVenues() = withContext(Dispatchers.IO) {
         database.venueDao.deactivateAllVenues()
-    }
-
-    suspend fun toggleVenueIsHidden(id: String) = withContext(Dispatchers.IO) {
-        database.venueDao.toggleVenueIsHidden(id)
     }
 
     private fun upsertVenue(item: DatabaseVenue) {
@@ -184,6 +188,7 @@ class VenuesRepository(application: Application) {
     fun setUserData(email: String?, uid: String) {
         userEmail = email ?: ""
         userFirebaseId = uid
+        cloudDatabase.setUserId(userFirebaseId)
     }
     val userIsSignedIn: Boolean
         get() = userEmail.isNotEmpty()

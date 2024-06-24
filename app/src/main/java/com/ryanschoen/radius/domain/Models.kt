@@ -1,5 +1,7 @@
 package com.ryanschoen.radius.domain
 
+import java.util.Date
+
 
 data class Venue(
     val id: String,
@@ -12,5 +14,6 @@ data class Venue(
     val url: String,
     val distance: Double,
     var visited: Boolean,
-    val hidden: Boolean
+    val hidden: Boolean,
+    var lastUserUpdate: Date
 )

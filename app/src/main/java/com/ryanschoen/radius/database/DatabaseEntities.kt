@@ -1,8 +1,10 @@
 package com.ryanschoen.radius.database
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.ryanschoen.radius.domain.Venue
+import java.util.Date
 
 @Entity
 data class DatabaseVenue constructor(
@@ -18,7 +20,8 @@ data class DatabaseVenue constructor(
     val distance: Double,
     var visited: Boolean,
     var hidden: Boolean,
-    var active: Boolean
+    var active: Boolean,
+    @ColumnInfo(defaultValue = "0") var lastUserUpdate: Int
 )
 
 fun List<DatabaseVenue>.asDomainModel(): List<Venue> {
@@ -34,7 +37,8 @@ fun List<DatabaseVenue>.asDomainModel(): List<Venue> {
             url = it.url,
             distance = it.distance,
             visited = it.visited,
-            hidden = it.hidden
+            hidden = it.hidden,
+            lastUserUpdate = Date((it.lastUserUpdate * 1000).toLong())
         )
     }
 }

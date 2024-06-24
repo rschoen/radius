@@ -24,7 +24,8 @@ fun NetworkYelpSearchResults.asDatabaseModel(): Array<DatabaseVenue> {
             distance = it.distance.toDouble(),
             visited = false,
             hidden = false,
-            active = true
+            active = true,
+            lastUserUpdate = 0
         )
     }.toTypedArray()
 }
