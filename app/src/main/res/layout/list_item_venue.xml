@@ -27,18 +27,21 @@
 
         <TextView
             android:id="@+id/venueName"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_small"
             android:layout_marginEnd="@dimen/margin_small"
+            android:ellipsize="end"
+            android:lines="1"
+            android:scrollHorizontally="false"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/visited_checkbox"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@id/venuePhoto"
             app:layout_constraintTop_toTopOf="@id/venuePhoto"
             app:nameWithHidden="@{venue}"
-            tools:text="LArdoise Bistro"/>
+            tools:text="LArdoise Bistro" />
 
         <ImageView
             android:id="@+id/ratingStars"

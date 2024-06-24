@@ -27,22 +27,23 @@
             android:orientation="vertical"
             android:background="?attr/selectableItemBackground"
             android:clickable="true">
-                    <TextView
-                        android:id="@+id/change_home_base_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/change_home_base"
-                        android:textSize="16sp" />
 
-                    <TextView
-                        android:id="@+id/change_home_base"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="0dp"
-                        android:text="@string/set_the_address_for_your_home_base"
-                        android:textSize="12sp"
-                        app:layout_constraintEnd_toEndOf="parent" />
+            <TextView
+                android:id="@+id/change_home_base_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/change_home_base"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/change_home_base"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:text="@string/set_the_address_for_your_home_base"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent" />
         </LinearLayout>
 
         <LinearLayout
@@ -52,13 +53,14 @@
             android:orientation="vertical"
             android:background="?attr/selectableItemBackground"
             android:clickable="true">
+
             <TextView
                 android:id="@+id/sign_in_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/sign_in"
-                android:textSize="16sp" />
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/sign_in"
@@ -66,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="0dp"
                 android:text="@string/sign_in_to_google_to_sync_your_data"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -78,13 +80,14 @@
             android:clickable="true"
             android:visibility="gone"
             tools:visibility="visible">
+
             <TextView
                 android:id="@+id/clear_data_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/debug_clear_data_and_quit"
-                android:textSize="16sp" />
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/clear_data"
@@ -92,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="0dp"
                 android:text="@string/clear_all_data_and_quit"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
         </LinearLayout>
         <LinearLayout
             android:id="@+id/clear_yelp_data_button"
@@ -103,20 +106,21 @@
             android:clickable="true"
             android:visibility="gone"
             tools:visibility="visible">
+
             <TextView
                 android:id="@+id/clear_yelp_data_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/debug_clear_yelp_data"
-                android:textSize="16sp" />
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/clear_yelp_data"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/clear_just_yelp_data_do_not_quit"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
         </LinearLayout>
         </LinearLayout>
     <com.google.android.material.card.MaterialCardView
