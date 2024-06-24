@@ -1,11 +1,11 @@
 package com.ryanschoen.radius.database
 
+import androidx.annotation.Keep
 import com.google.firebase.Firebase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
-import com.google.firebase.database.getValue
 import com.ryanschoen.radius.domain.Venue
 import timber.log.Timber
 import java.util.Date
@@ -36,7 +36,7 @@ class CloudDatabase() {
         listener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // Get Post object and use the values to update the UI
-                callback(dataSnapshot.children.mapNotNull { it.getValue<CloudVenue>() }.asDomainModel())
+                callback(dataSnapshot.children.mapNotNull { it.getValue(CloudVenue::class.java) }.asDomainModel())
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -51,7 +51,7 @@ class CloudDatabase() {
 
     fun getOneTimeSnapshot(callback: (List<Venue>) -> Unit) {
         database.reference.child("users").child(userId).child("venues").get().addOnSuccessListener { snapshot ->
-            callback(snapshot.children.mapNotNull { it.getValue<CloudVenue>() }.asDomainModel())
+            callback(snapshot.children.mapNotNull { it.getValue(CloudVenue::class.java) }.asDomainModel())
         }.addOnFailureListener{
             Timber.w(it)
         }
@@ -77,7 +77,8 @@ fun getCloudDatabase(): CloudDatabase {
     return INSTANCE
 }
 
-data class CloudVenue(val venueId: String = "", val visited: Boolean = false, val hidden: Boolean = false, val lastUpdated: Int = 0) {
+@Keep
+data class CloudVenue @Keep constructor(val venueId: String = "", val visited: Boolean = false, val hidden: Boolean = false, val lastUpdated: Int = 0) {
 
 }
 

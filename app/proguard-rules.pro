@@ -69,3 +69,16 @@
 
 # With R8 full mode generic signatures are stripped for classes that are not kept.
 -keep,allowobfuscation,allowshrinking class retrofit2.Response
+
+ # Add this global rule
+ -keepattributes Signature
+
+    # This rule will properly ProGuard all the model classes in
+    # the package com.yourcompany.models.
+    # Modify this rule to fit the structure of your app.
+    -keepclassmembers class com.ryanschoen.database.** {
+      *;
+    }
+    -keepclassmembers class com.ryanschoen.domain.** {
+      *;
+    }
