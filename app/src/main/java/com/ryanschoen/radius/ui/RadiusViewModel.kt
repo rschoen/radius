@@ -68,11 +68,22 @@ open class RadiusViewModel(application: Application) : AndroidViewModel(applicat
         _doneDownloadingVenues.value = false
     }
 
+    fun signIn(user: FirebaseUser) {
+        setCurrentUser(user)
+        viewModelScope.launch {
+            repo.initialSync()
+        }
+    }
+
     fun setCurrentUser(user: FirebaseUser) {
-        repo.setUserData(user.email, user.uid)
+        viewModelScope.launch {
+            repo.setUserData(user.email, user.uid)
+        }
     }
 
     fun clearCurrentUser() {
-        repo.setUserData("", "")
+        viewModelScope.launch {
+            repo.setUserData("", "")
+        }
     }
 }

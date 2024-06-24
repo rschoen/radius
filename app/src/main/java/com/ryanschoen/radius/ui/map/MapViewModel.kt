@@ -5,7 +5,8 @@ import com.ryanschoen.radius.ui.RadiusViewModel
 
 class MapViewModel(application: Application) : RadiusViewModel(application) {
 
-    var venues = repo.visibleVenues
+    var visibleVenues = repo.visibleVenues
+    var venues = repo.venues
     val tenthVenueDistance = repo.getNthVenue(10)
     var addressIsReady = repo.isAddressReady()
 

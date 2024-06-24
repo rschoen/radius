@@ -93,7 +93,7 @@ class SettingsFragment : RadiusFragment() {
         //val response = res.idpResponse
         if (res.resultCode == RESULT_OK) {
             val user = FirebaseAuth.getInstance().currentUser
-            user?.let { viewModel.setCurrentUser(it) }
+            user?.let { viewModel.signIn(it) }
             Timber.d("FIREBASE AUTH: logged in with user %s", user.toString())
         } else {
             viewModel.clearCurrentUser()

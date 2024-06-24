@@ -25,8 +25,11 @@ interface VenueDao {
     @Query("delete from databasevenue")
     fun deleteVenuesData()
 
-    @Query("update databasevenue set visited=:visited, hidden=:hidden, lastUserUpdate=UNIXEPOCH('now') where id=:id")
+    @Query("update databasevenue set visited=:visited, hidden=:hidden, lastUserUpdate=strftime('%s', 'now') where id=:id")
     fun setVenueState(id: String, visited: Boolean, hidden: Boolean)
+
+    @Query("update databasevenue set visited=:visited, hidden=:hidden, lastUserUpdate=:timestamp where id=:id")
+    fun setVenueStateWithoutTimestamp(id: String, visited: Boolean, hidden: Boolean, timestamp: Int)
 
     @Query("update databasevenue set active=0,distance=-1")
     fun deactivateAllVenues()
@@ -69,6 +72,7 @@ fun getDatabase(context: Context): VenuesDatabase {
                 VenuesDatabase::class.java,
                 "venues"
             )
+                .allowMainThreadQueries()
                 .build()
         }
     }

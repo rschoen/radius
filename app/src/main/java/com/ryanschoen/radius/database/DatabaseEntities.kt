@@ -38,7 +38,7 @@ fun List<DatabaseVenue>.asDomainModel(): List<Venue> {
             distance = it.distance,
             visited = it.visited,
             hidden = it.hidden,
-            lastUserUpdate = Date((it.lastUserUpdate * 1000).toLong())
+            lastUserUpdate = Date(it.lastUserUpdate.toLong() * 1000)
         )
     }
 }

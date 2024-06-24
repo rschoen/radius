@@ -14,9 +14,12 @@ import com.ryanschoen.radius.domain.Venue
 import com.ryanschoen.radius.network.asDatabaseModel
 import com.ryanschoen.radius.network.fetchVenues
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.time.Instant
 import java.time.LocalDateTime
+import java.util.Date
 
 class VenuesRepository(application: Application) {
     private val database = getDatabase(application)
@@ -28,6 +31,9 @@ class VenuesRepository(application: Application) {
 
     init {
         cloudDatabase.setUserId(userFirebaseId)
+        if(userIsSignedIn) {
+            syncVenuesAndSubscribe()
+        }
     }
 
     companion object {
@@ -156,11 +162,97 @@ class VenuesRepository(application: Application) {
 
     suspend fun setVenueState(venueId: String, visited: Boolean, hidden: Boolean) = withContext(Dispatchers.IO) {
         database.venueDao.setVenueState(venueId, visited, hidden)
-        cloudDatabase.setVenueState(venueId, visited, hidden)
+        cloudDatabase.setVenueState(venueId, visited, hidden, Date())
     }
 
+    private fun setLocalVenueStateWithTimestamp(venueId: String, visited: Boolean, hidden: Boolean, timestamp: Date) {
+        database.venueDao.setVenueStateWithoutTimestamp(venueId, visited, hidden, timestamp.toInstant().epochSecond.toInt())
+    }
+    private fun setCloudVenueState(venueId: String, visited: Boolean, hidden: Boolean, timestamp: Date) {
+        cloudDatabase.setVenueState(venueId, visited, hidden, timestamp)
+    }
     private suspend fun deactivateAllVenues() = withContext(Dispatchers.IO) {
         database.venueDao.deactivateAllVenues()
+    }
+
+    private fun syncVenuesAndSubscribe() {
+        this@VenuesRepository.cloudDatabase.subscribeToVenueChanges { venuesFromCloud: List<Venue> ->
+            val venuesSnapshot = venues.value
+            venuesSnapshot?.let {
+                for (venueFromCloud in venuesFromCloud) {
+                    for (venue in venuesSnapshot) {
+                        if (venue.id == venueFromCloud.id) {
+                            if(venueFromCloud.lastUserUpdate > venue.lastUserUpdate) {
+                                if (venueFromCloud.visited != venue.visited || venueFromCloud.hidden != venue.hidden) {
+                                    setLocalVenueStateWithTimestamp(
+                                        venueFromCloud.id,
+                                        venueFromCloud.visited,
+                                        venueFromCloud.hidden,
+                                        venueFromCloud.lastUserUpdate
+                                    )
+                                }
+                            } else if (venueFromCloud.lastUserUpdate < venue.lastUserUpdate) {
+                                setCloudVenueState(
+                                    venue.id,
+                                    venue.visited,
+                                    venue.hidden,
+                                    venue.lastUserUpdate
+                                )
+                            }
+
+                            break
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+    suspend fun initialSync() {
+        this@VenuesRepository.cloudDatabase.getOneTimeSnapshot { venuesFromCloud: List<Venue> ->
+            val venuesSnapshot = venues.value
+            venuesSnapshot?.let {
+                for (venue in venuesSnapshot) {
+                    Timber.d("${venue.name}")
+                    var found = false
+                    for (venueFromCloud in venuesFromCloud) {
+                        if (venue.id == venueFromCloud.id) {
+                            if(venueFromCloud.lastUserUpdate > venue.lastUserUpdate) {
+                                setLocalVenueStateWithTimestamp(
+                                    venueFromCloud.id,
+                                    venueFromCloud.visited,
+                                    venueFromCloud.hidden,
+                                    venueFromCloud.lastUserUpdate
+                                )
+                            }
+                        } else if (venueFromCloud.lastUserUpdate < venue.lastUserUpdate) {
+                            setCloudVenueState(
+                                venue.id,
+                                venue.visited,
+                                venue.hidden,
+                                venue.lastUserUpdate
+                            )
+                        }
+                        found = true
+                        break
+                    }
+                    if(!found) {
+                        setCloudVenueState(
+                            venue.id,
+                            venue.visited,
+                            venue.hidden,
+                            venue.lastUserUpdate
+                        )
+                    }
+                }
+
+            }
+        }
+    }
+
+    suspend fun unsubscribeFromCloudUpdates() {
+        cloudDatabase.clearSubscriptions()
     }
 
     private fun upsertVenue(item: DatabaseVenue) {
@@ -185,10 +277,18 @@ class VenuesRepository(application: Application) {
         }
     }
 
-    fun setUserData(email: String?, uid: String) {
+    suspend fun setUserData(email: String?, uid: String) {
         userEmail = email ?: ""
         userFirebaseId = uid
         cloudDatabase.setUserId(userFirebaseId)
+
+        if(userIsSignedIn) {
+            withContext(Dispatchers.IO) {
+                syncVenuesAndSubscribe()
+            }
+        } else {
+            unsubscribeFromCloudUpdates()
+        }
     }
     val userIsSignedIn: Boolean
         get() = userEmail.isNotEmpty()

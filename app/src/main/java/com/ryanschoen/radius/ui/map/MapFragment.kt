@@ -149,6 +149,9 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback, OnRequestPermissionsRe
 
             if ((viewModel as MapViewModel).venues.value != null && (viewModel as MapViewModel).venues.value!!.isNotEmpty()) {
                 for (venue in (viewModel as MapViewModel).venues.value!!) {
+                    if(venue.hidden) {
+                        continue
+                    }
                     val position = LatLng(venue.lat, venue.lng)
                     val marker = map!!.addMarker(
                         MarkerOptions().position(position).apply {
