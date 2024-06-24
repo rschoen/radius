@@ -2,7 +2,6 @@ package com.ryanschoen.radius.ui.settings
 
 import android.app.Activity.RESULT_OK
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup

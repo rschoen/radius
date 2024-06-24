@@ -14,16 +14,14 @@ import com.ryanschoen.radius.domain.Venue
 import com.ryanschoen.radius.network.asDatabaseModel
 import com.ryanschoen.radius.network.fetchVenues
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.time.Instant
 import java.time.LocalDateTime
 import java.util.Date
 
 class VenuesRepository(application: Application) {
     private val database = getDatabase(application)
-    private val cloudDatabase = getCloudDatabase(application)
+    private val cloudDatabase = getCloudDatabase()
     private val sharedPref = application.getSharedPreferences(
         application.getString(R.string.preference_file_key),
         Context.MODE_PRIVATE
@@ -209,12 +207,11 @@ class VenuesRepository(application: Application) {
         }
     }
 
-    suspend fun initialSync() {
+    fun initialSync() {
         this@VenuesRepository.cloudDatabase.getOneTimeSnapshot { venuesFromCloud: List<Venue> ->
             val venuesSnapshot = venues.value
             venuesSnapshot?.let {
                 for (venue in venuesSnapshot) {
-                    Timber.d("${venue.name}")
                     var found = false
                     for (venueFromCloud in venuesFromCloud) {
                         if (venue.id == venueFromCloud.id) {
@@ -251,7 +248,7 @@ class VenuesRepository(application: Application) {
         }
     }
 
-    suspend fun unsubscribeFromCloudUpdates() {
+    fun unsubscribeFromCloudUpdates() {
         cloudDatabase.clearSubscriptions()
     }
 

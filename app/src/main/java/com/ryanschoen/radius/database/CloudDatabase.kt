@@ -1,7 +1,5 @@
 package com.ryanschoen.radius.database
 
-import android.content.Context
-import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -10,7 +8,6 @@ import com.google.firebase.database.database
 import com.google.firebase.database.getValue
 import com.ryanschoen.radius.domain.Venue
 import timber.log.Timber
-import java.time.Instant
 import java.util.Date
 
 class CloudDatabase() {
@@ -60,20 +57,6 @@ class CloudDatabase() {
         }
     }
 
-    fun uploadVenueChanges(venues: List<Venue>) {
-        val cloudVenues = venues.asCloudModel()
-        for(cloudVenue in cloudVenues) {
-            database.reference.child("users").child(userId).child("venues").child(cloudVenue.venueId).get().addOnSuccessListener {
-                val storedCloudVenue = it.getValue<CloudVenue>()
-                if(storedCloudVenue == null || cloudVenue.lastUpdated > storedCloudVenue.lastUpdated) {
-                    postCloudVenue(cloudVenue)
-                }
-            }.addOnFailureListener{
-                Timber.w("Error getting firebase data")
-            }
-        }
-    }
-
     private fun postCloudVenue(cloudVenue: CloudVenue) {
         database.reference.child("users").child(userId).child("venues").child(cloudVenue.venueId).setValue(cloudVenue)
     }
@@ -85,7 +68,7 @@ class CloudDatabase() {
 
 private lateinit var INSTANCE: CloudDatabase
 
-fun getCloudDatabase(context: Context): CloudDatabase {
+fun getCloudDatabase(): CloudDatabase {
     synchronized(VenuesDatabase::class.java) {
         if (!::INSTANCE.isInitialized) {
             INSTANCE = CloudDatabase()
