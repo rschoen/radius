@@ -34,7 +34,7 @@
     <string name="downloaded_venues">Downloaded %1$d venues!</string>
     <string name="welcome_to_radius">Welcome to Radius!</string>
     <string name="enter_your_address">Enter the address of your home base to get started!</string>
-    <string name="welcome_paragraph">Radius shows you all the restaurants and bars around you, and help you keep track of which ones you\'ve tried.\n\nTry all the venues in your neighborhood to push your Radius higher!</string>
+    <string name="welcome_paragraph">Radius shows you all the restaurants and bars around you, and helps you keep track of which ones you\'ve tried.\n\nTry all the venues in your neighborhood to push your Radius higher!</string>
     <string name="a_person_happily_walking_to_a_restaurant">A person happily walking to a restaurant</string>
     <string name="refreshing_venue_data">Refreshing venue data…</string>
     <string name="title_settings">Settings</string>
