@@ -16,10 +16,10 @@ class SettingsViewModel(application: Application) : RadiusViewModel(application)
         }
     }
 
-    fun clearYelpData() {
+    fun clearNetworkData() {
         viewModelScope.launch {
-            repo.clearYelpData()
-            repo.yelpDataReady = false
+            repo.clearDownloadedNetworkData()
+            repo.networkVenueDataReady = false
         }
     }
 

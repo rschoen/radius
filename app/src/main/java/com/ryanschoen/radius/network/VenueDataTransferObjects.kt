@@ -1,27 +1,58 @@
 package com.ryanschoen.radius.network
 
+import com.ryanschoen.radius.BuildConfig.PLACES_API_KEY
 import com.ryanschoen.radius.database.DatabaseVenue
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 
 @JsonClass(generateAdapter = true)
-data class NetworkYelpSearchResults(
-    val businesses: List<NetworkVenue>
+data class NetworkSearchResults(
+    val results: List<NetworkVenue>,
+    @Json(name="next_page_token") val nextPageToken: String?
 )
 
-fun NetworkYelpSearchResults.asDatabaseModel(): Array<DatabaseVenue> {
-    return businesses.map {
+@JsonClass(generateAdapter = true)
+data class NetworkVenue(
+    @Json(name="place_id") val id: String,
+    val name: String,
+    @Json(name="business_status") val businessStatus: String?,
+    val photos: List<GooglePhoto>?,
+    @Json(name="user_ratings_total") val reviews: Int?,
+    val geometry: GoogleGeometry,
+    val rating: Double?
+)
+
+@JsonClass(generateAdapter = true)
+data class GoogleGeometry(
+    val location: GoogleLocation
+)
+
+@JsonClass(generateAdapter = true)
+data class GoogleLocation(
+    val lat: Double,
+    val lng: Double
+)
+
+@JsonClass(generateAdapter = true)
+data class GooglePhoto (
+    @Json(name="photo_reference") val photoReference: String
+)
+
+
+
+fun NetworkSearchResults.asDatabaseModel(): Array<DatabaseVenue> {
+    return results.map {
         DatabaseVenue(
             id = it.id,
             name = it.name,
-            url = it.url,
-            imageUrl = it.imageUrl,
-            reviews = it.reviews.toInt(),
-            rating = it.rating.toDouble(),
-            lat = it.coordinates.latitude?.toDouble(),
-            lng = it.coordinates.longitude?.toDouble(),
-            distance = it.distance.toDouble(),
+            url = "https://www.google.com/maps/search/?api=1&query=123%20main%20st&query_place_id=" + it.id,
+            imageUrl = photoListToURL(it.photos),
+            reviews = it.reviews ?: 0,
+            rating = convertRating(it.rating),
+            lat = it.geometry.location.lat,
+            lng = it.geometry.location.lng,
+            distance = 0.0,
             visited = false,
             hidden = false,
             active = true,
@@ -30,38 +61,19 @@ fun NetworkYelpSearchResults.asDatabaseModel(): Array<DatabaseVenue> {
     }.toTypedArray()
 }
 
-@JsonClass(generateAdapter = true)
-data class NetworkVenue(
-    val id: String,
-    val name: String,
-    @Json(name="image_url") val imageUrl: String,
-    @Json(name="is_closed") val closed: Boolean,
-    val url: String,
-    @Json(name="review_count") val reviews: String,
-    val rating: String,
-    val coordinates: YelpCoordinates,
-    var distance: String
-
-)
-
-@JsonClass(generateAdapter = true)
-data class YelpCoordinates(
-    val latitude: String? = "",
-    val longitude: String? = ""
-)
-/*
-fun NetworkYelpSearchResults.asDomainModel(): List<Venue> {
-    return businesses.map {
-        Venue (
-            id = it.id,
-            name = it.name,
-            lat = it.coordinates.latitude.toDouble(),
-            lng = it.coordinates.longitude.toDouble(),
-            reviews = it.reviews.toInt(),
-            rating = it.rating.toDouble(),
-            imageUrl = it.imageUrl,
-            url = it.url,
-            closed = it.closed
-        )
+fun photoListToURL(photoList: List<GooglePhoto>?): String {
+    if(!photoList.isNullOrEmpty()) {
+        val photoRef = photoList[0].photoReference
+        return "https://maps.googleapis.com/maps/api/place/photo?maxwidth=70&photo_reference=${photoRef}&key=${PLACES_API_KEY}"
+    } else {
+        return ""
     }
-}*/
+}
+
+fun convertRating(rating: Double?): Double {
+    rating?.let {
+        return rating*rating/5
+    }
+    return 0.0
+
+}

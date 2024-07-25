@@ -7,7 +7,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ryanschoen.radius.databinding.FragmentVenuesBinding
 import com.ryanschoen.radius.ui.RadiusFragment
-import com.ryanschoen.radius.yelpIntent
+import com.ryanschoen.radius.venueDetailsIntent
 import timber.log.Timber
 
 
@@ -45,7 +45,7 @@ class VenuesFragment : RadiusFragment() {
                 adapter = VenueAdapter(
                     venues,
                     VenueAdapter.OnClickListener { venue ->
-                        yelpIntent(requireContext(), venue.url)
+                        venueDetailsIntent(requireContext(), venue.url)
                     },
                     VenueAdapter.OnLongClickListener { venue ->
                         (viewModel as VenuesViewModel).setVenueState(venue.id, venue.visited, !venue.hidden)

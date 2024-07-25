@@ -24,7 +24,7 @@ class SetupViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             repo.setSavedAddressLatLong(address, latlng.latitude, latlng.longitude)
-            val venuesDownloaded = repo.downloadVenues(address)
+            val venuesDownloaded = repo.downloadVenues(latlng.latitude, latlng.longitude)
             _numVenues.value = venuesDownloaded
             _venuesChanged.value = true
 

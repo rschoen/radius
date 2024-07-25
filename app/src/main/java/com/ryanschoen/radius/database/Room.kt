@@ -47,7 +47,7 @@ interface VenueDao {
     fun getVenueById(id: String): DatabaseVenue
 
     @Query("update databasevenue set name='', url='', lat=0.0, lng=0.0, reviews=0, rating=0.0, imageUrl=''")
-    fun clearYelpData()
+    fun clearDownloadedNetworkData()
 }
 
 @Database(

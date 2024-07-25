@@ -39,7 +39,7 @@ class SettingsFragment : RadiusFragment() {
 
         if (BuildConfig.DEBUG) {
             binding.clearDataButton.visibility = View.VISIBLE
-            binding.clearYelpDataButton.visibility = View.VISIBLE
+            binding.clearNetworkDataButton.visibility = View.VISIBLE
         }
 
         (viewModel as SettingsViewModel).quitActivity.observe(viewLifecycleOwner) { quit ->
@@ -71,8 +71,8 @@ class SettingsFragment : RadiusFragment() {
         binding.clearDataButton.setOnClickListener {
             (viewModel as SettingsViewModel).clearAllData()
         }
-        binding.clearYelpDataButton.setOnClickListener {
-            (viewModel as SettingsViewModel).clearYelpData()
+        binding.clearNetworkDataButton.setOnClickListener {
+            (viewModel as SettingsViewModel).clearNetworkData()
         }
 
         (viewModel as SettingsViewModel).address?.let {

@@ -24,7 +24,7 @@ import com.ryanschoen.radius.domain.Venue
 import com.ryanschoen.radius.getPixelsFromDp
 import com.ryanschoen.radius.metersEquals
 import com.ryanschoen.radius.ui.RadiusFragment
-import com.ryanschoen.radius.yelpIntent
+import com.ryanschoen.radius.venueDetailsIntent
 import timber.log.Timber
 
 
@@ -274,7 +274,7 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback, OnRequestPermissionsRe
     }
 
     private fun onInfoWindowClick(p0: Marker) {
-        yelpIntent(requireContext(), (p0.tag as Venue).url)
+        venueDetailsIntent(requireContext(), (p0.tag as Venue).url)
     }
 
     override fun navigateToSetup() {

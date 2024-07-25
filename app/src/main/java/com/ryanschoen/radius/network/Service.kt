@@ -1,6 +1,6 @@
 package com.ryanschoen.radius.network
 
-import com.ryanschoen.radius.BuildConfig.YELP_API_KEY
+import com.ryanschoen.radius.BuildConfig.PLACES_API_KEY
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.Dispatchers
@@ -13,21 +13,19 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
 import timber.log.Timber
 
-const val RESULTS_PER_QUERY = 50
-const val QUERIES_PER_CATEGORY = 4
+const val QUERIES_PER_CATEGORY = 3
 val CATEGORIES = listOf("restaurant", "bar")
-const val MINIMUM_REVIEWS = 10
+const val MINIMUM_REVIEWS = 5
 
 
 interface VenueService {
-    @Headers("Authorization: Bearer $YELP_API_KEY")
-    @GET("search?sort_by=distance")
+    @Headers("Referer: ryanschoen.com")
+    @GET("json?rankby=distance&key=${PLACES_API_KEY}")
     suspend fun getVenues(
-        @Query("location") address: String,
-        @Query("term") searchTerm: String,
-        @Query("limit") limit: Int,
-        @Query("offset") offset: Int
-    ): NetworkYelpSearchResults
+        @Query("location") location: String,
+        @Query("type") venueType: String,
+        @Query("pagetoken") pageToken: String
+    ): NetworkSearchResults
 }
 
 private val moshi = Moshi.Builder()
@@ -40,7 +38,7 @@ object Network {
 
 
     private val venueRetrofit = Retrofit.Builder()
-        .baseUrl("https://api.yelp.com/v3/businesses/")
+        .baseUrl("https://maps.googleapis.com/maps/api/place/nearbysearch/")
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .client(httpClient.build())
         .build()
@@ -49,26 +47,33 @@ object Network {
 
 }
 
-suspend fun fetchVenues(address: String): NetworkYelpSearchResults {
+suspend fun fetchVenues(lat: Double, lng: Double): NetworkSearchResults {
     val venues = mutableListOf<NetworkVenue>()
     val venuesAdded = mutableListOf<String>()
+    val location = "$lat,$lng"
     withContext(Dispatchers.IO) {
         try {
             var queriesMade = 0
             for (category in CATEGORIES) {
+                var pageToken = ""
                 for (i in 0 until QUERIES_PER_CATEGORY) {
                     queriesMade++
-                    val newVenues = Network.venueList.getVenues(
-                        address,
+                    val networkResults = Network.venueList.getVenues(
+                        location,
                         category,
-                        RESULTS_PER_QUERY,
-                        i * RESULTS_PER_QUERY
-                    ).businesses
-                    for (venue in newVenues) {
-                        if (!venuesAdded.contains(venue.id) && !venue.closed && venue.reviews.toInt() >= MINIMUM_REVIEWS) {
+                        pageToken
+                    )
+                    for (venue in networkResults.results) {
+                        if (!venuesAdded.contains(venue.id) && (venue.reviews ?: 0) >= MINIMUM_REVIEWS) {
                             venues.add(venue)
                             venuesAdded.add(venue.id)
                         }
+                    }
+                    networkResults.nextPageToken?.let {
+                        pageToken = networkResults.nextPageToken
+                        Thread.sleep(1500)
+                    } ?: {
+                        pageToken = ""
                     }
                 }
             }
@@ -88,5 +93,5 @@ suspend fun fetchVenues(address: String): NetworkYelpSearchResults {
         }
 
     }
-    return NetworkYelpSearchResults(venues)
+    return NetworkSearchResults(venues, nextPageToken = "")
 }

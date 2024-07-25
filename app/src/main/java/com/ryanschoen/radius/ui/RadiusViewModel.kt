@@ -29,10 +29,10 @@ open class RadiusViewModel(application: Application) : AndroidViewModel(applicat
     init {
         if (!repo.isAddressReady()) {
             _navigateToSetup.value = true
-        } else if (repo.shouldRefreshYelpData) {
+        } else if (repo.shouldRefreshNetworkData) {
             viewModelScope.launch {
                 _startedDownloadingVenues.value = true
-                repo.downloadVenues(repo.getSavedAddress()!!)
+                repo.downloadVenues(repo.getSavedLatitude(), repo.getSavedLongitude())
                 _doneDownloadingVenues.value = true
             }
         }

@@ -13,9 +13,7 @@ android {
     signingConfigs {
         release {
             storeFile file('H:\\My Drive\\Projects\\Android\\Keystore\\keystore.jks')
-            storePassword '82HxjnFJt8rZbVzpPTXXJ-PfCU3c-w'
             keyAlias 'upload'
-            keyPassword '82HxjnFJt8rZbVzpPTXXJ-PfCU3c-w'
         }
     }
     namespace 'com.ryanschoen.radius'
@@ -25,8 +23,8 @@ android {
         applicationId "com.ryanschoen.radius"
         minSdk 26
         targetSdk 34
-        versionCode 14
-        versionName "1.1.1"
+        versionCode 15
+        versionName "1.2.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         ksp {

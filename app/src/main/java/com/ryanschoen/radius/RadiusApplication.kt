@@ -2,7 +2,7 @@ package com.ryanschoen.radius
 
 import android.app.Application
 import androidx.work.*
-import com.ryanschoen.radius.work.RefreshYelpDataWorker
+import com.ryanschoen.radius.work.RefreshNetworkDataWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,14 +29,14 @@ class RadiusApplication : Application() {
                 .setRequiresDeviceIdle(true)
                 .build()
 
-            val repeatingRequest = PeriodicWorkRequestBuilder<RefreshYelpDataWorker>(
+            val repeatingRequest = PeriodicWorkRequestBuilder<RefreshNetworkDataWorker>(
                 1, TimeUnit.DAYS
             )
                 .setConstraints(constraints)
                 .build()
 
             WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
-                RefreshYelpDataWorker.WORK_NAME,
+                RefreshNetworkDataWorker.WORK_NAME,
                 ExistingPeriodicWorkPolicy.UPDATE,
                 repeatingRequest
             )

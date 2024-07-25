@@ -23,11 +23,10 @@
     <string name="visited">Visited</string>
     <string name="unvisited">Unvisited</string>
     <string name="hidden">Hidden</string>
-    <string name="debug_clear_yelp_data">[DEBUG] Clear Yelp data</string>
+    <string name="debug_clear_venue_data">[DEBUG] Clear venue data</string>
     <string name="loading_circle_content_description">Animated circle indicating that venue data is loading</string>
-    <string name="yelp_logo">Yelp logo</string>
     <string name="loading_indicator_content_description">Loading indicator showing whether venues are loaded or not</string>
-    <string name="venue_photo_content_description">Photo of the venue provided by Yelp</string>
+    <string name="venue_photo_content_description">Photo of the venue</string>
     <string name="review_stars_content_description">Visual representation of the number of review stars the venue has</string>
     <string name="reviews_count">%1$s reviews</string>
     <string name="venue_name_hidden">%1$s (hidden)</string>
@@ -40,7 +39,7 @@
     <string name="title_settings">Settings</string>
     <string name="debug_clear_data_and_quit">[DEBUG] Clear data and quit</string>
     <string name="clear_all_data_and_quit">Clear all data and quit</string>
-    <string name="clear_just_yelp_data_do_not_quit">Clear just Yelp data; do not quit</string>
+    <string name="clear_just_venue_data_do_not_quit">Clear just venue data; do not quit</string>
     <string name="set_the_address_for_your_home_base">Set the address for your home base</string>
     <string name="sign_in">Sign in</string>
     <string name="sign_in_to_google_to_sync_your_data">Sign in to Google to sync your data</string>

@@ -55,39 +55,10 @@
         android:id="@+id/venue_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/attribution_horizontal_rule"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/filters_horizontal_rule"
         tools:listitem="@layout/list_item_venue" />
 
-    <View
-        android:id="@+id/attribution_horizontal_rule"
-        style="@style/Separator"
-        android:layout_width="match_parent"
-        app:layout_constraintTop_toBottomOf="@id/venue_list" />
-
-    <TextView
-        android:id="@+id/venue_attribution"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_small"
-        android:layout_marginTop="@dimen/margin_small"
-        android:layout_marginBottom="64dp"
-        android:text="@string/all_venue_information_provided_by"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/attribution_horizontal_rule" />
-
-    <ImageView
-        android:id="@+id/yelp_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="16dp"
-        android:layout_marginStart="@dimen/margin_small"
-        android:adjustViewBounds="true"
-        android:src="@drawable/yelp_logo"
-        app:layout_constraintBottom_toBottomOf="@id/venue_attribution"
-        app:layout_constraintStart_toEndOf="@id/venue_attribution"
-        app:layout_constraintTop_toTopOf="@id/venue_attribution"
-        android:contentDescription="@string/yelp_logo"/>
 
 
     <com.google.android.material.card.MaterialCardView

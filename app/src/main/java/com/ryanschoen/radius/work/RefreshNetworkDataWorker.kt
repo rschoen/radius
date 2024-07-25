@@ -6,11 +6,11 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.ryanschoen.radius.repository.VenuesRepository
 
-class RefreshYelpDataWorker(appContext: Context, params: WorkerParameters) :
+class RefreshNetworkDataWorker(appContext: Context, params: WorkerParameters) :
     CoroutineWorker(appContext, params) {
 
     companion object {
-        const val WORK_NAME = "RefreshYelpDataWorker"
+        const val WORK_NAME = "RefreshNetworkDataWorker"
     }
 
     override suspend fun doWork(): Result {
@@ -19,8 +19,8 @@ class RefreshYelpDataWorker(appContext: Context, params: WorkerParameters) :
         return try {
             val address = repo.getSavedAddress()
             if (!address.isNullOrEmpty()) {
-                repo.clearYelpData()
-                repo.downloadVenues(address)
+                repo.clearDownloadedNetworkData()
+                repo.downloadVenues(repo.getSavedLatitude(), repo.getSavedLongitude())
                 Result.success()
             } else {
                 Result.failure()

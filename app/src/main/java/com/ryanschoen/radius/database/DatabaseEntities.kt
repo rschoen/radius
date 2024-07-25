@@ -17,7 +17,7 @@ data class DatabaseVenue constructor(
     val rating: Double,
     val imageUrl: String,
     val url: String,
-    val distance: Double,
+    var distance: Double,
     var visited: Boolean,
     var hidden: Boolean,
     var active: Boolean,

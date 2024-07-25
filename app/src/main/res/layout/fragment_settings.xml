@@ -98,7 +98,7 @@
                 android:textSize="14sp" />
         </LinearLayout>
         <LinearLayout
-            android:id="@+id/clear_yelp_data_button"
+            android:id="@+id/clear_network_data_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -112,14 +112,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/debug_clear_yelp_data"
+                android:text="@string/debug_clear_venue_data"
                 android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/clear_yelp_data"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/clear_just_yelp_data_do_not_quit"
+                android:text="@string/clear_just_venue_data_do_not_quit"
                 android:textSize="14sp" />
         </LinearLayout>
         </LinearLayout>
