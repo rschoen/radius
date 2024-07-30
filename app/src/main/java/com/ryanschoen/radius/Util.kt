@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat.startActivity
 import kotlin.math.abs
 
 
-fun yelpRatingToImageRes(rating: Double): Int {
+fun ratingStarsToImage(rating: Double): Int {
     return when ((rating * 2).toInt()) {
         2 -> R.drawable.stars_regular_1
         3 -> R.drawable.stars_regular_1_half

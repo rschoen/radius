@@ -108,7 +108,7 @@
             tools:visibility="visible">
 
             <TextView
-                android:id="@+id/clear_yelp_data_title"
+                android:id="@+id/clear_downloaded_venue_data_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -116,7 +116,7 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/clear_yelp_data"
+                android:id="@+id/clear_downloaded_venue_data"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/clear_just_venue_data_do_not_quit"

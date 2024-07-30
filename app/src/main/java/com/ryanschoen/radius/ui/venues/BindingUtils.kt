@@ -7,7 +7,7 @@ import androidx.databinding.BindingAdapter
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.domain.Venue
 import com.ryanschoen.radius.metersToMiles
-import com.ryanschoen.radius.yelpRatingToImageRes
+import com.ryanschoen.radius.ratingStarsToImage
 import java.text.NumberFormat
 import java.util.*
 
@@ -23,7 +23,7 @@ fun TextView.setReviewString(item: Venue?) {
 @BindingAdapter("ratingImage")
 fun ImageView.setRatingImage(item: Venue?) {
     item?.let {
-        setImageResource(yelpRatingToImageRes(item.rating))
+        setImageResource(ratingStarsToImage(item.rating))
     }
 }
 
