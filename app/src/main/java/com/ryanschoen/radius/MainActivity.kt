@@ -8,16 +8,22 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.OnMapsSdkInitializedCallback
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.ryanschoen.radius.databinding.ActivityMainBinding
+import timber.log.Timber
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnMapsSdkInitializedCallback {
 
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+        MapsInitializer.initialize(applicationContext, MapsInitializer.Renderer.LATEST, this)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -51,7 +57,13 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-
+    override fun onMapsSdkInitialized(renderer: MapsInitializer.Renderer) {
+        if (renderer == MapsInitializer.Renderer.LATEST) {
+            Timber.d("MapsDemo", "The latest version of the renderer is used.")
+        } else {
+            Timber.d("MapsDemo", "The legacy version of the renderer is used.")
+        }
+    }
 
     fun showUpButton(show: Boolean) {
         supportActionBar!!.setDisplayHomeAsUpEnabled(show)

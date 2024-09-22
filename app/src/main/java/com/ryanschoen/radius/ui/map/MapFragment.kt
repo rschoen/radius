@@ -90,6 +90,8 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback, OnRequestPermissionsRe
         _binding = null
     }
 
+
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
