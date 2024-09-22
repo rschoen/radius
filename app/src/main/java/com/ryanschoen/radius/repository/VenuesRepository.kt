@@ -99,7 +99,7 @@ class VenuesRepository(application: Application) {
     private val networkDataHasExpired: Boolean
         get() = LocalDateTime.now().isAfter(networkDataExpiration)
     val shouldRefreshNetworkData: Boolean
-        get() = !networkVenueDataReady || networkDataHasExpired
+        get() = true
 
 
     private fun refreshNetworkDataExpiration(hours: Int = NETWORK_DATA_EXPIRATION_HOURS) {
@@ -133,8 +133,8 @@ class VenuesRepository(application: Application) {
         networkVenueDataReady = false
         deactivateAllVenues()
 
-        val venues = fetchVenues(lat, lng)
-        val dbVenues = venues.asDatabaseModel()
+        val result = fetchVenues(lat, lng)
+        val dbVenues = result.asDatabaseModel()
 
         var maxDistance: Double = -1.0
         for (venue in dbVenues) {
@@ -152,9 +152,9 @@ class VenuesRepository(application: Application) {
         database.venueDao.activateVenuesInRange(maxDistance)
         refreshNetworkDataExpiration()
         networkVenueDataReady = true
-        Timber.d("Inserted ${venues.results.size} venues")
+        Timber.d("Inserted ${result.venues.size} venues")
         setAddressIsReady()
-        venues.results.size
+        result.venues.size
     }
 
     suspend fun deleteAllData() = withContext(Dispatchers.IO) {

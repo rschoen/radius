@@ -1,11 +1,12 @@
 package com.ryanschoen.radius.network
 
-import com.ryanschoen.radius.BuildConfig.PLACES_API_KEY
+import com.ryanschoen.radius.BuildConfig.RADIUS_API_KEY
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 //import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
 import retrofit2.Retrofit
@@ -20,12 +21,11 @@ const val MINIMUM_REVIEWS = 5
 
 interface VenueService {
     @Headers("Referer: ryanschoen.com")
-    @GET("json?rankby=distance&key=${PLACES_API_KEY}")
+    @GET("nearby?rankby=distance&key=${RADIUS_API_KEY}")
     suspend fun getVenues(
-        @Query("location") location: String,
-        @Query("type") venueType: String,
-        @Query("pagetoken") pageToken: String
-    ): NetworkSearchResults
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double,
+    ): RadiusAPIResult
 }
 
 private val moshi = Moshi.Builder()
@@ -33,12 +33,12 @@ private val moshi = Moshi.Builder()
     .build()
 
 object Network {
-    //private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-    private val httpClient = OkHttpClient.Builder()//.addInterceptor(logging)
+    private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    private val httpClient = OkHttpClient.Builder().addInterceptor(logging)
 
 
     private val venueRetrofit = Retrofit.Builder()
-        .baseUrl("https://maps.googleapis.com/maps/api/place/nearbysearch/")
+        .baseUrl("https://fellyeah.duckdns.org:3491/")
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .client(httpClient.build())
         .build()
@@ -47,38 +47,21 @@ object Network {
 
 }
 
-suspend fun fetchVenues(lat: Double, lng: Double): NetworkSearchResults {
+suspend fun fetchVenues(lat: Double, lng: Double): RadiusAPIResult {
     val venues = mutableListOf<NetworkVenue>()
-    val venuesAdded = mutableListOf<String>()
-    val location = "$lat,$lng"
+    var metadata = RadiusMetadata("",false)
+
     withContext(Dispatchers.IO) {
         try {
-            var queriesMade = 0
-            for (category in CATEGORIES) {
-                var pageToken = ""
-                for (i in 0 until QUERIES_PER_CATEGORY) {
-                    queriesMade++
-                    val networkResults = Network.venueList.getVenues(
-                        location,
-                        category,
-                        pageToken
-                    )
-                    for (venue in networkResults.results) {
-                        if (!venuesAdded.contains(venue.id) && (venue.reviews ?: 0) >= MINIMUM_REVIEWS) {
-                            venues.add(venue)
-                            venuesAdded.add(venue.id)
-                        }
-                    }
-                    networkResults.nextPageToken?.let {
-                        pageToken = networkResults.nextPageToken
-                        Thread.sleep(1500)
-                    } ?: {
-                        pageToken = ""
-                    }
+            val networkResults = Network.venueList.getVenues(lat, lng)
+            metadata = networkResults.metadata
+            for (venue in networkResults.venues) {
+                if ((venue.reviews ?: 0) >= MINIMUM_REVIEWS) {
+                    venues.add(venue)
                 }
             }
 
-            Timber.i("Retrieved ${venues.size} venues with $queriesMade queries")
+            Timber.i("Retrieved ${venues.size} venues ")
 
         } catch (e: HttpException) {
             //TODO: do something more meaningful with this error
@@ -93,5 +76,5 @@ suspend fun fetchVenues(lat: Double, lng: Double): NetworkSearchResults {
         }
 
     }
-    return NetworkSearchResults(venues, nextPageToken = "")
+    return RadiusAPIResult(metadata, venues)
 }

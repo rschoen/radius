@@ -1,5 +1,6 @@
 package com.ryanschoen.radius.network
 
+import com.ryanschoen.radius.BuildConfig
 import com.ryanschoen.radius.BuildConfig.PLACES_API_KEY
 import com.ryanschoen.radius.database.DatabaseVenue
 import com.squareup.moshi.Json
@@ -7,51 +8,45 @@ import com.squareup.moshi.JsonClass
 
 
 @JsonClass(generateAdapter = true)
-data class NetworkSearchResults(
-    val results: List<NetworkVenue>,
-    @Json(name="next_page_token") val nextPageToken: String?
+data class RadiusAPIResult(
+    val metadata: RadiusMetadata,
+    val venues: List<NetworkVenue>,
+)
+
+@JsonClass(generateAdapter = true)
+data class RadiusMetadata(
+    val queryId: String,
+    val resultsComplete: Boolean,
 )
 
 @JsonClass(generateAdapter = true)
 data class NetworkVenue(
-    @Json(name="place_id") val id: String,
+    val id: String,
     val name: String,
-    @Json(name="business_status") val businessStatus: String?,
-    val photos: List<GooglePhoto>?,
-    @Json(name="user_ratings_total") val reviews: Int?,
-    val geometry: GoogleGeometry,
-    val rating: Double?
-)
-
-@JsonClass(generateAdapter = true)
-data class GoogleGeometry(
-    val location: GoogleLocation
-)
-
-@JsonClass(generateAdapter = true)
-data class GoogleLocation(
-    val lat: Double,
-    val lng: Double
-)
-
-@JsonClass(generateAdapter = true)
-data class GooglePhoto (
-    @Json(name="photo_reference") val photoReference: String
+    val imageUrl: String?,
+    val reviews: Int?,
+    val rating: Double?,
+    val latitude: Double,
+    val longitude: Double,
+    val timeLastUpdated: Long,
 )
 
 
 
-fun NetworkSearchResults.asDatabaseModel(): Array<DatabaseVenue> {
-    return results.map {
+
+
+fun RadiusAPIResult.asDatabaseModel(): Array<DatabaseVenue> {
+    val apiKey = BuildConfig.PLACES_API_KEY
+    return venues.map {
         DatabaseVenue(
             id = it.id,
             name = it.name,
             url = "https://www.google.com/maps/search/?api=1&query=123%20main%20st&query_place_id=" + it.id,
-            imageUrl = photoListToURL(it.photos),
+            imageUrl = it.imageUrl?.let { it.replace("API_KEY", apiKey) } ?: "",
             reviews = it.reviews ?: 0,
             rating = convertRating(it.rating),
-            lat = it.geometry.location.lat,
-            lng = it.geometry.location.lng,
+            lat = it.latitude,
+            lng = it.longitude,
             distance = 0.0,
             visited = false,
             hidden = false,
@@ -59,15 +54,6 @@ fun NetworkSearchResults.asDatabaseModel(): Array<DatabaseVenue> {
             lastUserUpdate = 0
         )
     }.toTypedArray()
-}
-
-fun photoListToURL(photoList: List<GooglePhoto>?): String {
-    if(!photoList.isNullOrEmpty()) {
-        val photoRef = photoList[0].photoReference
-        return "https://maps.googleapis.com/maps/api/place/photo?maxwidth=70&photo_reference=${photoRef}&key=${PLACES_API_KEY}"
-    } else {
-        return ""
-    }
 }
 
 fun convertRating(rating: Double?): Double {
