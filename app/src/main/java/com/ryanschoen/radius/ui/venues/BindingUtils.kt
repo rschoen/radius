@@ -19,11 +19,38 @@ fun TextView.setReviewString(item: Venue?) {
     }
 }
 
-
-@BindingAdapter("ratingImage")
-fun ImageView.setRatingImage(item: Venue?) {
+@BindingAdapter("ratingImage1")
+fun ImageView.setRatingImage1(item: Venue?) {
     item?.let {
-        setImageResource(ratingStarsToImage(item.rating))
+        setImageResource(ratingStarsToImage(item.rating, 1))
+    }
+}
+
+@BindingAdapter("ratingImage2")
+fun ImageView.setRatingImage2(item: Venue?) {
+    item?.let {
+        setImageResource(ratingStarsToImage(item.rating,2 ))
+    }
+}
+
+@BindingAdapter("ratingImage3")
+fun ImageView.setRatingImage3(item: Venue?) {
+    item?.let {
+        setImageResource(ratingStarsToImage(item.rating,3))
+    }
+}
+
+@BindingAdapter("ratingImage4")
+fun ImageView.setRatingImage4(item: Venue?) {
+    item?.let {
+        setImageResource(ratingStarsToImage(item.rating, 4))
+    }
+}
+
+@BindingAdapter("ratingImage5")
+fun ImageView.setRatingImage5(item: Venue?) {
+    item?.let {
+        setImageResource(ratingStarsToImage(item.rating, 5))
     }
 }
 

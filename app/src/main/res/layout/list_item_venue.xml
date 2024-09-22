@@ -44,19 +44,98 @@
             tools:text="LArdoise Bistro" />
 
         <ImageView
-            android:id="@+id/ratingStars"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/ratingStar1"
+            android:layout_width="@dimen/star_height"
+            android:layout_height="@dimen/star_height"
             android:layout_marginTop="@dimen/margin_small"
             android:layout_marginBottom="@dimen/margin_small"
+            android:layout_marginEnd="3dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/review_stars_content_description"
+            android:cropToPadding="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@id/venueName"
             app:layout_constraintTop_toBottomOf="@+id/venueName"
             app:layout_constraintVertical_bias="0.0"
-            app:ratingImage="@{venue}"
-            app:srcCompat="@drawable/stars_regular_4_half"
-            tools:srcCompat="@drawable/stars_regular_4_half"
-            android:contentDescription="@string/review_stars_content_description" />
+            app:ratingImage1="@{venue}"
+            app:srcCompat="@drawable/star_full"
+            tools:srcCompat="@drawable/star_full" />
+
+        <ImageView
+            android:id="@+id/ratingStar2"
+            android:layout_width="@dimen/star_height"
+            android:layout_height="@dimen/star_height"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_marginEnd="3dp"
+            android:layout_marginStart="3dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/review_stars_content_description"
+            android:cropToPadding="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ratingStar1"
+            app:layout_constraintTop_toBottomOf="@+id/venueName"
+            app:layout_constraintVertical_bias="0.0"
+            app:ratingImage2="@{venue}"
+            app:srcCompat="@drawable/star_full"
+            tools:srcCompat="@drawable/star_full" />
+
+        <ImageView
+            android:id="@+id/ratingStar3"
+            android:layout_width="@dimen/star_height"
+            android:layout_height="@dimen/star_height"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_marginEnd="3dp"
+            android:layout_marginStart="3dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/review_stars_content_description"
+            android:cropToPadding="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ratingStar2"
+            app:layout_constraintTop_toBottomOf="@+id/venueName"
+            app:layout_constraintVertical_bias="0.0"
+            app:ratingImage3="@{venue}"
+            app:srcCompat="@drawable/star_full"
+            tools:srcCompat="@drawable/star_full" />
+
+        <ImageView
+            android:id="@+id/ratingStar4"
+            android:layout_width="@dimen/star_height"
+            android:layout_height="@dimen/star_height"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_marginEnd="3dp"
+            android:layout_marginStart="3dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/review_stars_content_description"
+            android:cropToPadding="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ratingStar3"
+            app:layout_constraintTop_toBottomOf="@+id/venueName"
+            app:layout_constraintVertical_bias="0.0"
+            app:ratingImage4="@{venue}"
+            app:srcCompat="@drawable/star_full"
+            tools:srcCompat="@drawable/star_full" />
+
+        <ImageView
+            android:id="@+id/ratingStar5"
+            android:layout_width="@dimen/star_height"
+            android:layout_height="@dimen/star_height"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_marginEnd="3dp"
+            android:layout_marginStart="3dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/review_stars_content_description"
+            android:cropToPadding="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ratingStar4"
+            app:layout_constraintTop_toBottomOf="@+id/venueName"
+            app:layout_constraintVertical_bias="0.0"
+            app:ratingImage5="@{venue}"
+            app:srcCompat="@drawable/star_half"
+            tools:srcCompat="@drawable/star_half" />
 
 
         <TextView
@@ -81,7 +160,7 @@
             android:textSize="12sp"
             app:distanceMiles="@{venue}"
             app:layout_constraintStart_toStartOf="@id/venueName"
-            app:layout_constraintTop_toBottomOf="@+id/ratingStars"
+            app:layout_constraintTop_toBottomOf="@+id/ratingStar1"
             tools:text="0.23 mi" />
 
         <CheckBox
