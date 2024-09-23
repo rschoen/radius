@@ -45,7 +45,7 @@ class VenuesRepository(application: Application) {
         const val SAVED_USER_EMAIL = "saved_user_email"
         const val SAVED_USER_FIREBASE_ID = "saved_user_firebase_id"
 
-        const val NETWORK_DATA_EXPIRATION_HOURS = 24
+        const val NETWORK_DATA_EXPIRATION_HOURS = 1
     }
 
 
@@ -96,10 +96,8 @@ class VenuesRepository(application: Application) {
         get() = sharedPref.getString(SAVED_USER_FIREBASE_ID, "") ?: ""
         set(email) = sharedPref.edit().putString(SAVED_USER_FIREBASE_ID, email).apply()
 
-    private val networkDataHasExpired: Boolean
-        get() = LocalDateTime.now().isAfter(networkDataExpiration)
     val shouldRefreshNetworkData: Boolean
-        get() = true
+        get() = LocalDateTime.now().isAfter(networkDataExpiration)
 
 
     private fun refreshNetworkDataExpiration(hours: Int = NETWORK_DATA_EXPIRATION_HOURS) {
@@ -142,11 +140,11 @@ class VenuesRepository(application: Application) {
                 continue
             }
             venue.distance = metersBetweenPoints(lat, lng, venue.lat, venue.lng)
-            Timber.i("Caclulated distance as ${venue.distance}")
+            Timber.i("Calculated distance as ${venue.distance}")
             upsertVenue(venue)
             if (venue.distance > maxDistance) {
                 maxDistance = venue.distance
-                Timber.i("Max distance now ${maxDistance}")
+                Timber.i("Max distance now $maxDistance")
             }
         }
         database.venueDao.activateVenuesInRange(maxDistance)
