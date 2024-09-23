@@ -92,7 +92,7 @@ class VenuesRepository(application: Application) {
         set(email) = sharedPref.edit().putString(SAVED_USER_EMAIL, email).apply()
 
 
-    var userFirebaseId: String
+    private var userFirebaseId: String
         get() = sharedPref.getString(SAVED_USER_FIREBASE_ID, "") ?: ""
         set(email) = sharedPref.edit().putString(SAVED_USER_FIREBASE_ID, email).apply()
 
@@ -250,7 +250,7 @@ class VenuesRepository(application: Application) {
         }
     }
 
-    fun unsubscribeFromCloudUpdates() {
+    private fun unsubscribeFromCloudUpdates() {
         cloudDatabase.clearSubscriptions()
     }
 

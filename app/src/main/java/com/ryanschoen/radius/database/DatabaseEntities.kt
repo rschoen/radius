@@ -7,7 +7,7 @@ import com.ryanschoen.radius.domain.Venue
 import java.util.Date
 
 @Entity
-data class DatabaseVenue constructor(
+data class DatabaseVenue (
     @PrimaryKey
     val id: String,
     val name: String,

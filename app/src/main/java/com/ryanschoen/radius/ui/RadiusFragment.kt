@@ -9,7 +9,6 @@ abstract class RadiusFragment : Fragment() {
 
 
     internal lateinit var viewModel: RadiusViewModel
-    private lateinit var auth: FirebaseAuth
 
 
 

@@ -122,7 +122,7 @@ class SettingsFragment : RadiusFragment() {
         binding.loadingVenuesSpinnerCard.visibility = View.GONE
     }
 
-    fun refreshSigninStatus() {
+    private fun refreshSigninStatus() {
         if((viewModel as SettingsViewModel).userIsSignedIn) {
             binding.signInTitle.text = "Sign out"
             binding.signIn.text = "Signed in as ${(viewModel as SettingsViewModel).userEmail}"

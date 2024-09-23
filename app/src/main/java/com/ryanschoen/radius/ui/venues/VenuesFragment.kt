@@ -1,6 +1,5 @@
 package com.ryanschoen.radius.ui.venues
 
-import android.R
 import android.os.Bundle
 import android.view.*
 import androidx.lifecycle.ViewModelProvider
