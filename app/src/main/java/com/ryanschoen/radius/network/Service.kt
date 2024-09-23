@@ -6,22 +6,18 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-//import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
 import timber.log.Timber
 
-const val QUERIES_PER_CATEGORY = 3
-val CATEGORIES = listOf("restaurant", "bar")
 const val MINIMUM_REVIEWS = 5
 
 
 interface VenueService {
     @Headers("Referer: ryanschoen.com")
-    @GET("nearby?rankby=distance&key=${RADIUS_API_KEY}")
+    @GET("nearby?key=${RADIUS_API_KEY}")
     suspend fun getVenues(
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
@@ -33,8 +29,8 @@ private val moshi = Moshi.Builder()
     .build()
 
 object Network {
-    private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-    private val httpClient = OkHttpClient.Builder().addInterceptor(logging)
+    //private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    private val httpClient = OkHttpClient.Builder()//.addInterceptor(logging)
 
 
     private val venueRetrofit = Retrofit.Builder()

@@ -144,11 +144,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_small"
             android:layout_marginEnd="@dimen/margin_small"
-            app:layout_constraintBottom_toBottomOf="@+id/ratingStars"
+            app:layout_constraintBottom_toBottomOf="@+id/ratingStar1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/ratingStars"
-            app:layout_constraintTop_toTopOf="@+id/ratingStars"
+            app:layout_constraintStart_toEndOf="@+id/ratingStar5"
+            app:layout_constraintTop_toTopOf="@+id/ratingStar1"
             tools:text="254"
             app:reviewString="@{venue}"/>
 

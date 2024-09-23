@@ -10,7 +10,7 @@ import com.ryanschoen.radius.domain.Venue
 import timber.log.Timber
 import java.util.Date
 
-class CloudDatabase() {
+class CloudDatabase {
     private val database = Firebase.database
     private var userId = ""
     private var listener: ValueEventListener? = null

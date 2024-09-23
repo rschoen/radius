@@ -53,7 +53,7 @@ class VenuesFragment : RadiusFragment() {
                     },
                     VenueAdapter.OnCheckListener { venue, checked ->
                         if (venue.visited != checked) {
-                            Timber.i("Changed venue ${venue.id} from ${venue.visited} to ${checked}")
+                            Timber.i("Changed venue ${venue.id} from ${venue.visited} to $checked")
                             viewModel.setVenueState(
                                 venue.id,
                                 checked,

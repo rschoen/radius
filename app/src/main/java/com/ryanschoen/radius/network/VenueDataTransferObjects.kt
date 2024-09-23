@@ -1,9 +1,7 @@
 package com.ryanschoen.radius.network
 
-import com.ryanschoen.radius.BuildConfig
 import com.ryanschoen.radius.BuildConfig.PLACES_API_KEY
 import com.ryanschoen.radius.database.DatabaseVenue
-import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 
@@ -36,13 +34,13 @@ data class NetworkVenue(
 
 
 fun RadiusAPIResult.asDatabaseModel(): Array<DatabaseVenue> {
-    val apiKey = BuildConfig.PLACES_API_KEY
+    val apiKey = PLACES_API_KEY
     return venues.map {
         DatabaseVenue(
             id = it.id,
             name = it.name,
             url = "https://www.google.com/maps/search/?api=1&query=123%20main%20st&query_place_id=" + it.id,
-            imageUrl = it.imageUrl?.let { it.replace("API_KEY", apiKey) } ?: "",
+            imageUrl = it.imageUrl?.replace("API_KEY", apiKey) ?: "",
             reviews = it.reviews ?: 0,
             rating = convertRating(it.rating),
             lat = it.latitude,
