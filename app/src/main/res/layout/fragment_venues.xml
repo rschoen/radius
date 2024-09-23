@@ -51,13 +51,19 @@
         android:layout_width="match_parent"
         app:layout_constraintTop_toBottomOf="@id/checkbox_filter_unvisited" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/venue_list"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/pullToRefresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/filters_horizontal_rule"
-        tools:listitem="@layout/list_item_venue" />
+        app:layout_constraintTop_toBottomOf="@id/filters_horizontal_rule">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/venue_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            tools:listitem="@layout/list_item_venue" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
 
 

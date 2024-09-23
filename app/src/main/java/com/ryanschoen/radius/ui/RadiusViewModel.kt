@@ -86,4 +86,12 @@ open class RadiusViewModel(application: Application) : AndroidViewModel(applicat
             repo.setUserData("", "")
         }
     }
+
+    fun refreshData() {
+        viewModelScope.launch {
+            _startedDownloadingVenues.value = true
+            repo.downloadVenues(repo.getSavedLatitude(), repo.getSavedLongitude())
+            _doneDownloadingVenues.value = true
+        }
+    }
 }

@@ -1,10 +1,12 @@
 package com.ryanschoen.radius.ui.venues
 
+import android.R
 import android.os.Bundle
 import android.view.*
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.ryanschoen.radius.databinding.FragmentVenuesBinding
 import com.ryanschoen.radius.ui.RadiusFragment
 import com.ryanschoen.radius.venueDetailsIntent
@@ -83,6 +85,12 @@ class VenuesFragment : RadiusFragment() {
         }
         binding.checkboxFilterHidden.setOnClickListener {
             filterList()
+        }
+
+        val pullToRefresh: SwipeRefreshLayout = binding.pullToRefresh
+        pullToRefresh.setOnRefreshListener {
+            viewModel.refreshData()
+            pullToRefresh.isRefreshing = false
         }
 
         return root

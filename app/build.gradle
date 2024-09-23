@@ -79,7 +79,7 @@ dependencies {
     implementation "com.google.android.libraries.places:places:$version_places"
 
     implementation "androidx.room:room-runtime:$version_room"
-    //annotationProcessor "androidx.room:room-compiler:$version_room"
+    annotationProcessor "androidx.room:room-compiler:$version_room"
     ksp "androidx.room:room-compiler:$version_room"
 
     implementation "com.squareup.retrofit2:retrofit:$version_retrofit"
@@ -103,5 +103,7 @@ dependencies {
     implementation "com.google.firebase:firebase-database"
     implementation "com.google.firebase:firebase-auth"
     implementation "com.firebaseui:firebase-ui-auth:$version_firebaseui_auth"
+
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:$version_swiperefreshlayout"
 
 }
