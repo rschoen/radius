@@ -17,14 +17,14 @@ android {
         }
     }
     namespace 'com.ryanschoen.radius'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.ryanschoen.radius"
         minSdk 26
-        targetSdk 34
-        versionCode 15
-        versionName "1.2.0"
+        targetSdk 35
+        versionCode 17
+        versionName "1.3.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         ksp {
