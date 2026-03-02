@@ -34,8 +34,6 @@ abstract class RadiusFragment : Fragment() {
         } else {
             viewModel.setCurrentUser(user)
         }
-
-
     }
 
 

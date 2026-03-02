@@ -2,8 +2,11 @@ package com.ryanschoen.radius
 
 import android.os.Bundle
 import android.view.View
+import android.widget.FrameLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -56,12 +59,21 @@ class MainActivity : AppCompatActivity(), OnMapsSdkInitializedCallback {
                 onSupportNavigateUp()
             }
         })
+
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars() or WindowInsetsCompat.Type.statusBars())
+            val params: FrameLayout.LayoutParams = FrameLayout.LayoutParams(v.layoutParams )
+            params.setMargins(0, systemBarInsets.top, 0, systemBarInsets.bottom)
+            v.layoutParams = params
+            WindowInsetsCompat.CONSUMED
+        }
     }
     override fun onMapsSdkInitialized(renderer: MapsInitializer.Renderer) {
         if (renderer == MapsInitializer.Renderer.LATEST) {
-            Timber.d("MapsDemo", "The latest version of the renderer is used.")
+            Timber.d( "The latest version of the renderer is used.")
         } else {
-            Timber.d("MapsDemo", "The legacy version of the renderer is used.")
+            Timber.d("The legacy version of the renderer is used.")
         }
     }
 
@@ -83,4 +95,6 @@ class MainActivity : AppCompatActivity(), OnMapsSdkInitializedCallback {
             return super.onSupportNavigateUp()
         }
     }
+
+
 }
