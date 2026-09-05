@@ -74,16 +74,16 @@ class SetupFragment : Fragment() {
             childFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
 
         // Specify the types of place data to return.
-        autocompleteFragment.setPlaceFields(listOf(Place.Field.ADDRESS, Place.Field.LAT_LNG))
+        autocompleteFragment.setPlaceFields(listOf(Place.Field.FORMATTED_ADDRESS, Place.Field.LOCATION))
             .setHint(getString(R.string.search_for_address))
 
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
                 Handler(Looper.getMainLooper()).postDelayed({
-                    autocompleteFragment.setText(place.address)
+                    autocompleteFragment.setText(place.formattedAddress)
                 }, 300)
-                autocompleteFragment.setText(place.address)
+                autocompleteFragment.setText(place.formattedAddress)
                 binding.venuesStatusIcon.setImageResource(R.drawable.baseline_change_circle_36)
                 val r = RotateAnimation(
                     360f,
@@ -101,7 +101,7 @@ class SetupFragment : Fragment() {
 
                 binding.venuesStatusText.text = getString(R.string.venue_search_processing)
                 binding.venuesStatusText.visibility = View.VISIBLE
-                viewModel.loadVenues(place.address!!, place.latLng!!)
+                viewModel.loadVenues(place.formattedAddress!!, place.location!!)
             }
 
             override fun onError(status: Status) {
