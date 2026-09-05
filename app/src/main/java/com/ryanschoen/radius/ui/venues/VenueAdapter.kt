@@ -20,7 +20,7 @@ class VenueAdapter(
     venues: List<Venue>,
     private val onClickListener: OnClickListener,
     private val onLongClickListener: OnLongClickListener,
-    private val onCheckListener: OnCheckListener
+    private val onCheckListener: OnCheckListener,
 ) : ListAdapter<Venue, RecyclerView.ViewHolder>(VenueDiffCallback()), Filterable {
 
     var originalVenues: List<Venue> = venues
@@ -46,10 +46,10 @@ class VenueAdapter(
         when (holder) {
             is ViewHolder -> {
                 holder.bind(
-                    getItem(position),
-                    onClickListener,
-                    onLongClickListener,
-                    onCheckListener
+                    item = getItem(position),
+                    onClickListener = onClickListener,
+                    onLongClickListener = onLongClickListener,
+                    onCheckListener = onCheckListener,
                 )
             }
         }
@@ -62,7 +62,7 @@ class VenueAdapter(
             item: Venue,
             onClickListener: OnClickListener,
             onLongClickListener: OnLongClickListener,
-            onCheckListener: OnCheckListener
+            onCheckListener: OnCheckListener,
         ) {
             binding.venue = item
 
@@ -72,8 +72,8 @@ class VenueAdapter(
                 .centerCrop()
                 .into(binding.venuePhoto)
 
-            binding.visitedCheckbox.setOnClickListener {
-                if (it is CheckBox) {
+            binding.visitedCheckbox.setOnClickListener { view ->
+                (view as? CheckBox)?.let {
                     onCheckListener.onCheck(item, it.isChecked)
                 }
             }
@@ -157,13 +157,15 @@ class VenueDiffCallback : DiffUtil.ItemCallback<Venue>() {
     }
 
     override fun areContentsTheSame(oldItem: Venue, newItem: Venue): Boolean {
-        return (oldItem.id == newItem.id &&
-                oldItem.name == newItem.name &&
-                oldItem.reviews == newItem.reviews &&
-                oldItem.rating == newItem.rating &&
-                oldItem.imageUrl == newItem.imageUrl &&
-                oldItem.hidden == newItem.hidden &&
-                oldItem.visited == newItem.visited)
+        return (
+            (oldItem.id == newItem.id) &&
+                (oldItem.name == newItem.name) &&
+                (oldItem.reviews == newItem.reviews) &&
+                (oldItem.rating == newItem.rating) &&
+                (oldItem.imageUrl == newItem.imageUrl) &&
+                (oldItem.hidden == newItem.hidden) &&
+                (oldItem.visited == newItem.visited)
+            )
     }
 }
 

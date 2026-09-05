@@ -42,5 +42,7 @@
     <string name="clear_just_venue_data_do_not_quit">Clear just venue data; do not quit</string>
     <string name="set_the_address_for_your_home_base">Set the address for your home base</string>
     <string name="sign_in">Sign in</string>
+    <string name="sign_out">Sign out</string>
+    <string name="signed_in_as">Signed in as %1$s</string>
     <string name="sign_in_to_google_to_sync_your_data">Sign in to Google to sync your data</string>
 </resources>

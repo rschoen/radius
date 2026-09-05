@@ -3,15 +3,14 @@ package com.ryanschoen.radius
 import android.content.Context
 import android.content.Intent
 import android.location.Location
-import android.net.Uri
-import androidx.core.content.ContextCompat.startActivity
+import androidx.core.net.toUri
 import kotlin.math.abs
 
 
 fun ratingStarsToImage(rating: Double, starNumber: Int): Int {
     return if (rating >= starNumber) {
         R.drawable.star_full
-    } else if (rating >= starNumber - 0.5) {
+    } else if (rating >= (starNumber - 0.5)) {
         R.drawable.star_half
     } else {
         R.drawable.star_empty
@@ -19,8 +18,8 @@ fun ratingStarsToImage(rating: Double, starNumber: Int): Int {
 }
 
 fun venueDetailsIntent(context: Context, url: String) {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-    startActivity(context, intent, null)
+    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+    context.startActivity(intent)
 }
 
 fun metersEquals(a: Double, b: Double, delta: Double = 0.001): Boolean {

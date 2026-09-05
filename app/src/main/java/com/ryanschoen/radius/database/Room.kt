@@ -54,7 +54,7 @@ interface VenueDao {
     version = 2,
     entities = [DatabaseVenue::class],
     autoMigrations = [
-        AutoMigration (from = 1, to = 2)
+        AutoMigration(from = 1, to = 2),
     ]
 )
 abstract class VenuesDatabase : RoomDatabase() {

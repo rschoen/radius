@@ -1,12 +1,14 @@
 package com.ryanschoen.radius.ui.map
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import android.widget.CheckBox
-import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -15,8 +17,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import android.Manifest
-import androidx.core.app.ActivityCompat
 import com.ryanschoen.radius.R
 import com.ryanschoen.radius.databinding.FragmentMapBinding
 import com.ryanschoen.radius.databinding.VenueInfoWindowBinding
@@ -28,7 +28,7 @@ import com.ryanschoen.radius.venueDetailsIntent
 import timber.log.Timber
 
 
-class MapFragment : RadiusFragment(), OnMapReadyCallback, OnRequestPermissionsResultCallback {
+class MapFragment : RadiusFragment(), OnMapReadyCallback {
 
 
     private var _binding: FragmentMapBinding? = null
@@ -50,10 +50,25 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback, OnRequestPermissionsRe
     private var maxVisitedDistanceOnMap: Double = 0.0
 
 
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions(),
+    ) { permissions ->
+        if (
+            (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) ||
+            (permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true)
+        ) {
+            // Enable the my location layer if the permission has been granted.
+            enableMyLocation()
+        } else {
+            // Permission was denied.
+            locationPermissionDenied = true
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         viewModel =
             ViewModelProvider(this)[MapViewModel::class.java]
@@ -69,7 +84,11 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback, OnRequestPermissionsRe
             if (navigate) {
                 Timber.i("Navigating to setup...")
                 this.findNavController()
-                    .navigate(MapFragmentDirections.actionNavigationMapToNavigationSetup(false))
+                    .navigate(
+                        MapFragmentDirections.actionNavigationMapToNavigationSetup(
+                            isAddressAlreadySet = false,
+                        ),
+                    )
                 viewModel.onNavigateToSetupDone()
             }
         }
@@ -97,8 +116,9 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback, OnRequestPermissionsRe
         map = googleMap
         map!!.setMapStyle(
             MapStyleOptions.loadRawResourceStyle(
-                requireContext(), R.raw.map_style
-            )
+                requireContext(),
+                R.raw.map_style,
+            ),
         )
         binding.mapRelativeLayout.init(map, getPixelsFromDp(requireContext(), (39 + 20).toFloat()))
         infoWindowBinding = VenueInfoWindowBinding.inflate(layoutInflater)
@@ -149,7 +169,10 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback, OnRequestPermissionsRe
                 )
             )
 
-            if ((viewModel as MapViewModel).venues.value != null && (viewModel as MapViewModel).venues.value!!.isNotEmpty()) {
+            if (
+                ((viewModel as MapViewModel).venues.value != null) &&
+                ((viewModel as MapViewModel).venues.value!!.isNotEmpty())
+            ) {
                 for (venue in (viewModel as MapViewModel).venues.value!!) {
                     if(venue.hidden) {
                         continue
@@ -215,7 +238,7 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback, OnRequestPermissionsRe
     }
 
     private fun setupMap() {
-        if (map == null || view == null) {
+        if ((map == null) || (view == null)) {
             return
         }
 
@@ -280,7 +303,11 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback, OnRequestPermissionsRe
     }
 
     override fun navigateToSetup() {
-        findNavController().navigate(MapFragmentDirections.actionNavigationMapToNavigationSetup(true))
+        findNavController().navigate(
+            MapFragmentDirections.actionNavigationMapToNavigationSetup(
+                isAddressAlreadySet = true,
+            ),
+        )
     }
 
 
@@ -342,53 +369,18 @@ class MapFragment : RadiusFragment(), OnMapReadyCallback, OnRequestPermissionsRe
         }
 
         // 3. Otherwise, request permission
-        if(!askedForLocationPermission) {
+        if (!askedForLocationPermission) {
             askedForLocationPermission = true
-            ActivityCompat.requestPermissions(
-                requireActivity(),
+            requestPermissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
-                LOCATION_PERMISSION_REQUEST_CODE
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                )
             )
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
-            super.onRequestPermissionsResult(
-                requestCode,
-                permissions,
-                grantResults
-            )
-            return
-        }
-
-        if (isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)
-            || isPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)
-        ) {
-            // Enable the my location layer if the permission has been granted.
-            enableMyLocation()
-        } else {
-            // Permission was denied. Display an error message
-            // Display the missing permission error dialog when the fragments resume.
-            locationPermissionDenied = true
-        }
-    }
-    private fun isPermissionGranted(permission: String) : Boolean {
-        return ContextCompat.checkSelfPermission(
-            requireContext(),
-            permission) == PackageManager.PERMISSION_GRANTED
-    }
-
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
-    }
+    companion object
 
 }
 

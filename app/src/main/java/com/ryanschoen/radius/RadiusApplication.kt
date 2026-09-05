@@ -30,7 +30,8 @@ class RadiusApplication : Application() {
                 .build()
 
             val repeatingRequest = PeriodicWorkRequestBuilder<RefreshNetworkDataWorker>(
-                1, TimeUnit.DAYS
+                1,
+                TimeUnit.DAYS,
             )
                 .setConstraints(constraints)
                 .build()

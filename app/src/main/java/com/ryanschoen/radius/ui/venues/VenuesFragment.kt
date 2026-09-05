@@ -23,7 +23,7 @@ class VenuesFragment : RadiusFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         viewModel =
             ViewModelProvider(this)[VenuesViewModel::class.java]
@@ -35,7 +35,11 @@ class VenuesFragment : RadiusFragment() {
         viewModel.navigateToSetup.observe(viewLifecycleOwner) { navigate ->
             if (navigate) {
                 this.findNavController()
-                    .navigate(VenuesFragmentDirections.actionNavigationVenuesToNavigationSetup(false))
+                    .navigate(
+                        VenuesFragmentDirections.actionNavigationVenuesToNavigationSetup(
+                            isAddressAlreadySet = false,
+                        ),
+                    )
                 viewModel.onNavigateToSetupDone()
             }
         }
@@ -58,10 +62,11 @@ class VenuesFragment : RadiusFragment() {
                             viewModel.setVenueState(
                                 venue.id,
                                 checked,
-                                venue.hidden
+                                venue.hidden,
                             )
                         }
-                    })
+                    },
+                )
                 binding.venueList.adapter = adapter
                 filterList()
                 val layoutManager = LinearLayoutManager(requireContext())
@@ -110,8 +115,8 @@ class VenuesFragment : RadiusFragment() {
     override fun navigateToSetup() {
         findNavController().navigate(
             VenuesFragmentDirections.actionNavigationVenuesToNavigationSetup(
-                true
-            )
+                isAddressAlreadySet = true,
+            ),
         )
     }
 

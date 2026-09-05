@@ -25,7 +25,7 @@ class RefreshNetworkDataWorker(appContext: Context, params: WorkerParameters) :
             } else {
                 Result.failure()
             }
-        } catch (e: Throwable) {
+        } catch (_: Throwable) {
             Result.retry()
         }
     }

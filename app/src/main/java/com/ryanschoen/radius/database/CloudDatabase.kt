@@ -45,7 +45,7 @@ class CloudDatabase {
             }
         }
         database.reference.child("users").child(userId).child("venues").addValueEventListener(
-            listener as ValueEventListener
+            listener!!,
         )
     }
 
@@ -78,9 +78,12 @@ fun getCloudDatabase(): CloudDatabase {
 }
 
 @Keep
-data class CloudVenue @Keep constructor(val venueId: String = "", val visited: Boolean = false, val hidden: Boolean = false, val lastUpdated: Int = 0) {
-
-}
+data class CloudVenue @Keep constructor(
+    val venueId: String = "",
+    val visited: Boolean = false,
+    val hidden: Boolean = false,
+    val lastUpdated: Int = 0,
+)
 
 fun List<CloudVenue>.asDomainModel(): List<Venue> {
     return map {
@@ -97,16 +100,6 @@ fun List<CloudVenue>.asDomainModel(): List<Venue> {
             visited = it.visited,
             hidden = it.hidden,
             lastUserUpdate = Date(it.lastUpdated.toLong() * 1000)
-        )
-    }
-}
-fun List<Venue>.asCloudModel(): List<CloudVenue> {
-    return map {
-        CloudVenue(
-            venueId = it.id,
-            visited = it.visited,
-            hidden = it.hidden,
-            lastUpdated = it.lastUserUpdate.toInstant().epochSecond.toInt()
         )
     }
 }

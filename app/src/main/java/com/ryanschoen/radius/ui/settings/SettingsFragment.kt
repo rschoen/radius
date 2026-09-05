@@ -30,7 +30,7 @@ class SettingsFragment : RadiusFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         viewModel =
             ViewModelProvider(this)[SettingsViewModel::class.java]
@@ -109,8 +109,8 @@ class SettingsFragment : RadiusFragment() {
     override fun navigateToSetup() {
         findNavController().navigate(
             SettingsFragmentDirections.actionNavigationSettingsToNavigationSetup(
-                true
-            )
+                isAddressAlreadySet = true,
+            ),
         )
     }
 
@@ -123,12 +123,15 @@ class SettingsFragment : RadiusFragment() {
     }
 
     private fun refreshSigninStatus() {
-        if((viewModel as SettingsViewModel).userIsSignedIn) {
-            binding.signInTitle.text = "Sign out"
-            binding.signIn.text = "Signed in as ${(viewModel as SettingsViewModel).userEmail}"
+        if ((viewModel as SettingsViewModel).userIsSignedIn) {
+            binding.signInTitle.text = getString(R.string.sign_out)
+            binding.signIn.text = getString(
+                R.string.signed_in_as,
+                (viewModel as SettingsViewModel).userEmail,
+            )
         } else {
-            binding.signInTitle.text = resources.getString(R.string.sign_in)
-            binding.signIn.text = resources.getString(R.string.sign_in_to_google_to_sync_your_data)
+            binding.signInTitle.text = getString(R.string.sign_in)
+            binding.signIn.text = getString(R.string.sign_in_to_google_to_sync_your_data)
         }
     }
 }

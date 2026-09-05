@@ -254,14 +254,14 @@ class VenuesRepository(application: Application) {
     private fun upsertVenue(item: DatabaseVenue) {
         try {
             database.venueDao.insertVenue(item)
-        } catch (ignored: SQLiteConstraintException) {
+        } catch (_: SQLiteConstraintException) {
             val oldItem = database.venueDao.getVenueById(item.id)
             database.venueDao.updateVenue(item.apply {
                 active = oldItem.active
                 visited = oldItem.visited
                 hidden = oldItem.hidden
             })
-        } catch (ignored: Throwable) {
+        } catch (_: Throwable) {
             val oldItem = database.venueDao.getVenueById(item.id)
             database.venueDao.updateVenue(item.apply {
                 active = oldItem.active
