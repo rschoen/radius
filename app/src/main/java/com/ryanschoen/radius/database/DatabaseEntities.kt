@@ -21,7 +21,7 @@ data class DatabaseVenue (
     var visited: Boolean,
     var hidden: Boolean,
     var active: Boolean,
-    @ColumnInfo(defaultValue = "0") var lastUserUpdate: Int
+    @ColumnInfo(defaultValue = "0") var lastUserUpdate: Int,
 )
 
 fun List<DatabaseVenue>.asDomainModel(): List<Venue> {

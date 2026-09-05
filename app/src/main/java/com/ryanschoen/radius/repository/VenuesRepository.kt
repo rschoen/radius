@@ -3,6 +3,7 @@ package com.ryanschoen.radius.repository
 import android.app.Application
 import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
+import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import com.ryanschoen.radius.R
@@ -53,10 +54,6 @@ class VenuesRepository(application: Application) {
         it.asDomainModel()
     }
 
-    val visibleVenues: LiveData<List<Venue>> = database.venueDao.getVisibleActiveVenues().map {
-        it.asDomainModel()
-    }
-
     fun getNthVenue(n: Int): LiveData<Double> = database.venueDao.getNthVenueDistance(n)
     suspend fun clearDownloadedNetworkData() = withContext(Dispatchers.IO) {
         database.venueDao.clearDownloadedNetworkData()
@@ -80,21 +77,21 @@ class VenuesRepository(application: Application) {
     }
 
     private fun setAddressIsReady() {
-        sharedPref.edit().putBoolean(SAVED_ADDRESS_READY, true).apply()
+        sharedPref.edit { putBoolean(SAVED_ADDRESS_READY, true) }
     }
 
     var networkVenueDataReady: Boolean
         get() = sharedPref.getBoolean(NETWORK_DATA_READY, false)
-        set(ready) = sharedPref.edit().putBoolean(NETWORK_DATA_READY, ready).apply()
+        set(ready) = sharedPref.edit { putBoolean(NETWORK_DATA_READY, ready) }
 
     var userEmail: String
         get() = sharedPref.getString(SAVED_USER_EMAIL, "") ?: ""
-        set(email) = sharedPref.edit().putString(SAVED_USER_EMAIL, email).apply()
+        set(email) = sharedPref.edit { putString(SAVED_USER_EMAIL, email) }
 
 
     private var userFirebaseId: String
         get() = sharedPref.getString(SAVED_USER_FIREBASE_ID, "") ?: ""
-        set(email) = sharedPref.edit().putString(SAVED_USER_FIREBASE_ID, email).apply()
+        set(email) = sharedPref.edit { putString(SAVED_USER_FIREBASE_ID, email) }
 
     val shouldRefreshNetworkData: Boolean
         get() = LocalDateTime.now().isAfter(networkDataExpiration)
@@ -102,7 +99,7 @@ class VenuesRepository(application: Application) {
 
     private fun refreshNetworkDataExpiration(hours: Int = NETWORK_DATA_EXPIRATION_HOURS) {
         val networkDataExpiration = LocalDateTime.now().plusHours(hours.toLong())
-        sharedPref.edit().putString(NETWORK_DATA_EXPIRATION, networkDataExpiration.toString()).apply()
+        sharedPref.edit { putString(NETWORK_DATA_EXPIRATION, networkDataExpiration.toString()) }
     }
 
     private val networkDataExpiration: LocalDateTime
@@ -124,7 +121,7 @@ class VenuesRepository(application: Application) {
     }
 
     private fun clearSharedPrefs() {
-        sharedPref.edit().clear().apply()
+        sharedPref.edit { clear() }
     }
 
     suspend fun downloadVenues(lat: Double, lng: Double): Int = withContext(Dispatchers.IO) {
@@ -136,7 +133,7 @@ class VenuesRepository(application: Application) {
 
         var maxDistance: Double = -1.0
         for (venue in dbVenues) {
-            if (venue.lat == null || venue.lng == null) {
+            if ((venue.lat == null) || (venue.lng == null)) {
                 continue
             }
             venue.distance = metersBetweenPoints(lat, lng, venue.lat, venue.lng)
@@ -257,14 +254,14 @@ class VenuesRepository(application: Application) {
     private fun upsertVenue(item: DatabaseVenue) {
         try {
             database.venueDao.insertVenue(item)
-        } catch (exception: SQLiteConstraintException) {
+        } catch (ignored: SQLiteConstraintException) {
             val oldItem = database.venueDao.getVenueById(item.id)
             database.venueDao.updateVenue(item.apply {
                 active = oldItem.active
                 visited = oldItem.visited
                 hidden = oldItem.hidden
             })
-        } catch (throwable: Throwable) {
+        } catch (ignored: Throwable) {
             val oldItem = database.venueDao.getVenueById(item.id)
             database.venueDao.updateVenue(item.apply {
                 active = oldItem.active

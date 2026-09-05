@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity(), OnMapsSdkInitializedCallback {
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_map,
-                R.id.navigation_venues
+                R.id.navigation_venues,
             )
         )
 
@@ -54,11 +54,14 @@ class MainActivity : AppCompatActivity(), OnMapsSdkInitializedCallback {
             }
         }
 
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                onSupportNavigateUp()
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(enabled = true) {
+                override fun handleOnBackPressed() {
+                    onSupportNavigateUp()
+                }
             }
-        })
+        )
 
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -88,11 +91,11 @@ class MainActivity : AppCompatActivity(), OnMapsSdkInitializedCallback {
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
 
         val backStackEntry = navController.previousBackStackEntry
-        if (backStackEntry != null) {
+        return if (backStackEntry != null) {
             navController.navigate(backStackEntry.destination.id)
-            return true
+            true
         } else {
-            return super.onSupportNavigateUp()
+            super.onSupportNavigateUp()
         }
     }
 

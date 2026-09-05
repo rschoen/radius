@@ -29,7 +29,6 @@ import java.nio.charset.Charset
 class SetupFragment : Fragment() {
 
     private val viewModel: SetupViewModel by lazy {
-        requireActivity()
         ViewModelProvider(this)[SetupViewModel::class.java]
     }
 
@@ -44,7 +43,7 @@ class SetupFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentSetupBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -65,7 +64,7 @@ class SetupFragment : Fragment() {
             Base64.decode(BuildConfig.MAPS_API_KEY_BASE64.toByteArray(), Base64.DEFAULT),
             Charset.defaultCharset()
         )
-        Places.initialize(requireContext(), apiKey)
+        Places.initializeWithNewPlacesApiEnabled(requireContext(), apiKey)
 
         // Create a new PlacesClient instance
         Places.createClient(requireContext())
@@ -78,8 +77,9 @@ class SetupFragment : Fragment() {
             .setHint(getString(R.string.search_for_address))
 
         // Set up a PlaceSelectionListener to handle the response.
-        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
-            override fun onPlaceSelected(place: Place) {
+        autocompleteFragment.setOnPlaceSelectedListener(
+            object : PlaceSelectionListener {
+                override fun onPlaceSelected(place: Place) {
                 Handler(Looper.getMainLooper()).postDelayed({
                     autocompleteFragment.setText(place.formattedAddress)
                 }, 300)
@@ -121,7 +121,8 @@ class SetupFragment : Fragment() {
                 } else {
                     binding.venuesStatusIcon.setImageResource(R.drawable.baseline_check_circle_36)
                     binding.venuesStatusText.text = String.format(
-                        getString(R.string.downloaded_venues), viewModel.numVenues.value
+                        getString(R.string.downloaded_venues),
+                        viewModel.numVenues.value,
                     )
                     findNavController().navigate(SetupFragmentDirections.actionNavigationSetupToNavigationMap())
                 }

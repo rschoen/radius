@@ -17,7 +17,7 @@ const val MINIMUM_REVIEWS = 5
 
 interface VenueService {
     @Headers("Referer: ryanschoen.com")
-    @GET("nearby?key=${RADIUS_API_KEY}")
+    @GET("nearby?key=$RADIUS_API_KEY")
     suspend fun getVenues(
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
@@ -45,7 +45,7 @@ object Network {
 
 suspend fun fetchVenues(lat: Double, lng: Double): RadiusAPIResult {
     val venues = mutableListOf<NetworkVenue>()
-    var metadata = RadiusMetadata("",false)
+    var metadata = RadiusMetadata(queryId = "", resultsComplete = false)
 
     withContext(Dispatchers.IO) {
         try {
