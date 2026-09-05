@@ -26,7 +26,7 @@ class VenuesRepository(application: Application) {
     private val cloudDatabase = getCloudDatabase()
     private val sharedPref = application.getSharedPreferences(
         application.getString(R.string.preference_file_key),
-        Context.MODE_PRIVATE
+        Context.MODE_PRIVATE,
     )
 
     init {
@@ -111,11 +111,10 @@ class VenuesRepository(application: Application) {
         )
 
     fun setSavedAddressLatLong(address: String, lat: Double, lng: Double) {
-        with(sharedPref.edit()) {
+        sharedPref.edit {
             putString(SAVED_ADDRESS_STRING, address)
             putFloat(SAVED_LATITUDE_STRING, lat.toFloat())
             putFloat(SAVED_LONGITUDE_STRING, lng.toFloat())
-            apply()
         }
         // TODO: update database
     }
@@ -180,7 +179,10 @@ class VenuesRepository(application: Application) {
                     for (venue in venuesSnapshot) {
                         if (venue.id == venueFromCloud.id) {
                             if(venueFromCloud.lastUserUpdate > venue.lastUserUpdate) {
-                                if (venueFromCloud.visited != venue.visited || venueFromCloud.hidden != venue.hidden) {
+                                if (
+                                    (venueFromCloud.visited != venue.visited) ||
+                                    (venueFromCloud.hidden != venue.hidden)
+                                ) {
                                     setLocalVenueStateWithTimestamp(
                                         venueFromCloud.id,
                                         venueFromCloud.visited,
@@ -256,18 +258,22 @@ class VenuesRepository(application: Application) {
             database.venueDao.insertVenue(item)
         } catch (_: SQLiteConstraintException) {
             val oldItem = database.venueDao.getVenueById(item.id)
-            database.venueDao.updateVenue(item.apply {
-                active = oldItem.active
-                visited = oldItem.visited
-                hidden = oldItem.hidden
-            })
+            database.venueDao.updateVenue(
+                item.apply {
+                    active = oldItem.active
+                    visited = oldItem.visited
+                    hidden = oldItem.hidden
+                },
+            )
         } catch (_: Throwable) {
             val oldItem = database.venueDao.getVenueById(item.id)
-            database.venueDao.updateVenue(item.apply {
-                active = oldItem.active
-                visited = oldItem.visited
-                hidden = oldItem.hidden
-            })
+            database.venueDao.updateVenue(
+                item.apply {
+                    active = oldItem.active
+                    visited = oldItem.visited
+                    hidden = oldItem.hidden
+                },
+            )
         }
     }
 

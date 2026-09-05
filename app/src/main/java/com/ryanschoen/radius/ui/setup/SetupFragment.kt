@@ -62,7 +62,7 @@ class SetupFragment : Fragment() {
         // Initialize the SDK
         val apiKey = String(
             Base64.decode(BuildConfig.MAPS_API_KEY_BASE64.toByteArray(), Base64.DEFAULT),
-            Charset.defaultCharset()
+            Charset.defaultCharset(),
         )
         Places.initializeWithNewPlacesApiEnabled(requireContext(), apiKey)
 
@@ -80,35 +80,39 @@ class SetupFragment : Fragment() {
         autocompleteFragment.setOnPlaceSelectedListener(
             object : PlaceSelectionListener {
                 override fun onPlaceSelected(place: Place) {
-                Handler(Looper.getMainLooper()).postDelayed({
+                    Handler(Looper.getMainLooper()).postDelayed(
+                        {
+                            autocompleteFragment.setText(place.formattedAddress)
+                        },
+                        300,
+                    )
                     autocompleteFragment.setText(place.formattedAddress)
-                }, 300)
-                autocompleteFragment.setText(place.formattedAddress)
-                binding.venuesStatusIcon.setImageResource(R.drawable.baseline_change_circle_36)
-                val r = RotateAnimation(
-                    360f,
-                    0f,
-                    Animation.RELATIVE_TO_SELF,
-                    0.5f,
-                    Animation.RELATIVE_TO_SELF,
-                    0.5f
-                )
-                r.duration = 800
-                r.repeatCount = Animation.INFINITE
-                binding.venuesStatusIcon.startAnimation(r)
+                    binding.venuesStatusIcon.setImageResource(R.drawable.baseline_change_circle_36)
+                    val r = RotateAnimation(
+                        360f,
+                        0f,
+                        Animation.RELATIVE_TO_SELF,
+                        0.5f,
+                        Animation.RELATIVE_TO_SELF,
+                        0.5f,
+                    )
+                    r.duration = 800
+                    r.repeatCount = Animation.INFINITE
+                    binding.venuesStatusIcon.startAnimation(r)
 
-                binding.venuesStatusIcon.visibility = View.VISIBLE
+                    binding.venuesStatusIcon.visibility = View.VISIBLE
 
-                binding.venuesStatusText.text = getString(R.string.venue_search_processing)
-                binding.venuesStatusText.visibility = View.VISIBLE
-                viewModel.loadVenues(place.formattedAddress!!, place.location!!)
-            }
+                    binding.venuesStatusText.text = getString(R.string.venue_search_processing)
+                    binding.venuesStatusText.visibility = View.VISIBLE
+                    viewModel.loadVenues(place.formattedAddress!!, place.location!!)
+                }
 
-            override fun onError(status: Status) {
-                // TODO: Handle the error.
-                Timber.i("An error occurred: $status")
-            }
-        })
+                override fun onError(status: Status) {
+                    // TODO: Handle the error.
+                    Timber.i("An error occurred: $status")
+                }
+            },
+        )
 
 
 
