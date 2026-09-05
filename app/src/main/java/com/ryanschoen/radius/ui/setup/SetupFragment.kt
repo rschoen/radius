@@ -1,23 +1,26 @@
 package com.ryanschoen.radius.ui.setup
 
+import android.app.Activity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.AutocompletePrediction
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.libraries.places.widget.PlaceAutocomplete
+import com.google.android.libraries.places.widget.PlaceAutocompleteActivity
 import com.ryanschoen.radius.BuildConfig
 import com.ryanschoen.radius.MainActivity
 import com.ryanschoen.radius.R
@@ -39,7 +42,25 @@ class SetupFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    private lateinit var placesClient: PlacesClient
+    private var sessionToken: AutocompleteSessionToken? = null
+
     private val args: SetupFragmentArgs by navArgs()
+
+    private val startAutocomplete = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val intent = result.data
+            if (intent != null) {
+                val prediction = PlaceAutocomplete.getPredictionFromIntent(intent)
+                prediction?.let { handlePlaceSelected(it) }
+            }
+        } else if (result.resultCode == PlaceAutocompleteActivity.RESULT_ERROR) {
+            val status = PlaceAutocomplete.getResultStatusFromIntent(result.data!!)
+            Timber.i("An error occurred: $status")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,54 +88,15 @@ class SetupFragment : Fragment() {
         Places.initializeWithNewPlacesApiEnabled(requireContext(), apiKey)
 
         // Create a new PlacesClient instance
-        Places.createClient(requireContext())
-        // Initialize the AutocompleteSupportFragment.
-        val autocompleteFragment =
-            childFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
+        placesClient = Places.createClient(requireContext())
 
-        // Specify the types of place data to return.
-        autocompleteFragment.setPlaceFields(listOf(Place.Field.FORMATTED_ADDRESS, Place.Field.LOCATION))
-            .setHint(getString(R.string.search_for_address))
-
-        // Set up a PlaceSelectionListener to handle the response.
-        autocompleteFragment.setOnPlaceSelectedListener(
-            object : PlaceSelectionListener {
-                override fun onPlaceSelected(place: Place) {
-                    Handler(Looper.getMainLooper()).postDelayed(
-                        {
-                            autocompleteFragment.setText(place.formattedAddress)
-                        },
-                        300,
-                    )
-                    autocompleteFragment.setText(place.formattedAddress)
-                    binding.venuesStatusIcon.setImageResource(R.drawable.baseline_change_circle_36)
-                    val r = RotateAnimation(
-                        360f,
-                        0f,
-                        Animation.RELATIVE_TO_SELF,
-                        0.5f,
-                        Animation.RELATIVE_TO_SELF,
-                        0.5f,
-                    )
-                    r.duration = 800
-                    r.repeatCount = Animation.INFINITE
-                    binding.venuesStatusIcon.startAnimation(r)
-
-                    binding.venuesStatusIcon.visibility = View.VISIBLE
-
-                    binding.venuesStatusText.text = getString(R.string.venue_search_processing)
-                    binding.venuesStatusText.visibility = View.VISIBLE
-                    viewModel.loadVenues(place.formattedAddress!!, place.location!!)
-                }
-
-                override fun onError(status: Status) {
-                    // TODO: Handle the error.
-                    Timber.i("An error occurred: $status")
-                }
-            },
-        )
-
-
+        binding.autocompleteContainer.setOnClickListener {
+            sessionToken = AutocompleteSessionToken.newInstance()
+            val intent = PlaceAutocomplete.createIntent(requireContext()) {
+                setAutocompleteSessionToken(sessionToken)
+            }
+            startAutocomplete.launch(intent)
+        }
 
         viewModel.venuesChanged.observe(viewLifecycleOwner) { changed ->
             if (changed) {
@@ -140,6 +122,39 @@ class SetupFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (requireActivity() as MainActivity).showUpButton(args.isAddressAlreadySet)
 
+    }
+
+    private fun handlePlaceSelected(prediction: AutocompletePrediction) {
+        val placeId = prediction.placeId
+        val fields = listOf(Place.Field.FORMATTED_ADDRESS, Place.Field.LOCATION)
+        val request = FetchPlaceRequest.builder(placeId, fields)
+            .setSessionToken(sessionToken)
+            .build()
+
+        placesClient.fetchPlace(request).addOnSuccessListener { response ->
+            val place = response.place
+            binding.autocompleteSearchText.text = place.formattedAddress
+            binding.venuesStatusIcon.setImageResource(R.drawable.baseline_change_circle_36)
+            val r = RotateAnimation(
+                360f,
+                0f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f,
+            )
+            r.duration = 800
+            r.repeatCount = Animation.INFINITE
+            binding.venuesStatusIcon.startAnimation(r)
+
+            binding.venuesStatusIcon.visibility = View.VISIBLE
+
+            binding.venuesStatusText.text = getString(R.string.venue_search_processing)
+            binding.venuesStatusText.visibility = View.VISIBLE
+            viewModel.loadVenues(place.formattedAddress!!, place.location!!)
+        }.addOnFailureListener { exception ->
+            Timber.e(exception, "Place fetch failed")
+        }
     }
 
 
